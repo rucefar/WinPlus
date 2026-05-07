@@ -17,9 +17,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 
 .noise-bg {
     background-color: #f4f1ea;
-    background-image: 
-        radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     background-size: 30px 30px, auto;
 }
 
@@ -204,7 +202,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-tag.indigo.on { background: var(--n-indigo); color: white; border-color: var(--n-indigo); }
 .n-tag.purple { background: #f5f3ff; border-color: rgba(124,92,191,0.2); color: var(--n-purple); }
 .n-tag.purple.on { background: var(--n-purple); color: white; border-color: var(--n-purple); }
-
 .n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); }
 .n-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: var(--n-radius-sm); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .n-btn-ghost { background: none; border: 1px solid var(--n-border); color: var(--n-text2); }
@@ -709,6 +706,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       <button class="tab-btn active" onclick="window.gotoPage('mandala',this)">⊞ 曼陀羅九宮格</button>
       <button class="tab-btn"       onclick="window.gotoPage('mindmap',this)">🕸 組織網路圖</button>
       <button class="tab-btn"       onclick="window.gotoPage('notebook',this)">📓 筆記本</button>
+      
       <span class="cloud-status">☁️ 尚未登入</span>
       <div class="user-profile" id="user-profile-name"></div>
       <button class="logout-btn" onclick="window.logout()">登出</button>
@@ -769,38 +767,111 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
           </div>
           <div id="nb-note-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
             <div id="nb-toolbar">
-              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')"><b>B</b></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')"><i>I</i></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')"><u>U</u></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')"><s>S</s></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')" title="粗體"><b>B</b></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')" title="斜體"><i>I</i></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')" title="底線"><u>U</u></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')" title="刪除線"><s>S</s></button>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')">☰</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')">①</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')">→</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')">←</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')" title="項目清單">☰</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')" title="編號清單">①</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')" title="縮排">→</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')" title="取消縮排">←</button>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')">⬛︎</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')">▣</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')">⬛</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')" title="靠左">⬛︎</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')" title="置中">▣</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')" title="靠右">⬛</button>
               <div class="nb-tool-sep"></div>
-              <input id="nb-font-size" type="number" value="15" min="8" max="72" onchange="window.NotebookApp.fontSize(this.value)">
-              <div class="nb-color-btn"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
-              <div class="nb-color-btn" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
+              <input id="nb-font-size" type="number" value="15" min="8" max="72" title="字體大小" onchange="window.NotebookApp.fontSize(this.value)">
+              <div class="nb-color-btn" title="文字顏色"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
+              <div class="nb-color-btn" title="螢光標記" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()">─</button>
-              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()">☑</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" style="font-size:.65rem">✕fmt</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()" title="分隔線">─</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()" title="待辦項目">☑</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" title="清除格式" style="font-size:.65rem">✕fmt</button>
             </div>
             <div id="nb-title-bar"><input id="nb-title-input" type="text" placeholder="筆記標題…" oninput="window.NotebookApp.titleChange(this.value)"></div>
             <div id="nb-content-area"><div id="nb-editor" contenteditable="true" oninput="window.NotebookApp.contentChange()" onkeydown="window.NotebookApp.editorKeydown(event)"></div></div>
-            <div id="nb-status"><span id="nb-word-count">0 字</span><span id="nb-save-status">已儲存</span><span id="nb-note-date"></span></div>
+            <div id="nb-status">
+              <span id="nb-word-count">0 字</span>
+              <span id="nb-save-status">已儲存</span>
+              <span id="nb-note-date"></span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 </div>
 
-<div id="wp-toast"></div>
+<div id="hundred-view" class="app-view">
+  <button class="back-btn" style="position: absolute; top: 1rem; left: 1rem; z-index: 100; background: rgba(0,0,0,0.4); border: 1px solid var(--h-gold); color: var(--h-gold-light); padding: 6px 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 0.8rem; border-radius: 4px; transition: all 0.2s;" onclick="window.switchApp('home')">← 回首頁</button>
+  <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 10px; align-items: center; z-index: 100;">
+      <span class="cloud-status" style="font-size: 0.75rem; color: #888;">☁️ 尚未登入</span>
+      <button class="logout-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 12px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; transition: background 0.2s;" onclick="window.logout()">登出</button>
+  </div>
+
+  <div class="noise"></div>
+  <div class="h-container">
+    <div class="header">
+      <div class="header-deco">
+        <div class="deco-line"></div>
+        <div class="deco-diamond"></div>
+        <div class="deco-line right"></div>
+      </div>
+      <h1>百戰成功表</h1>
+      <p class="description">
+        每一次當您展示市場計畫不成功的時候，就在下面方格打一個 ✓。<br>
+        您將會發覺，在還沒有將這些方格全部填滿 ✓ 之前，您已經是一位直系直銷商了。<br>
+        要成為白金您最多碰到 100 次挫折而已，何樂而不為呢？
+      </p>
+      <div class="slogan">DO IT NOW!</div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-num" id="h-checked-count">0</div>
+        <div class="stat-label">已記錄</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num" id="h-remain-count">100</div>
+        <div class="stat-label">剩餘</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num" id="h-pct-count">0%</div>
+        <div class="stat-label">進度</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="h-progress-fill"></div>
+      </div>
+      <div class="progress-label">
+        <span>0</span>
+        <span>白金之路</span>
+        <span>100</span>
+      </div>
+    </div>
+
+    <div class="grid-wrap">
+      <table class="grid" id="h-grid"></table>
+    </div>
+
+    <div class="complete-banner" id="h-complete-banner">
+      <p>🏆 恭喜！您已完成百戰，白金在望！</p>
+    </div>
+
+    <div class="reset-btn">
+      <button class="reset" onclick="window.hResetAll()">RESET ALL</button>
+    </div>
+  </div>
+</div>
+
+<div class="export-msg" id="export-msg">✔ 已複製成功！現在可以貼給 AI 請它幫你分析了。</div>
+<div class="toast" id="h-toast"></div>
+<div class="n-toast" id="n-toast"></div>
+<div id="wp-toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 20px;border-radius:20px;font-size:.8rem;z-index:99999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;"></div>
 
 <div id="review-record-modal" class="biz-modal-overlay" style="align-items: flex-end; padding-bottom: 30px;" onclick="if(event.target===this) window.closeReviewModal()">
     <div class="biz-modal" style="max-width: 500px; display: flex; flex-direction: column; max-height: 65vh;">
@@ -816,7 +887,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     <p style="font-size:13px; color:#666; margin-bottom:15px;">選擇要與此節點配對的 90天跟進客戶：</p>
     <select id="mm-link-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
     <div style="display:flex; gap:10px; margin-top:20px;">
-      <button class="n-btn n-btn-danger" onclick="window.mmUnlink()" style="flex:1;" id="mm-unlink-btn">解除配對</button>
       <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-link-modal').classList.remove('show')" style="flex:1;">取消</button>
       <button class="n-btn n-btn-primary" onclick="window.mmSaveLink()" style="flex:1;">確認配對</button>
     </div>
@@ -932,6 +1002,9 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     [1,2,3,4,5,6,7,8,9,10],
   ];
 
+  const milestones = {10:'突破10次，持續前進！', 25:'四分之一完成，繼續加油！', 50:'已達半程里程碑！', 75:'75次！白金近在眼前！', 100:'百戰已滿！您已踏上白金之路！'};
+  let hToastTimer;
+
   window.hRenderGrid = function() {
     const grid = document.getElementById('h-grid');
     if (!grid) return;
@@ -978,7 +1051,18 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     if(elPct) elPct.textContent = pct + '%';
     if(elProg) elProg.style.width = pct + '%';
     if(elBanner) elBanner.classList.toggle('show', count === 100);
+
+    if (milestones[count]) hShowToast(milestones[count]);
   };
+
+  function hShowToast(msg) {
+    const t = document.getElementById('h-toast');
+    if(!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(hToastTimer);
+    hToastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
 
   window.hResetAll = function() {
     if (!confirm('確定要清空所有紀錄重新開始嗎？')) return;
@@ -1193,7 +1277,10 @@ window.reviewExportToday = function() {
     promptText += `- 感恩事項：${log.gratitude.join('、') || '無'}\n`;
 
     navigator.clipboard.writeText(promptText).then(() => {
-        window.showWPToast("✔ 已複製當前選擇日期的紀錄！");
+        const msg = document.getElementById('export-msg');
+        msg.textContent = "✔ 已複製當前選擇日期的紀錄！";
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 5000);
     });
 };
 
@@ -1217,7 +1304,10 @@ window.reviewExportData = function(days) {
   });
 
   navigator.clipboard.writeText(promptText).then(() => {
-    window.showWPToast("✔ 已複製多天紀錄！");
+    const msg = document.getElementById('export-msg');
+    msg.textContent = "✔ 已複製多天紀錄！";
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 5000);
   });
 };
 
@@ -1976,7 +2066,6 @@ window.mmSaveReparent = function() {
     }
 };
 
-// 畫面平移 (無限畫布)
 document.addEventListener('DOMContentLoaded', () => {
     const mmPage = document.getElementById('page-mindmap');
     if(mmPage) {
@@ -2059,7 +2148,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:40, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:50, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
