@@ -108,7 +108,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-topbar .n-back { background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); font-family: inherit; font-size: 0.75rem; padding: 4px 12px; border-radius: 18px; cursor: pointer; transition: all 0.2s; }
 .n-topbar .n-back:hover { background: rgba(255,255,255,0.25); color: #fff; }
 .n-topbar .n-bar-title { font-family: 'Noto Serif TC', serif; font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.9); }
-
 .n-content { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
 .n-summary-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .n-chip { display: flex; align-items: center; gap: 8px; background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 8px 16px; box-shadow: var(--n-shadow); }
@@ -205,7 +204,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-tag.indigo.on { background: var(--n-indigo); color: white; border-color: var(--n-indigo); }
 .n-tag.purple { background: #f5f3ff; border-color: rgba(124,92,191,0.2); color: var(--n-purple); }
 .n-tag.purple.on { background: var(--n-purple); color: white; border-color: var(--n-purple); }
-
 .n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); flex-wrap: wrap;}
 .n-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: var(--n-radius-sm); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .n-btn-ghost { background: none; border: 1px solid var(--n-border); color: var(--n-text2); }
@@ -296,6 +294,12 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #hundred-view td.platinum { background: linear-gradient(135deg, var(--h-gold-dark), var(--h-gold), var(--h-gold-light)); cursor: default; position: relative; }
 #hundred-view td.platinum::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent); }
 #hundred-view .platinum-text { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 700; color: var(--h-bg); letter-spacing: 2px; position: relative; z-index: 1; }
+#hundred-view .complete-banner { display: none; text-align: center; padding: 24px; margin-top: 20px; border: 1px solid var(--h-border-strong); background: linear-gradient(135deg, rgba(200,169,110,0.08), transparent); animation: fadeUp 0.6s ease both; }
+#hundred-view .complete-banner.show { display: block; }
+#hundred-view .complete-banner p { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--h-gold-light); letter-spacing: 3px; }
+#hundred-view .reset-btn { margin-top: 24px; display: flex; justify-content: center; animation: fadeUp 0.8s 0.5s ease both; }
+#hundred-view button.reset { background: transparent; border: 1px solid var(--h-border); color: var(--h-text-muted); font-family: inherit; font-size: 12px; letter-spacing: 3px; padding: 10px 28px; cursor: pointer; transition: all 0.2s ease; }
+#hundred-view button.reset:hover { border-color: var(--h-border-strong); color: var(--h-gold); background: var(--h-cell-hover); }
 
 /* ── WINPLUS VIEW CSS ── */
 #winplus-view { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background: #fff; }
@@ -332,13 +336,16 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 
 /* Mind Map */
 #page-mindmap { background: #f5f1ea; background-image: radial-gradient(circle at 20% 80%, rgba(74,124,142,.06) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(201,120,60,.06) 0%, transparent 60%); position:relative; overflow:hidden; }
+#mm-workspace { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0; }
+#mm-svg { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; }
+#mm-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
 .mm-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(26,26,46,.35); pointer-events: none; white-space: nowrap; z-index: 50; background:rgba(255,255,255,0.6); padding:4px 10px; border-radius:12px; }
 .mm-toolbar { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; z-index: 100; background: #1e1e1e; padding: 7px 12px; border-radius: 40px; box-shadow: 0 6px 24px rgba(0,0,0,.25); max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center; }
 @media (max-width: 480px) { .mm-toolbar { bottom: 12px; top: auto; border-radius: 20px; padding: 5px 10px; } .mm-hint { display: none; } }
 .mm-btn { padding: 6px 12px; border: none; background: rgba(255,255,255,.1); color: #f0ebe0; font-family: inherit; font-size: clamp(.65rem, 2vw, .76rem); cursor: pointer; border-radius: 22px; transition: background .15s; letter-spacing: .03em; white-space: nowrap; }
 .mm-btn:hover { background: rgba(255,255,255,.2); }
 .mm-btn.danger { color: #ff9a9a; }
-.mm-node { position: absolute; transform: translate(-50%, -50%); min-width: 72px; max-width: 160px; text-align: center; cursor: grab; z-index: 10; }
+.mm-node { position: absolute; transform: translate(-50%, -50%); min-width: 72px; max-width: 160px; text-align: center; cursor: grab; z-index: 10; pointer-events: auto; }
 .mm-node:active { cursor: grabbing; }
 .mm-node-inner { padding: 8px 14px; border-radius: 26px; background: #fff; border: 2px solid rgba(26,26,46,.15); box-shadow: 0 3px 14px rgba(26,26,46,.12); font-size: .82rem; line-height: 1.5; word-break: break-all; transition: border-color .18s, box-shadow .18s; position: relative; }
 .mm-node.root > .mm-node-inner { background: #1e1e1e; color: #f0ebe0; border-color: #1e1e1e; font-size: .95rem; font-weight: 500; border-radius: 32px; padding: 11px 20px; }
@@ -529,7 +536,8 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         </button>
         <input type="file" id="n-import-file" style="display:none" accept=".json" onchange="window.nImportData(event)">
         <button class="n-btn-add" onclick="window.nOpenNew(0)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> 新增客戶
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          新增客戶
         </button>
       </div>
       <div id="n-stage-blocks"></div>
@@ -703,105 +711,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </div>
 </div>
 
-<div id="winplus-view" class="app-view">
-    <div id="nav">
-      <button class="tab-btn home-btn" onclick="window.switchApp('home')">← 回首頁</button>
-      <span class="nav-logo">✦ WinPlus+Team</span>
-      <button class="tab-btn active" onclick="window.gotoPage('mandala',this)">⊞ 曼陀羅九宮格</button>
-      <button class="tab-btn"       onclick="window.gotoPage('mindmap',this)">🕸 組織網路圖</button>
-      <button class="tab-btn"       onclick="window.gotoPage('notebook',this)">📓 筆記本</button>
-      
-      <span class="cloud-status">☁️ 尚未登入</span>
-      <div class="user-profile" id="user-profile-name"></div>
-      <button class="logout-btn" onclick="window.logout()">登出</button>
-    </div>
-
-    <div class="page active" id="page-mandala">
-      <div class="mandala-wrapper">
-        <div class="mandala-left">
-          <div class="mandala-brand"><div class="mandala-brand-title">曼陀羅<br>九宮格</div></div>
-          <div class="left-field"><div class="left-dot d-date">日期</div><input id="ml-date" class="left-input" placeholder="年 / 月 / 日"></div>
-          <div class="left-field"><div class="left-dot d-ttl">標題</div><input id="ml-title" class="left-input" placeholder="主題標題"></div>
-          <div class="left-field"><div class="left-dot d-name">姓名</div><input id="ml-name" class="left-input" placeholder="姓名"></div>
-          <div class="left-field"><div class="left-dot d-memo">memo</div><input id="ml-memo" class="left-input" placeholder="備忘錄"></div>
-        </div>
-        <div><div class="big-grid" id="big-grid"></div></div>
-      </div>
-    </div>
-
-    <div class="page" id="page-mindmap">
-      <div class="mm-hint">點選節點 · 拖曳移動平移 · 點 ＋ 新增子節點 · 雙擊編輯文字</div>
-      <div id="mm-workspace" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0;">
-        <svg id="mm-svg" style="position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible;"></svg>
-        <div id="mm-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
-      </div>
-      <div class="mm-toolbar">
-        <button class="mm-btn" onclick="window.mmAddChildToSelected()">＋ 新增子節點</button>
-        <button class="mm-btn" onclick="window.mmAutoLayout()">⟳ 自動排版</button>
-        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
-        <label style="display:flex; align-items:center; gap:4px; color:#f0ebe0; font-size:0.7rem; cursor:pointer;" title="文字顏色">
-          <span style="font-weight:bold;">A</span>
-          <input type="color" oninput="window.mmChangeTextColor(this.value)" value="#333333" style="width:20px;height:20px;padding:0;border:1px solid rgba(255,255,255,0.3); border-radius:3px; cursor:pointer; background:transparent;">
-        </label>
-        <label style="display:flex; align-items:center; gap:4px; color:#f0ebe0; font-size:0.7rem; cursor:pointer; margin-left: 4px;" title="節點背景色">
-          <span style="font-weight:bold;">Bg</span>
-          <input type="color" oninput="window.mmChangeBgColor(this.value)" value="#ffffff" style="width:20px;height:20px;padding:0;border:1px solid rgba(255,255,255,0.3); border-radius:3px; cursor:pointer; background:transparent;">
-        </label>
-        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
-        <button class="mm-btn" onclick="window.mmOpenReparentModal()" style="color: #e8a045;">↳ 更換上層</button>
-        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
-        <button class="mm-btn danger" onclick="window.mmClearAll()">✕ 清除全部</button>
-      </div>
-    </div>
-
-    <div class="page" id="page-notebook">
-      <div id="nb-layout">
-        <div id="nb-sidebar">
-          <div id="nb-sidebar-top">
-            <input id="nb-search" type="text" placeholder="搜尋筆記…" oninput="window.NotebookApp.search(this.value)">
-            <button id="nb-new-btn" onclick="window.NotebookApp.newNote()" title="新增筆記">＋</button>
-          </div>
-          <div id="nb-list"></div>
-          <div id="nb-empty-hint">尚無筆記</div>
-        </div>
-        <div id="nb-editor-wrap">
-          <div id="nb-placeholder">
-            <div class="nb-ph-icon">📓</div>
-            <div class="nb-ph-text">點左側＋新增筆記，或選擇已有筆記</div>
-          </div>
-          <div id="nb-note-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-            <div id="nb-toolbar">
-              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')"><b>B</b></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')"><i>I</i></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')"><u>U</u></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')"><s>S</s></button>
-              <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')">☰</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')">①</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')">→</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')">←</button>
-              <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')">⬛︎</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')">▣</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')">⬛</button>
-              <div class="nb-tool-sep"></div>
-              <input id="nb-font-size" type="number" value="15" min="8" max="72" onchange="window.NotebookApp.fontSize(this.value)">
-              <div class="nb-color-btn"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
-              <div class="nb-color-btn" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
-              <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()">─</button>
-              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()">☑</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" style="font-size:.65rem">✕fmt</button>
-            </div>
-            <div id="nb-title-bar"><input id="nb-title-input" type="text" placeholder="筆記標題…" oninput="window.NotebookApp.titleChange(this.value)"></div>
-            <div id="nb-content-area"><div id="nb-editor" contenteditable="true" oninput="window.NotebookApp.contentChange()" onkeydown="window.NotebookApp.editorKeydown(event)"></div></div>
-            <div id="nb-status"><span id="nb-word-count">0 字</span><span id="nb-save-status">已儲存</span><span id="nb-note-date"></span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-</div>
-
 <div id="hundred-view" class="app-view">
   <button class="back-btn" style="position: absolute; top: 1rem; left: 1rem; z-index: 100; background: rgba(0,0,0,0.4); border: 1px solid var(--h-gold); color: var(--h-gold-light); padding: 6px 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 0.8rem; border-radius: 4px; transition: all 0.2s;" onclick="window.switchApp('home')">← 回首頁</button>
   <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 10px; align-items: center; z-index: 100;">
@@ -868,7 +777,110 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   </div>
 </div>
 
-<div id="wp-toast"></div>
+<div id="winplus-view" class="app-view">
+    <div id="nav">
+      <button class="tab-btn home-btn" onclick="window.switchApp('home')">← 回首頁</button>
+      <span class="nav-logo">✦ WinPlus+Team</span>
+      <button class="tab-btn active" onclick="window.gotoPage('mandala',this)">⊞ 曼陀羅九宮格</button>
+      <button class="tab-btn"       onclick="window.gotoPage('mindmap',this)">🕸 組織網路圖</button>
+      <button class="tab-btn"       onclick="window.gotoPage('notebook',this)">📓 筆記本</button>
+      
+      <span class="cloud-status">☁️ 尚未登入</span>
+      <div class="user-profile" id="user-profile-name"></div>
+      <button class="logout-btn" onclick="window.logout()">登出</button>
+    </div>
+
+    <div class="page active" id="page-mandala">
+      <div class="mandala-wrapper">
+        <div class="mandala-left">
+          <div class="mandala-brand"><div class="mandala-brand-title">曼陀羅<br>九宮格</div></div>
+          <div class="left-field"><div class="left-dot d-date">日期</div><input id="ml-date" class="left-input" placeholder="年 / 月 / 日"></div>
+          <div class="left-field"><div class="left-dot d-ttl">標題</div><input id="ml-title" class="left-input" placeholder="主題標題"></div>
+          <div class="left-field"><div class="left-dot d-name">姓名</div><input id="ml-name" class="left-input" placeholder="姓名"></div>
+          <div class="left-field"><div class="left-dot d-memo">memo</div><input id="ml-memo" class="left-input" placeholder="備忘錄"></div>
+        </div>
+        <div><div class="big-grid" id="big-grid"></div></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-mindmap">
+      <div class="mm-hint">點選節點 · 拖曳空白處平移 · 點 ＋ 新增子節點 · 雙擊編輯文字</div>
+      <div id="mm-workspace" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0;">
+        <svg id="mm-svg" style="position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none;"></svg>
+        <div id="mm-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+      </div>
+      <div class="mm-toolbar">
+        <button class="mm-btn" onclick="window.mmAddChildToSelected()">＋ 新增子節點</button>
+        <button class="mm-btn" onclick="window.mmAutoLayout()">⟳ 自動排版</button>
+        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
+        <label style="display:flex; align-items:center; gap:4px; color:#f0ebe0; font-size:0.7rem; cursor:pointer;" title="文字顏色">
+          <span style="font-weight:bold;">A</span>
+          <input type="color" oninput="window.mmChangeTextColor(this.value)" value="#333333" style="width:20px;height:20px;padding:0;border:1px solid rgba(255,255,255,0.3); border-radius:3px; cursor:pointer; background:transparent;">
+        </label>
+        <label style="display:flex; align-items:center; gap:4px; color:#f0ebe0; font-size:0.7rem; cursor:pointer; margin-left: 4px;" title="節點背景色">
+          <span style="font-weight:bold;">Bg</span>
+          <input type="color" oninput="window.mmChangeBgColor(this.value)" value="#ffffff" style="width:20px;height:20px;padding:0;border:1px solid rgba(255,255,255,0.3); border-radius:3px; cursor:pointer; background:transparent;">
+        </label>
+        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
+        <button class="mm-btn" onclick="window.mmOpenReparentModal()" style="color: #e8a045;">↳ 更換上層</button>
+        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
+        <button class="mm-btn danger" onclick="window.mmClearAll()">✕ 清除全部</button>
+      </div>
+    </div>
+
+    <div class="page" id="page-notebook">
+      <div id="nb-layout">
+        <div id="nb-sidebar">
+          <div id="nb-sidebar-top">
+            <input id="nb-search" type="text" placeholder="搜尋筆記…" oninput="window.NotebookApp.search(this.value)">
+            <button id="nb-new-btn" onclick="window.NotebookApp.newNote()" title="新增筆記">＋</button>
+          </div>
+          <div id="nb-list"></div>
+          <div id="nb-empty-hint">尚無筆記</div>
+        </div>
+        <div id="nb-editor-wrap">
+          <div id="nb-placeholder">
+            <div class="nb-ph-icon">📓</div>
+            <div class="nb-ph-text">點左側＋新增筆記，或選擇已有筆記</div>
+          </div>
+          <div id="nb-note-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+            <div id="nb-toolbar">
+              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')" title="粗體"><b>B</b></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')" title="斜體"><i>I</i></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')" title="底線"><u>U</u></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')" title="刪除線"><s>S</s></button>
+              <div class="nb-tool-sep"></div>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')" title="項目清單">☰</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')" title="編號清單">①</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')" title="縮排">→</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')" title="取消縮排">←</button>
+              <div class="nb-tool-sep"></div>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')" title="靠左">⬛︎</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')" title="置中">▣</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')" title="靠右">⬛</button>
+              <div class="nb-tool-sep"></div>
+              <input id="nb-font-size" type="number" value="15" min="8" max="72" title="字體大小" onchange="window.NotebookApp.fontSize(this.value)">
+              <div class="nb-color-btn" title="文字顏色"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
+              <div class="nb-color-btn" title="螢光標記" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
+              <div class="nb-tool-sep"></div>
+              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()" title="分隔線">─</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()" title="待辦項目">☑</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" title="清除格式" style="font-size:.65rem">✕fmt</button>
+            </div>
+            <div id="nb-title-bar"><input id="nb-title-input" type="text" placeholder="筆記標題…" oninput="window.NotebookApp.titleChange(this.value)"></div>
+            <div id="nb-content-area"><div id="nb-editor" contenteditable="true" oninput="window.NotebookApp.contentChange()" onkeydown="window.NotebookApp.editorKeydown(event)"></div></div>
+            <div id="nb-status">
+              <span id="nb-word-count">0 字</span>
+              <span id="nb-save-status">已儲存</span>
+              <span id="nb-note-date"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div id="wp-toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 20px;border-radius:20px;font-size:.8rem;z-index:99999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;"></div>
 
 <div id="review-record-modal" class="biz-modal-overlay" style="align-items: flex-end; padding-bottom: 30px;" onclick="if(event.target===this) window.closeReviewModal()">
     <div class="biz-modal" style="max-width: 500px; display: flex; flex-direction: column; max-height: 65vh;">
@@ -918,18 +930,13 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     };
 
     window.switchApp = function(appId, pushHistory = true) {
-        // 隱藏所有頁面
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
-        
-        // 顯示目標頁面
         const targetView = document.getElementById(appId + '-view');
         if (targetView) targetView.classList.add('active');
         
-        // 切換主頁面時，自動關閉所有浮動視窗
         window.closeReviewModal();
         document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
-        // 特殊頁面載入邏輯
         if (appId === 'map' && typeof window.initMap === 'function') window.initMap();
         if (appId === 'review' && typeof window.reviewRenderTracker === 'function') window.reviewRenderTracker();
 
@@ -1248,8 +1255,7 @@ window.reviewViewRecord = function(dateStr) {
     }
     
     document.getElementById('rr-content').innerHTML = contentHtml;
-    const modal = document.getElementById('review-record-modal');
-    if(modal) modal.classList.add('show');
+    document.getElementById('review-record-modal').classList.add('show');
 };
 
 window.reviewExportToday = function() {
@@ -1824,7 +1830,6 @@ window.mmDrawLines = function() {
 window.mmRender = function() {
     const canvas = document.getElementById('mm-canvas');
     if (!canvas) {
-        console.error("找不到 mm-canvas！");
         return;
     }
     canvas.innerHTML = '';
@@ -2122,7 +2127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mmPage.style.cursor = '';
         });
         
-        // Touch support for panning
         mmPage.addEventListener('touchstart', (e) => {
             if(e.target.closest('.mm-node') || e.target.closest('.mm-toolbar') || e.touches.length !== 1) return;
             isPanning = true;
@@ -2140,7 +2144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
 })();
 
 /* ══════════════════════════════════════════
@@ -2183,7 +2186,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:55, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:56, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
@@ -2194,147 +2197,4 @@ window.restoreAllData = function(data) {
           if (data.fields) { ['ml_date','ml_title','ml_name','ml_memo'].forEach((k,i) => { if (data.fields[k] != null) { localStorage.setItem(k, data.fields[k]); const ids = ['ml-date','ml-title','ml-name','ml-memo']; const el = document.getElementById(ids[i]); if (el) el.value = data.fields[k]; } }); }
           if (data.mindmap) { localStorage.setItem('mm_nodes', JSON.stringify(data.mindmap)); if(typeof window.mmLoadState === 'function') window.mmLoadState(); }
           if (data.notebook && typeof window.NotebookApp.restoreNotes === 'function') window.NotebookApp.restoreNotes(data.notebook);
-          if (data.ninety90 && Array.isArray(data.ninety90)) { localStorage.setItem('crm90_v3', JSON.stringify(data.ninety90)); if (typeof window.nLoadCustomers === 'function') window.nLoadCustomers(data.ninety90); }
-          
-          if (data.reviewData) {
-            localStorage.setItem('goal-health', data.reviewData.goals.health || '');
-            localStorage.setItem('goal-social', data.reviewData.goals.social || '');
-            localStorage.setItem('goal-family', data.reviewData.goals.family || '');
-            localStorage.setItem('goal-amway', data.reviewData.goals.amway || '');
-            localStorage.setItem('goal-wealth', data.reviewData.goals.wealth || '');
-            localStorage.setItem('richLogs', JSON.stringify(data.reviewData.richLogs || []));
-            if(typeof window.reviewLoadGoals === 'function') {
-                window.reviewLoadGoals();
-                window.reviewRenderTracker();
-            }
-          }
-          
-          if (data.hundredState) {
-            localStorage.setItem('hundred_state', JSON.stringify(data.hundredState));
-            window.hundredState = data.hundredState;
-            if(typeof window.hRenderGrid === 'function') window.hRenderGrid();
-          }
-      } catch(err) {
-          console.error("DOM 復原時發生錯誤: ", err);
-      }
-  };
-
-  if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', execRestore);
-  } else {
-      execRestore();
-  }
-};
-</script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithCredential, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyArBQTUSpEk2VfLMSe1lLDbhBDNEzZJgtA",
-    authDomain: "rucefar.github.io",   
-    projectId: "winplus-6fe62",
-    storageBucket: "winplus-6fe62.firebasestorage.app",
-    messagingSenderId: "635721093721",
-    appId: "1:635721093721:web:12d24d7025514608335748"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  onAuthStateChanged(auth, async (user) => {
-    const initUser = async () => {
-        window.currentUserUid = user.uid;
-        document.getElementById('login-overlay').style.display = 'none';
-        const nameEls = document.querySelectorAll('.user-profile');
-        if (nameEls.length) nameEls.forEach(el => el.textContent = user.displayName);
-        const statusEls = document.querySelectorAll('.cloud-status');
-        statusEls.forEach(el => el.textContent = '☁️ 正在讀取雲端資料...');
-        try {
-          const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists()) { window.restoreAllData(docSnap.data()); }
-          statusEls.forEach(el => el.textContent = '☁️ 已與雲端同步');
-        } catch (e) {
-          console.error("Firebase 讀取失敗: ", e);
-          statusEls.forEach(el => el.textContent = '⚠️ 讀取失敗');
-        }
-        window.switchApp('home');
-    };
-
-    if (user) {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initUser);
-        } else {
-            initUser();
-        }
-    } else {
-      window.currentUserUid = null;
-      if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', () => {
-              document.getElementById('login-overlay').style.display = 'flex';
-          });
-      } else {
-          document.getElementById('login-overlay').style.display = 'flex';
-      }
-    }
-  });
-
-  window.handleCredentialResponse = async (response) => {
-      const credential = GoogleAuthProvider.credential(response.credential);
-      await signInWithCredential(auth, credential);
-  };
-
-  window.onload = function () {
-      google.accounts.id.initialize({
-          client_id: "635721093721-ebdobeukugpou646db9kt6ij873ejorb.apps.googleusercontent.com",
-          callback: window.handleCredentialResponse
-      });
-      const btnContainer = document.getElementById("google-btn-container");
-      if (btnContainer) {
-          google.accounts.id.renderButton(
-              btnContainer,
-              { 
-                  theme: "outline", 
-                  size: "large", 
-                  type: "standard", 
-                  shape: "rectangular",
-                  text: "signin_with",
-                  logo_alignment: "left",
-                  width: 250
-              }
-          );
-      }
-      google.accounts.id.prompt(); 
-  };
-
-  window.logout = async () => { await signOut(auth); localStorage.clear(); location.reload(); };
-
-  let cloudTimer = null;
-  window.triggerCloudSave = () => {
-    if (!window.currentUserUid) return;
-    clearTimeout(cloudTimer);
-    cloudTimer = setTimeout(async () => {
-      try {
-        const fullData = window.collectAllData ? window.collectAllData() : null;
-        if (fullData) {
-            await setDoc(doc(db, "users", window.currentUserUid), fullData);
-            const statusEls = document.querySelectorAll('.cloud-status');
-            statusEls.forEach(el => el.textContent = '☁️ 已與雲端同步');
-            setTimeout(() => {
-                statusEls.forEach(el => el.textContent = '☁️'); 
-            }, 2000);
-        }
-      } catch(e) {
-        console.error("雲端存檔失敗：", e);
-        const statusEls = document.querySelectorAll('.cloud-status');
-        statusEls.forEach(el => el.textContent = '⚠️ 存檔失敗');
-      }
-    }, 2000);
-  };
-</script>
-
-</body>
-</html>
+          if (data.ninety90 && Array.isArray(data.ninety90)) { localStorage.setItem('crm90_v3
