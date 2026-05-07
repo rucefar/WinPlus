@@ -56,7 +56,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     font-family: 'Noto Sans TC', sans-serif; color: var(--text-main); min-height: 100vh; flex-direction: column; align-items: center; justify-content: center;
     padding: 2rem 1rem;
 }
-
 #home-view .header { text-align: center; margin-bottom: 3rem; animation: fadeInDown 1s ease-out; position: relative; }
 #home-view .header h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: 0.2em; margin-bottom: 1rem; background: linear-gradient(135deg, var(--accent-review), var(--accent-winplus)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 #home-view .header p { font-size: 1.1rem; color: #636e72; font-weight: 300; letter-spacing: 0.1em; }
@@ -67,12 +66,12 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #home-view .card.review-card .icon { color: var(--accent-review); }
 #home-view .card.winplus { border-top: 6px solid var(--accent-winplus); }
 #home-view .card.winplus .icon { color: var(--accent-winplus); }
-#home-view .card.hundred { border-top: 6px solid var(--accent-hundred); background: linear-gradient(180deg, rgba(200,169,110,0.05), var(--glass)); }
-#home-view .card.hundred .icon { color: var(--accent-hundred); }
 #home-view .card.ninety { border-top: 6px solid #1a5fb4; }
 #home-view .card.ninety .icon { color: #1a5fb4; }
 #home-view .card.map-card { border-top: 6px solid #27ae60; }
 #home-view .card.map-card .icon { color: #27ae60; }
+#home-view .card.hundred { border-top: 6px solid var(--accent-hundred); background: linear-gradient(180deg, rgba(200,169,110,0.05), var(--glass)); }
+#home-view .card.hundred .icon { color: var(--accent-hundred); }
 #home-view .card:hover { transform: translateY(-12px); box-shadow: 0 20px 50px rgba(0,0,0,0.12); background: rgba(255, 255, 255, 0.95); }
 #home-view .icon { font-size: 4rem; margin-bottom: 2rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
 #home-view .card h2 { font-size: 1.8rem; margin-bottom: 1.2rem; transition: var(--transition); font-family: 'Noto Serif TC', serif; font-weight: 700; }
@@ -80,9 +79,9 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #home-view .tag { margin-top: auto; padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
 #home-view .review-card .tag { background: rgba(139, 32, 32, 0.1); color: var(--accent-review); }
 #home-view .winplus .tag { background: rgba(232, 160, 69, 0.1); color: var(--accent-winplus); }
-#home-view .hundred .tag { background: rgba(200, 169, 110, 0.1); color: var(--accent-hundred); }
 #home-view .ninety .tag { background: rgba(26,95,180,0.10); color: #1a5fb4; }
 #home-view .map-card .tag { background: rgba(39,174,96,0.1); color: #27ae60; }
+#home-view .hundred .tag { background: rgba(200, 169, 110, 0.1); color: var(--accent-hundred); }
 #home-view .footer { margin-top: 4rem; text-align: center; font-size: 0.85rem; color: #999; letter-spacing: 0.05em; }
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -108,12 +107,14 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-topbar .n-back { background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); font-family: inherit; font-size: 0.75rem; padding: 4px 12px; border-radius: 18px; cursor: pointer; transition: all 0.2s; }
 .n-topbar .n-back:hover { background: rgba(255,255,255,0.25); color: #fff; }
 .n-topbar .n-bar-title { font-family: 'Noto Serif TC', serif; font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+
 .n-content { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
 .n-summary-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .n-chip { display: flex; align-items: center; gap: 8px; background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 8px 16px; box-shadow: var(--n-shadow); }
 .n-chip .n-num { font-size: 18px; font-weight: 700; }
 .n-chip .n-lbl { font-size: 11px; color: var(--n-text3); }
 .n-chip-dot { width: 9px; height: 9px; border-radius: 50%; }
+
 .n-toolbar { display: flex; gap: 10px; margin-bottom: 24px; align-items: center; }
 .n-search-wrap { flex: 1; position: relative; }
 .n-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--n-text3); pointer-events: none; }
@@ -868,10 +869,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   </div>
 </div>
 
-<div class="export-msg" id="export-msg">✔ 已複製成功！現在可以貼給 AI 請它幫你分析了。</div>
-<div class="toast" id="h-toast"></div>
-<div class="n-toast" id="n-toast"></div>
-<div id="wp-toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 20px;border-radius:20px;font-size:.8rem;z-index:99999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;"></div>
+<div id="wp-toast"></div>
 
 <div id="review-record-modal" class="biz-modal-overlay" style="align-items: flex-end; padding-bottom: 30px;" onclick="if(event.target===this) window.closeReviewModal()">
     <div class="biz-modal" style="max-width: 500px; display: flex; flex-direction: column; max-height: 65vh;">
@@ -1002,9 +1000,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     [1,2,3,4,5,6,7,8,9,10],
   ];
 
-  const milestones = {10:'突破10次，持續前進！', 25:'四分之一完成，繼續加油！', 50:'已達半程里程碑！', 75:'75次！白金近在眼前！', 100:'百戰已滿！您已踏上白金之路！'};
-  let hToastTimer;
-
   window.hRenderGrid = function() {
     const grid = document.getElementById('h-grid');
     if (!grid) return;
@@ -1051,18 +1046,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     if(elPct) elPct.textContent = pct + '%';
     if(elProg) elProg.style.width = pct + '%';
     if(elBanner) elBanner.classList.toggle('show', count === 100);
-
-    if (milestones[count]) hShowToast(milestones[count]);
   };
-
-  function hShowToast(msg) {
-    const t = document.getElementById('h-toast');
-    if(!t) return;
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(hToastTimer);
-    hToastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-  }
 
   window.hResetAll = function() {
     if (!confirm('確定要清空所有紀錄重新開始嗎？')) return;
@@ -1277,10 +1261,7 @@ window.reviewExportToday = function() {
     promptText += `- 感恩事項：${log.gratitude.join('、') || '無'}\n`;
 
     navigator.clipboard.writeText(promptText).then(() => {
-        const msg = document.getElementById('export-msg');
-        msg.textContent = "✔ 已複製當前選擇日期的紀錄！";
-        msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 5000);
+        window.showWPToast("✔ 已複製當前選擇日期的紀錄！");
     });
 };
 
@@ -1304,10 +1285,7 @@ window.reviewExportData = function(days) {
   });
 
   navigator.clipboard.writeText(promptText).then(() => {
-    const msg = document.getElementById('export-msg');
-    msg.textContent = "✔ 已複製多天紀錄！";
-    msg.style.display = 'block';
-    setTimeout(() => msg.style.display = 'none', 5000);
+    window.showWPToast("✔ 已複製多天紀錄！");
   });
 };
 
@@ -1794,7 +1772,10 @@ window.mmDrawLines = function() {
 
 window.mmRender = function() {
     const canvas = document.getElementById('mm-canvas');
-    if (!canvas) return;
+    if (!canvas) {
+        console.error("找不到 mm-canvas！");
+        return;
+    }
     canvas.innerHTML = '';
     window.mmDrawLines();
 
@@ -2148,7 +2129,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:50, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:51, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
