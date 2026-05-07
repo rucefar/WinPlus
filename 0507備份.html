@@ -17,9 +17,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 
 .noise-bg {
     background-color: #f4f1ea;
-    background-image: 
-        radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     background-size: 30px 30px, auto;
 }
 
@@ -37,23 +35,19 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .logout-btn { background: transparent; border: 1px solid rgba(0,0,0,0.3); color: #333; border-radius: 12px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; transition: background 0.2s; }
 .logout-btn:hover { background: rgba(255,0,0,0.1); border-color: rgba(255,0,0,0.5); color: #e85a5a; }
 
-#nav .cloud-status { color: rgba(255,255,255,0.6); margin-left: auto; }
-#nav .user-profile { color: rgba(255,255,255,0.8); }
-#nav .logout-btn { color: #fff; border-color: rgba(255,255,255,0.3); }
-#nav .logout-btn:hover { background: rgba(255,0,0,0.2); border-color: rgba(255,0,0,0.5); color: #fff; }
+.biz-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+.biz-modal-overlay.show { display: flex !important; }
+.biz-modal { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 12px 48px rgba(0,0,0,0.22); animation: slideUp 0.3s ease-out; }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.toast, .export-msg, .n-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #222; color: white; padding: 11px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; z-index: 99999; white-space: nowrap; }
+.toast.show, .n-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ══════════════════════════════════════════
-   首頁 (HOME VIEW) 樣式
+   HOME VIEW
 ══════════════════════════════════════════ */
-#home-view {
-    --bg-color: #f4f1ea; --text-main: #2d3436; 
-    --accent-review: #8b2020; --accent-winplus: #e8a045; --accent-hundred: #c8a96e;
-    --glass: rgba(255, 255, 255, 0.8); --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    font-family: 'Noto Sans TC', sans-serif; color: var(--text-main); min-height: 100vh; flex-direction: column; align-items: center; justify-content: center;
-    padding: 2rem 1rem;
-}
-
-#home-view .header { text-align: center; margin-bottom: 3rem; animation: fadeInDown 1s ease-out; position: relative; }
+#home-view { --bg-color: #f4f1ea; --text-main: #2d3436; --accent-review: #8b2020; --accent-winplus: #e8a045; --accent-hundred: #c8a96e; --glass: rgba(255, 255, 255, 0.8); --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); color: var(--text-main); min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
+#home-view .header { text-align: center; margin-bottom: 3rem; position: relative; }
 #home-view .header h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: 0.2em; margin-bottom: 1rem; background: linear-gradient(135deg, var(--accent-review), var(--accent-winplus)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 #home-view .header p { font-size: 1.1rem; color: #636e72; font-weight: 300; letter-spacing: 0.1em; }
 #home-view .container { display: flex; gap: 2.5rem; max-width: 1000px; width: 100%; flex-wrap: wrap; justify-content: center; }
@@ -80,26 +74,40 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #home-view .map-card .tag { background: rgba(39,174,96,0.1); color: #27ae60; }
 #home-view .hundred .tag { background: rgba(200, 169, 110, 0.1); color: var(--accent-hundred); }
 #home-view .footer { margin-top: 4rem; text-align: center; font-size: 0.85rem; color: #999; letter-spacing: 0.05em; }
-@keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ══════════════════════════════════════════
-   90天夥伴跟進系統 CSS
+   REVIEW VIEW (邁向目標複盤日誌)
 ══════════════════════════════════════════ */
-#ninety-view {
-  --n-bg: #f5f4f0; --n-card: #ffffff; --n-bg2: #f0eeea;
-  --n-text: #1a1a1a; --n-text2: #5c5b57; --n-text3: #9c9b97;
-  --n-border: rgba(0,0,0,0.10); --n-border2: rgba(0,0,0,0.18);
-  --n-blue: #1a5fb4; --n-blue-l: #e8f0fb;
-  --n-green: #0e7d5a; --n-green-l: #e0f5ee;
-  --n-amber: #a05c00; --n-amber-l: #fdf0d8;
-  --n-red: #b03030; --n-red-l: #fdeaea;
-  --n-purple: #7c5cbf; --n-pink: #903050;
-  --n-indigo: #534AB7;
-  --n-radius: 14px; --n-radius-sm: 8px;
-  --n-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  background: var(--n-bg); font-family: 'Noto Sans TC', sans-serif;
-  color: var(--n-text); min-height: 100vh; overflow-y: auto; padding-bottom: 60px;
-}
+#review-view { --r-primary: #b59871; --r-success: #8dae8c; --r-bg: #f5f1eb; --r-text: #4a4036; --r-card-bg: rgba(255, 255, 255, 0.9); background: linear-gradient(135deg, var(--r-bg) 0%, #e6dfd3 100%); color: var(--r-text); min-height: 100vh; position: relative; overflow-y: auto; padding-bottom: 2rem; }
+#review-view .r-container { max-width: 850px; margin: 60px auto 20px; background: var(--r-card-bg); padding: 30px 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+#review-view h1 { text-align: center; color: var(--r-primary); margin-bottom: 5px; font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight:900;}
+#review-view .subtitle { text-align: center; font-size: 14px; color: #8c7e71; margin-bottom: 30px; letter-spacing: 0.1em;}
+#review-view .section { margin-bottom: 25px; padding: 20px 25px; background: #ffffff; border-radius: 16px; border-left: 5px solid var(--r-primary); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+#review-view h2 { font-size: 18px; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-family: 'Noto Serif TC', serif;}
+#review-view label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; color: #5a4f44;}
+#review-view textarea, #review-view input[type="text"] { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #faf8f5; transition: 0.3s; }
+#review-view textarea:focus, #review-view input[type="text"]:focus { outline: none; border-color: var(--r-primary); background: #fff; }
+#review-view .goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+@media (max-width: 600px) { #review-view .goal-grid { grid-template-columns: 1fr; } #review-view .r-container{ padding: 20px; margin-top: 50px;} }
+#review-view .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; font-size: 16px; color: var(--r-primary); }
+#review-view .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+#review-view .calendar-day-header { font-size: 12px; color: #888; padding-bottom: 4px; font-weight: bold; }
+#review-view .tracker-day { width: 100%; aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: #f0ebe4; color: #999; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+#review-view .tracker-day:hover:not(.empty) { transform: scale(1.05); border-color: var(--r-primary); }
+#review-view .tracker-day.completed { background: var(--r-success); color: white; font-weight: bold; box-shadow: 0 2px 5px rgba(141, 174, 140, 0.4); }
+#review-view .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+#review-view button { background: var(--r-primary); color: #fff; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.2s; font-family: 'Noto Sans TC', sans-serif;}
+#review-view button:hover { background: #9d805c; transform: translateY(-2px); }
+#review-view button.success-btn { background: var(--r-success); width: 100%; font-size: 18px; padding: 15px; margin-top: 20px;}
+#review-view button.success-btn:hover { background: #7a9c79; }
+#review-view button.outline-btn { background: transparent; border: 2px solid var(--r-primary); color: var(--r-primary); }
+#review-view button.outline-btn:hover { background: var(--r-primary); color: #fff; }
+#review-view #r-timer { font-size: 2.5em; font-weight: 800; color: var(--r-primary); text-align: center; margin-top: 10px; font-family: monospace;}
+
+/* ══════════════════════════════════════════
+   NINETY VIEW (90天夥伴跟進系統)
+══════════════════════════════════════════ */
+#ninety-view { --n-bg: #f5f4f0; --n-card: #ffffff; --n-bg2: #f0eeea; --n-text: #1a1a1a; --n-text2: #5c5b57; --n-text3: #9c9b97; --n-border: rgba(0,0,0,0.10); --n-border2: rgba(0,0,0,0.18); --n-blue: #1a5fb4; --n-blue-l: #e8f0fb; --n-green: #0e7d5a; --n-green-l: #e0f5ee; --n-amber: #a05c00; --n-amber-l: #fdf0d8; --n-red: #b03030; --n-red-l: #fdeaea; --n-purple: #7c5cbf; --n-pink: #903050; --n-indigo: #534AB7; --n-radius: 14px; --n-radius-sm: 8px; --n-shadow: 0 2px 8px rgba(0,0,0,0.06); background: var(--n-bg); font-family: 'Noto Sans TC', sans-serif; color: var(--n-text); min-height: 100vh; overflow-y: auto; padding-bottom: 60px; }
 .n-topbar { background: #1e1e1e; height: 50px; display: flex; align-items: center; padding: 0 16px; gap: 12px; position: sticky; top: 0; z-index: 50; }
 .n-topbar .n-back { background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); font-family: inherit; font-size: 0.75rem; padding: 4px 12px; border-radius: 18px; cursor: pointer; transition: all 0.2s; }
 .n-topbar .n-back:hover { background: rgba(255,255,255,0.25); color: #fff; }
@@ -116,7 +124,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-search { width: 100%; background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 9px 14px 9px 36px; font-size: 13px; color: var(--n-text); font-family: inherit; outline: none; transition: border-color 0.15s; }
 .n-search:focus { border-color: var(--n-blue); }
 .n-btn-add { display: flex; align-items: center; gap: 6px; background: #1a1a1a; color: white; border: none; border-radius: var(--n-radius-sm); padding: 9px 18px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; white-space: nowrap; }
-
 .n-stage-block { margin-bottom: 32px; }
 .n-stage-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .n-stage-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 99px; border: 1.5px solid; }
@@ -126,7 +133,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-s4 .n-stage-lbl { color: var(--n-purple); border-color: var(--n-purple); background: #f5f3ff; }
 .n-stage-cnt { font-size: 12px; color: var(--n-text3); }
 .n-stage-line { flex: 1; height: 1px; background: var(--n-border); }
-
 .n-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px,1fr)); gap: 12px; }
 .n-ccard { background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius); padding: 16px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; display: flex; flex-direction: column; gap: 8px; }
 .n-ccard:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.10); border-color: var(--n-border2); }
@@ -172,7 +178,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-card-dark .n-field input, .n-card-dark .n-field textarea { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.10); color: #c5d8f0; }
 .n-card-dark .n-field input:focus, .n-card-dark .n-field textarea:focus { border-color: #4a6fa5; background: rgba(255,255,255,0.09); }
 .n-card-dark .n-field label { color: #6b8aad; }
-
 .n-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 8px; }
 .n-chk { display: flex; align-items: center; gap: 8px; background: var(--n-bg2); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 9px 10px; cursor: pointer; font-size: 13px; color: var(--n-text2); transition: all 0.15s; user-select: none; }
 .n-chk.on { background: var(--n-blue-l); border-color: rgba(26,95,180,0.25); color: var(--n-blue); }
@@ -182,7 +187,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-chk.on .n-chk-mark { display: block; }
 .chk-text-green { color: #1a9a50; font-weight: 700; }
 .n-chk.on .chk-text-green { color: #0e7d5a; }
-
 .n-tag-sec { margin-bottom: 14px; }
 .n-tag-sec-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--n-text3); margin-bottom: 7px; }
 .n-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -197,6 +201,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-tag.indigo.on { background: var(--n-indigo); color: white; border-color: var(--n-indigo); }
 .n-tag.purple { background: #f5f3ff; border-color: rgba(124,92,191,0.2); color: var(--n-purple); }
 .n-tag.purple.on { background: var(--n-purple); color: white; border-color: var(--n-purple); }
+
 .n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); }
 .n-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: var(--n-radius-sm); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .n-btn-ghost { background: none; border: 1px solid var(--n-border); color: var(--n-text2); }
@@ -205,44 +210,19 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-btn-danger:hover { background: var(--n-red-l); }
 .n-btn-primary { background: #1a1a1a; border: none; color: white; }
 
-/* ══════════════════════════════════════════
-   REVIEW VIEW (邁向目標複盤日誌)
-══════════════════════════════════════════ */
-#review-view { --r-primary: #b59871; --r-success: #8dae8c; --r-bg: #f5f1eb; --r-text: #4a4036; --r-card-bg: rgba(255, 255, 255, 0.9); background: linear-gradient(135deg, var(--r-bg) 0%, #e6dfd3 100%); color: var(--r-text); min-height: 100vh; position: relative; overflow-y: auto; padding-bottom: 2rem; }
-#review-view .r-container { max-width: 850px; margin: 60px auto 20px; background: var(--r-card-bg); padding: 30px 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
-#review-view h1 { text-align: center; color: var(--r-primary); margin-bottom: 5px; font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight:900;}
-#review-view .subtitle { text-align: center; font-size: 14px; color: #8c7e71; margin-bottom: 30px; letter-spacing: 0.1em;}
-#review-view .section { margin-bottom: 25px; padding: 20px 25px; background: #ffffff; border-radius: 16px; border-left: 5px solid var(--r-primary); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-#review-view h2 { font-size: 18px; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-family: 'Noto Serif TC', serif;}
-#review-view label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; color: #5a4f44;}
-#review-view textarea, #review-view input[type="text"] { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #faf8f5; transition: 0.3s; }
-#review-view textarea:focus, #review-view input[type="text"]:focus { outline: none; border-color: var(--r-primary); background: #fff; }
-#review-view .goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-@media (max-width: 600px) { #review-view .goal-grid { grid-template-columns: 1fr; } #review-view .r-container{ padding: 20px; margin-top: 50px;} }
-
-#review-view .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; font-size: 16px; color: var(--r-primary); }
-#review-view .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-#review-view .calendar-day-header { font-size: 12px; color: #888; padding-bottom: 4px; font-weight: bold; }
-#review-view .tracker-day { width: 100%; aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: #f0ebe4; color: #999; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-#review-view .tracker-day:hover:not(.empty) { transform: scale(1.05); border-color: var(--r-primary); }
-#review-view .tracker-day.completed { background: var(--r-success); color: white; font-weight: bold; box-shadow: 0 2px 5px rgba(141, 174, 140, 0.4); }
-
-#review-view .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
-#review-view button { background: var(--r-primary); color: #fff; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.2s; font-family: inherit;}
-#review-view button:hover { background: #9d805c; transform: translateY(-2px); }
-#review-view button.success-btn { background: var(--r-success); width: 100%; font-size: 18px; padding: 15px; margin-top: 20px;}
-#review-view button.success-btn:hover { background: #7a9c79; }
-#review-view button.outline-btn { background: transparent; border: 2px solid var(--r-primary); color: var(--r-primary); }
-#review-view button.outline-btn:hover { background: var(--r-primary); color: #fff; }
-#review-view #r-timer { font-size: 2.5em; font-weight: 800; color: var(--r-primary); text-align: center; margin-top: 10px; font-family: monospace;}
-
-/* ══════════════════════════════════════════
-   HUNDRED VIEW (百戰成功圖)
-══════════════════════════════════════════ */
-#hundred-view { --h-gold: #c8a96e; --h-gold-light: #e8d5a3; --h-gold-dark: #8a6a30; --h-bg: #0f0c08; --h-bg2: #1a1510; --h-bg3: #221d14; --h-text: #f0e6d0; --h-text-muted: #9a8a6a; --h-border: rgba(200, 169, 110, 0.25); --h-border-strong: rgba(200, 169, 110, 0.5); --h-check-color: #c8a96e; --h-cell-hover: rgba(200, 169, 110, 0.08); --h-cell-checked: rgba(200, 169, 110, 0.12); background: var(--h-bg); color: var(--h-text); min-height: 100vh; display: none; flex-direction: column; align-items: center; padding: 60px 20px 60px; position: relative; overflow-x: hidden; font-family: 'Noto Sans TC', sans-serif; }
+/* ── HUNDRED VIEW CSS (百戰成功圖) ── */
+#hundred-view {
+  --h-gold: #c8a96e; --h-gold-light: #e8d5a3; --h-gold-dark: #8a6a30;
+  --h-bg: #0f0c08; --h-bg2: #1a1510; --h-bg3: #221d14;
+  --h-text: #f0e6d0; --h-text-muted: #9a8a6a;
+  --h-border: rgba(200, 169, 110, 0.25); --h-border-strong: rgba(200, 169, 110, 0.5);
+  --h-check-color: #c8a96e; --h-cell-hover: rgba(200, 169, 110, 0.08); --h-cell-checked: rgba(200, 169, 110, 0.12);
+  background: var(--h-bg); color: var(--h-text); min-height: 100vh;
+  display: none; flex-direction: column; align-items: center; padding: 60px 20px 60px;
+  position: relative; overflow-x: hidden; font-family: 'Noto Sans TC', sans-serif;
+}
 #hundred-view.active { display: flex; }
 #hundred-view::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200,169,110,0.07) 0%, transparent 70%), radial-gradient(ellipse 40% 30% at 80% 80%, rgba(200,169,110,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0; }
-#hundred-view .noise { position: absolute; inset: 0; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
 #hundred-view .h-container { width: 100%; max-width: 760px; position: relative; z-index: 1; margin: 0 auto; }
 #hundred-view .header { text-align: center; margin-bottom: 36px; animation: fadeDown 0.8s ease both; }
 #hundred-view .header-deco { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; }
@@ -283,7 +263,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #hundred-view .complete-banner.show { display: block; }
 #hundred-view .complete-banner p { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--h-gold-light); letter-spacing: 3px; }
 #hundred-view .reset-btn { margin-top: 24px; display: flex; justify-content: center; animation: fadeUp 0.8s 0.5s ease both; }
-#hundred-view button.reset { background: transparent; border: 1px solid var(--h-border); color: var(--h-text-muted); font-family: inherit; font-size: 12px; letter-spacing: 3px; padding: 10px 28px; cursor: pointer; transition: all 0.2s ease; }
+#hundred-view button.reset { background: transparent; border: 1px solid var(--h-border); color: var(--h-text-muted); font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: 3px; padding: 10px 28px; cursor: pointer; transition: all 0.2s ease; }
 #hundred-view button.reset:hover { border-color: var(--h-border-strong); color: var(--h-gold); background: var(--h-cell-hover); }
 
 /* ── WINPLUS VIEW CSS ── */
@@ -320,10 +300,11 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .cA{background:#f5e6b0} .cA .cell-code{color:#b8900a} .cB{background:#f5c0a8} .cB .cell-code{color:#c05030} .cC{background:#b0dff0} .cC .cell-code{color:#1a7aaa} .cD{background:#b0dff0} .cD .cell-code{color:#1a7aaa} .cE{background:#f5c0d8} .cE .cell-code{color:#b03070} .cF{background:#f5c0d8} .cF .cell-code{color:#b03070} .cG{background:#b0f0c8} .cG .cell-code{color:#1a9a50} .cH{background:#b0f0c8} .cH .cell-code{color:#1a9a50} .cM{background:#fff5cc} .cM .cell-code{color:#b8900a}
 
 /* Mind Map */
-#page-mindmap { background: #f5f1ea; background-image: radial-gradient(circle at 20% 80%, rgba(74,124,142,.06) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(201,120,60,.06) 0%, transparent 60%); position:relative; overflow:hidden; }
-.mm-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(26,26,46,.35); pointer-events: none; white-space: nowrap; z-index: 50; background:rgba(255,255,255,0.6); padding:4px 10px; border-radius:12px; }
+#page-mindmap { background: #f5f1ea; background-image: radial-gradient(circle at 20% 80%, rgba(74,124,142,.06) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(201,120,60,.06) 0%, transparent 60%); }
+#mm-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+#mm-canvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; }
+.mm-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(26,26,46,.35); pointer-events: none; white-space: nowrap; z-index: 50; }
 .mm-toolbar { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; z-index: 100; background: #1e1e1e; padding: 7px 12px; border-radius: 40px; box-shadow: 0 6px 24px rgba(0,0,0,.25); max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center; }
-@media (max-width: 480px) { .mm-toolbar { bottom: 12px; top: auto; border-radius: 20px; padding: 5px 10px; } .mm-hint { display: none; } }
 .mm-btn { padding: 6px 12px; border: none; background: rgba(255,255,255,.1); color: #f0ebe0; font-family: inherit; font-size: clamp(.65rem, 2vw, .76rem); cursor: pointer; border-radius: 22px; transition: background .15s; letter-spacing: .03em; white-space: nowrap; }
 .mm-btn:hover { background: rgba(255,255,255,.2); }
 .mm-btn.danger { color: #ff9a9a; }
@@ -393,6 +374,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   #nb-content-area { padding: 6px 12px 20px; }
 }
 @media (max-width: 480px) {
+  .nav-logo { display: none; }
   #nb-layout { flex-direction: column; height: 100%; }
   #nb-sidebar { width: 100%; height: auto; max-height: 180px; flex-shrink: 0; border-right: none; border-bottom: 1px solid #e8e2d8; overflow: hidden; }
   #nb-sidebar-top { padding: 7px 10px 6px; }
@@ -411,22 +393,14 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   #nb-title-input { font-size: .9rem; }
   #nb-title-bar { padding: 6px 12px 2px; }
   #nb-content-area { padding: 4px 12px 16px; }
+  .mm-toolbar { bottom: auto; top: 8px; border-radius: 20px; padding: 5px 10px; }
+  .mm-hint { display: none; }
 }
 @media (max-width: 360px) {
   #nb-sidebar { max-height: 150px; }
   .nb-item { width: 100px; }
   .nb-item-preview, .nb-item-date { display: none; }
 }
-
-/* ══════════════════════════════════════════
-   地圖系統 CSS
-══════════════════════════════════════════ */
-#map-view { position: relative; width: 100vw; height: 100vh; overflow: hidden; background: #f4f1ea; display: none; flex-direction: column; }
-#map-view.active { display: flex; }
-.map-topbar { background: #1e1e1e; height: 50px; display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; }
-#map-container { flex: 1; width: 100%; z-index: 1; }
-.map-refresh-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer; margin-left: 10px; }
-.map-refresh-btn:hover { background: rgba(255,255,255,0.2); }
 </style>
 </head>
 <body>
@@ -693,7 +667,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       <button class="tab-btn active" onclick="window.gotoPage('mandala',this)">⊞ 曼陀羅九宮格</button>
       <button class="tab-btn"       onclick="window.gotoPage('mindmap',this)">🕸 組織網路圖</button>
       <button class="tab-btn"       onclick="window.gotoPage('notebook',this)">📓 筆記本</button>
-      
       <span class="cloud-status">☁️ 尚未登入</span>
       <div class="user-profile" id="user-profile-name"></div>
       <button class="logout-btn" onclick="window.logout()">登出</button>
@@ -713,11 +686,9 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </div>
 
     <div class="page" id="page-mindmap">
-      <div class="mm-hint">點選節點 · 拖曳移動平移 · 點 ＋ 新增子節點 · 雙擊編輯文字</div>
-      <div id="mm-workspace" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0;">
-        <svg id="mm-svg" style="position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible;"></svg>
-        <div id="mm-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
-      </div>
+      <div class="mm-hint">點選節點 · 拖曳移動 · 點 ＋ 新增子節點 · 雙擊編輯文字</div>
+      <svg id="mm-svg"></svg>
+      <div id="mm-canvas"></div>
       <div class="mm-toolbar">
         <button class="mm-btn" onclick="window.mmAddChildToSelected()">＋ 新增子節點</button>
         <button class="mm-btn" onclick="window.mmAutoLayout()">⟳ 自動排版</button>
@@ -734,30 +705,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         <button class="mm-btn" onclick="window.mmOpenReparentModal()" style="color: #e8a045;">↳ 更換上層</button>
         <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
         <button class="mm-btn danger" onclick="window.mmClearAll()">✕ 清除全部</button>
-      </div>
-    </div>
-    
-    <div id="mm-link-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.classList.remove('show')">
-      <div class="biz-modal">
-        <h3 style="color:#333; margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">配對客戶資料</h3>
-        <p style="font-size:13px; color:#666; margin-bottom:15px;">選擇要與此節點配對的 90天跟進客戶：</p>
-        <select id="mm-link-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
-        <div id="mm-link-modal-actions" style="display:flex; gap:10px; margin-top:20px;">
-          <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-link-modal').classList.remove('show')" style="flex:1;">取消</button>
-          <button class="n-btn n-btn-primary" onclick="window.mmSaveLink()" style="flex:1;">確認配對</button>
-        </div>
-      </div>
-    </div>
-    
-    <div id="mm-reparent-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.classList.remove('show')">
-      <div class="biz-modal">
-        <h3 style="color:#333; margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">更換上層項目</h3>
-        <p style="font-size:13px; color:#666; margin-bottom:15px;">請選擇此節點要移動到哪一個項目下方：</p>
-        <select id="mm-reparent-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-          <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-reparent-modal').classList.remove('show')" style="flex:1;">取消</button>
-          <button class="n-btn n-btn-primary" onclick="window.mmSaveReparent()" style="flex:1;">確認更換</button>
-        </div>
       </div>
     </div>
 
@@ -778,105 +725,35 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
           </div>
           <div id="nb-note-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
             <div id="nb-toolbar">
-              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')" title="粗體"><b>B</b></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')" title="斜體"><i>I</i></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')" title="底線"><u>U</u></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')" title="刪除線"><s>S</s></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')"><b>B</b></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')"><i>I</i></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')"><u>U</u></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')"><s>S</s></button>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')" title="項目清單">☰</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')" title="編號清單">①</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')" title="縮排">→</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')" title="取消縮排">←</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')">☰</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')">①</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')">→</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')">←</button>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')" title="靠左">⬛︎</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')" title="置中">▣</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')" title="靠右">⬛</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')">⬛︎</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')">▣</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')">⬛</button>
               <div class="nb-tool-sep"></div>
-              <input id="nb-font-size" type="number" value="15" min="8" max="72" title="字體大小" onchange="window.NotebookApp.fontSize(this.value)">
-              <div class="nb-color-btn" title="文字顏色"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
-              <div class="nb-color-btn" title="螢光標記" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
+              <input id="nb-font-size" type="number" value="15" min="8" max="72" onchange="window.NotebookApp.fontSize(this.value)">
+              <div class="nb-color-btn"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
+              <div class="nb-color-btn" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()" title="分隔線">─</button>
-              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()" title="待辦項目">☑</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" title="清除格式" style="font-size:.65rem">✕fmt</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()">─</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()">☑</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" style="font-size:.65rem">✕fmt</button>
             </div>
             <div id="nb-title-bar"><input id="nb-title-input" type="text" placeholder="筆記標題…" oninput="window.NotebookApp.titleChange(this.value)"></div>
             <div id="nb-content-area"><div id="nb-editor" contenteditable="true" oninput="window.NotebookApp.contentChange()" onkeydown="window.NotebookApp.editorKeydown(event)"></div></div>
-            <div id="nb-status">
-              <span id="nb-word-count">0 字</span>
-              <span id="nb-save-status">已儲存</span>
-              <span id="nb-note-date"></span>
-            </div>
+            <div id="nb-status"><span id="nb-word-count">0 字</span><span id="nb-save-status">已儲存</span><span id="nb-note-date"></span></div>
           </div>
         </div>
       </div>
     </div>
-</div>
-
-<div id="hundred-view" class="app-view">
-  <button class="back-btn" style="position: absolute; top: 1rem; left: 1rem; z-index: 100; background: rgba(0,0,0,0.4); border: 1px solid var(--h-gold); color: var(--h-gold-light); padding: 6px 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 0.8rem; border-radius: 4px; transition: all 0.2s;" onclick="window.switchApp('home')">← 回首頁</button>
-  <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 10px; align-items: center; z-index: 100;">
-      <span class="cloud-status" style="font-size: 0.75rem; color: #888;">☁️ 尚未登入</span>
-      <button class="logout-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 12px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; transition: background 0.2s;" onclick="window.logout()">登出</button>
-  </div>
-
-  <div class="noise"></div>
-  <div class="h-container">
-    <div class="header">
-      <div class="header-deco">
-        <div class="deco-line"></div>
-        <div class="deco-diamond"></div>
-        <div class="deco-line right"></div>
-      </div>
-      <h1>百戰成功表</h1>
-      <p class="description">
-        每一次當您展示市場計畫不成功的時候，就在下面方格打一個 ✓。<br>
-        您將會發覺，在還沒有將這些方格全部填滿 ✓ 之前，您已經是一位直系直銷商了。<br>
-        要成為白金您最多碰到 100 次挫折而已，何樂而不為呢？
-      </p>
-      <div class="slogan">DO IT NOW!</div>
-    </div>
-
-    <div class="stats-bar">
-      <div class="stat">
-        <div class="stat-num" id="h-checked-count">0</div>
-        <div class="stat-label">已記錄</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-num" id="h-remain-count">100</div>
-        <div class="stat-label">剩餘</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-num" id="h-pct-count">0%</div>
-        <div class="stat-label">進度</div>
-      </div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-track">
-        <div class="progress-fill" id="h-progress-fill"></div>
-      </div>
-      <div class="progress-label">
-        <span>0</span>
-        <span>白金之路</span>
-        <span>100</span>
-      </div>
-    </div>
-
-    <div class="grid-wrap">
-      <table class="grid" id="h-grid"></table>
-    </div>
-
-    <div class="complete-banner" id="h-complete-banner">
-      <p>🏆 恭喜！您已完成百戰，白金在望！</p>
-    </div>
-
-    <div class="reset-btn">
-      <button class="reset" onclick="window.hResetAll()">RESET ALL</button>
-    </div>
-  </div>
 </div>
 
 <div class="export-msg" id="export-msg">✔ 已複製成功！現在可以貼給 AI 請它幫你分析了。</div>
@@ -890,6 +767,31 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         <div id="rr-content" style="font-size: 14px; line-height: 1.8; color: #4a4036; white-space: pre-wrap; background: #faf8f5; padding: 15px; border-radius: 8px; overflow-y: auto; flex: 1;"></div>
         <button style="background: #b59871; width: 100%; margin-top: 20px; padding: 12px; border-radius: 30px; border: none; color: white; cursor: pointer; font-weight: bold; font-size: 16px;" onclick="window.closeReviewModal()">關閉</button>
     </div>
+</div>
+
+<div id="mm-link-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.classList.remove('show')">
+  <div class="biz-modal">
+    <h3 style="color:#333; margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">配對客戶資料</h3>
+    <p style="font-size:13px; color:#666; margin-bottom:15px;">選擇要與此節點配對的 90天跟進客戶：</p>
+    <select id="mm-link-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="n-btn n-btn-danger" onclick="window.mmUnlink()" style="flex:1;" id="mm-unlink-btn">解除配對</button>
+      <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-link-modal').classList.remove('show')" style="flex:1;">取消</button>
+      <button class="n-btn n-btn-primary" onclick="window.mmSaveLink()" style="flex:1;">確認配對</button>
+    </div>
+  </div>
+</div>
+
+<div id="mm-reparent-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.classList.remove('show')">
+  <div class="biz-modal">
+    <h3 style="color:#333; margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">更換上層項目</h3>
+    <p style="font-size:13px; color:#666; margin-bottom:15px;">請選擇此節點要移動到哪一個項目下方：</p>
+    <select id="mm-reparent-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-reparent-modal').classList.remove('show')" style="flex:1;">取消</button>
+      <button class="n-btn n-btn-primary" onclick="window.mmSaveReparent()" style="flex:1;">確認更換</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -907,23 +809,24 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         if (modal) modal.classList.remove('show');
     };
 
-    window.switchApp = function(appId, pushHistory = true) {
+    window.switchApp = function(appId) {
+        // 隱藏所有頁面
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+        
+        // 顯示目標頁面
         const targetView = document.getElementById(appId + '-view');
         if (targetView) targetView.classList.add('active');
         
+        // 切換主頁面時，自動關閉所有浮動視窗
         window.closeReviewModal();
         document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
+        // 特殊頁面載入邏輯
         if (appId === 'map' && typeof window.initMap === 'function') window.initMap();
         if (appId === 'review' && typeof window.reviewRenderTracker === 'function') window.reviewRenderTracker();
-
-        if (pushHistory) {
-            window.history.pushState({ type: 'app', id: appId }, '', `#${appId}`);
-        }
     };
 
-    window.gotoPage = function(name, btn, pushHistory = true) {
+    window.gotoPage = function(name, btn) {
       document.querySelectorAll('#winplus-view .page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('#winplus-view .tab-btn:not(.home-btn)').forEach(b => b.classList.remove('active'));
       
@@ -931,13 +834,10 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       if (page) page.classList.add('active');
       if (btn) btn.classList.add('active');
       
+      // 頁籤切換時，自動關閉所有浮動視窗
       document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
       if (name === 'mindmap' && typeof window.mmLoadState === 'function') window.mmLoadState(); 
-
-      if (pushHistory) {
-          window.history.pushState({ type: 'page', id: name, app: 'winplus' }, '', `#winplus/${name}`);
-      }
     };
 
     window.showWPToast = function(msg) { 
@@ -948,26 +848,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       clearTimeout(t._timer); 
       t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2200); 
     };
-
-    window.addEventListener('popstate', function(event) {
-        const state = event.state;
-        if (state) {
-            if (state.type === 'app') {
-                window.switchApp(state.id, false); 
-            } else if (state.type === 'page') {
-                window.switchApp(state.app, false);
-                const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${state.id}'`));
-                window.gotoPage(state.id, targetBtn || null, false);
-            }
-        } else {
-            window.switchApp('home', false);
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        window.history.replaceState({ type: 'app', id: 'home' }, '', '#home');
-    });
-
 })();
 
 /* ══════════════════════════════════════════
@@ -1731,26 +1611,17 @@ window.NotebookApp = {
 })();
 
 /* ══════════════════════════════════════════
-   組織網路圖 (Mind Map) - 包含滑鼠平移功能
+   組織網路圖 (Mind Map)
 ══════════════════════════════════════════ */
 ;(function(){
 window.mmNodes = [];
 window.mmSelectedId = null;
-window.mmPanX = 0;
-window.mmPanY = 0;
-
-window.mmUpdateWorkspace = function() {
-    const ws = document.getElementById('mm-workspace');
-    if(ws) ws.style.transform = `translate(${window.mmPanX}px, ${window.mmPanY}px)`;
-};
 
 window.mmLoadState = function() {
     const saved = JSON.parse(localStorage.getItem('mm_nodes') || '[]');
     if (saved.length > 0) { window.mmNodes = saved; } else {
-        window.mmNodes = [{ id: 'root', text: '核心目標', x: window.innerWidth / 2, y: 100, parentId: null, isRoot: true }];
+        window.mmNodes = [{ id: 'root', text: '核心目標', x: window.innerWidth / 2, y: window.innerHeight / 2, parentId: null, isRoot: true }];
     }
-    window.mmPanX = 0; window.mmPanY = 0;
-    window.mmUpdateWorkspace();
     window.mmRender();
 };
 
@@ -1796,6 +1667,7 @@ window.mmRender = function() {
         
         let linkIcon = node.linkedCrmId ? '🔗' : '➕';
         let linkColor = node.linkedCrmId ? '#4CAF50' : '#888';
+        
         let unlinkBtnHtml = node.linkedCrmId ? `<div class="mm-node-unlink-btn" title="解除配對" style="position:absolute; top:-10px; left:calc(50% + 15px); cursor:pointer; background:#ffe0e0; color:#c03030; border-radius:50%; border:1px solid #ffcccc; width:20px; height:20px; font-size:10px; display:none; align-items:center; justify-content:center; z-index:16;">✕</div>` : '';
 
         el.innerHTML = `
@@ -1845,17 +1717,8 @@ window.mmRender = function() {
         el.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('mm-node-text') || e.target.tagName === 'BUTTON' || e.target.closest('.mm-node-link-btn') || e.target.closest('.mm-node-unlink-btn')) return;
             isDragging = true;
-            // 當前滑鼠位置扣除節點位置，就是相對於節點的偏差值
             const startX = e.clientX - node.x; const startY = e.clientY - node.y;
-            function onMouseMove(ev) { 
-                if(!isDragging) return; 
-                // 新的節點座標 = 當前滑鼠位置扣除偏差值 (包含平移量，所以這寫法依然相容平移)
-                node.x = ev.clientX - startX; 
-                node.y = ev.clientY - startY; 
-                el.style.left = node.x + 'px'; 
-                el.style.top = node.y + 'px'; 
-                window.mmDrawLines(); 
-            }
+            function onMouseMove(ev) { if(!isDragging) return; node.x = ev.clientX - startX; node.y = ev.clientY - startY; el.style.left = node.x + 'px'; el.style.top = node.y + 'px'; window.mmDrawLines(); }
             function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); window.mmSaveState(); }
             document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
         });
@@ -1867,7 +1730,7 @@ window.mmAddChildToSelected = function() {
     const parentId = window.mmSelectedId || 'root';
     const parent = window.mmNodes.find(n => n.id === parentId);
     if(!parent) return;
-    const newNode = { id: 'mm_' + Date.now().toString(), text: '新節點', x: parent.x + 120, y: parent.y + 100, parentId: parentId };
+    const newNode = { id: 'mm_' + Date.now().toString(), text: '新節點', x: parent.x + 120, y: parent.y + (Math.random() - 0.5) * 100, parentId: parentId };
     window.mmNodes.push(newNode);
     window.mmSelectedId = newNode.id; window.mmSaveState(); window.mmRender();
 };
@@ -2055,49 +1918,6 @@ window.mmSaveReparent = function() {
     }
 };
 
-// 畫面平移 (無限畫布)
-document.addEventListener('DOMContentLoaded', () => {
-    const mmPage = document.getElementById('page-mindmap');
-    if(mmPage) {
-        let isPanning = false, startPanX = 0, startPanY = 0;
-        
-        mmPage.addEventListener('mousedown', (e) => {
-            if(e.target.closest('.mm-node') || e.target.closest('.mm-toolbar')) return;
-            isPanning = true;
-            startPanX = e.clientX - window.mmPanX;
-            startPanY = e.clientY - window.mmPanY;
-            mmPage.style.cursor = 'grabbing';
-        });
-        window.addEventListener('mousemove', (e) => {
-            if(!isPanning) return;
-            window.mmPanX = e.clientX - startPanX;
-            window.mmPanY = e.clientY - startPanY;
-            window.mmUpdateWorkspace();
-        });
-        window.addEventListener('mouseup', () => {
-            isPanning = false;
-            mmPage.style.cursor = '';
-        });
-        
-        // Touch support for panning
-        mmPage.addEventListener('touchstart', (e) => {
-            if(e.target.closest('.mm-node') || e.target.closest('.mm-toolbar') || e.touches.length !== 1) return;
-            isPanning = true;
-            startPanX = e.touches[0].clientX - window.mmPanX;
-            startPanY = e.touches[0].clientY - window.mmPanY;
-        }, {passive: false});
-        window.addEventListener('touchmove', (e) => {
-            if(!isPanning) return;
-            window.mmPanX = e.touches[0].clientX - startPanX;
-            window.mmPanY = e.touches[0].clientY - startPanY;
-            window.mmUpdateWorkspace();
-        }, {passive: false});
-        window.addEventListener('touchend', () => {
-            isPanning = false;
-        });
-    }
-});
-
 })();
 
 /* ══════════════════════════════════════════
@@ -2140,7 +1960,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:35, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:31, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
