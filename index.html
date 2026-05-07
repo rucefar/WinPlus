@@ -10,7 +10,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 /* ══════════════════════════════════════════
-   全域基礎設定與模組
+   全域基礎設定與登入畫面
 ══════════════════════════════════════════ */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-family: 'Noto Sans TC', sans-serif; }
@@ -88,6 +88,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #review-view textarea, #review-view input[type="text"] { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #faf8f5; transition: 0.3s; }
 #review-view textarea:focus, #review-view input[type="text"]:focus { outline: none; border-color: var(--r-primary); background: #fff; }
 #review-view .goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+@media (max-width: 600px) { #review-view .goal-grid { grid-template-columns: 1fr; } #review-view .r-container{ padding: 20px; margin-top: 50px;} }
 #review-view .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; font-size: 16px; color: var(--r-primary); }
 #review-view .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
 #review-view .calendar-day-header { font-size: 12px; color: #888; padding-bottom: 4px; font-weight: bold; }
@@ -129,6 +130,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-s1 .n-stage-lbl { color: var(--n-blue); border-color: var(--n-blue); background: var(--n-blue-l); }
 .n-s2 .n-stage-lbl { color: var(--n-green); border-color: var(--n-green); background: var(--n-green-l); }
 .n-s3 .n-stage-lbl { color: var(--n-amber); border-color: var(--n-amber); background: var(--n-amber-l); }
+.n-s4 .n-stage-lbl { color: var(--n-purple); border-color: var(--n-purple); background: #f5f3ff; }
 .n-stage-cnt { font-size: 12px; color: var(--n-text3); }
 .n-stage-line { flex: 1; height: 1px; background: var(--n-border); }
 .n-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px,1fr)); gap: 12px; }
@@ -138,6 +140,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-s1 .n-avatar { background: var(--n-blue-l); color: var(--n-blue); }
 .n-s2 .n-avatar { background: var(--n-green-l); color: var(--n-green); }
 .n-s3 .n-avatar { background: var(--n-amber-l); color: var(--n-amber); }
+.n-s4 .n-avatar { background: #f5f3ff; color: var(--n-purple); }
 .n-cname { font-size: 15px; font-weight: 700; }
 .n-cmeta { font-size: 12px; color: var(--n-text3); line-height: 1.6; }
 .n-pdots { display: flex; gap: 3px; margin-top: 2px; }
@@ -145,6 +148,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-s1 .n-pdot.on { background: var(--n-blue); }
 .n-s2 .n-pdot.on { background: var(--n-green); }
 .n-s3 .n-pdot.on { background: var(--n-amber); }
+.n-s4 .n-pdot.on { background: var(--n-purple); }
 .n-add-card { background: none; border: 1.5px dashed var(--n-border2); border-radius: var(--n-radius); padding: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--n-text3); font-size: 12px; font-family: inherit; min-height: 110px; transition: all 0.15s; }
 .n-add-card:hover { border-color: var(--n-text2); color: var(--n-text2); background: var(--n-bg2); }
 
@@ -153,9 +157,11 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-form-topbar h2 { font-size: 18px; font-weight: 700; font-family: 'Noto Serif TC', serif; }
 .n-back-btn { display: flex; align-items: center; gap: 6px; background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 7px 14px; font-size: 13px; font-weight: 500; color: var(--n-text2); cursor: pointer; font-family: inherit; transition: background 0.15s; }
 .n-back-btn:hover { background: var(--n-bg2); }
-.n-stage-toggle { display: inline-flex; background: var(--n-bg2); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 3px; gap: 2px; margin-bottom: 20px; }
+
+.n-stage-toggle { display: inline-flex; background: var(--n-bg2); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 3px; gap: 2px; margin-bottom: 20px; flex-wrap: wrap; }
 .n-stg-btn { padding: 7px 16px; font-size: 12px; font-weight: 600; border: none; background: none; border-radius: 6px; cursor: pointer; color: var(--n-text3); font-family: inherit; transition: all 0.15s; }
 .n-stg-btn.active { background: var(--n-card); color: var(--n-blue); box-shadow: var(--n-shadow); }
+
 .n-fgrid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
 @media (max-width: 640px) { .n-fgrid { grid-template-columns: 1fr; } }
 .n-card { background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius); padding: 20px; box-shadow: var(--n-shadow); margin-bottom: 14px; }
@@ -195,6 +201,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-tag.indigo.on { background: var(--n-indigo); color: white; border-color: var(--n-indigo); }
 .n-tag.purple { background: #f5f3ff; border-color: rgba(124,92,191,0.2); color: var(--n-purple); }
 .n-tag.purple.on { background: var(--n-purple); color: white; border-color: var(--n-purple); }
+
 .n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); }
 .n-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: var(--n-radius-sm); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .n-btn-ghost { background: none; border: 1px solid var(--n-border); color: var(--n-text2); }
@@ -203,9 +210,63 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-btn-danger:hover { background: var(--n-red-l); }
 .n-btn-primary { background: #1a1a1a; border: none; color: white; }
 
-/* ══════════════════════════════════════════
-   WINPLUS VIEW (組織網路&名單九宮格、筆記本)
-══════════════════════════════════════════ */
+/* ── HUNDRED VIEW CSS (百戰成功圖) ── */
+#hundred-view {
+  --h-gold: #c8a96e; --h-gold-light: #e8d5a3; --h-gold-dark: #8a6a30;
+  --h-bg: #0f0c08; --h-bg2: #1a1510; --h-bg3: #221d14;
+  --h-text: #f0e6d0; --h-text-muted: #9a8a6a;
+  --h-border: rgba(200, 169, 110, 0.25); --h-border-strong: rgba(200, 169, 110, 0.5);
+  --h-check-color: #c8a96e; --h-cell-hover: rgba(200, 169, 110, 0.08); --h-cell-checked: rgba(200, 169, 110, 0.12);
+  background: var(--h-bg); color: var(--h-text); min-height: 100vh;
+  display: none; flex-direction: column; align-items: center; padding: 60px 20px 60px;
+  position: relative; overflow-x: hidden; font-family: 'Noto Sans TC', sans-serif;
+}
+#hundred-view.active { display: flex; }
+#hundred-view::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200,169,110,0.07) 0%, transparent 70%), radial-gradient(ellipse 40% 30% at 80% 80%, rgba(200,169,110,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+#hundred-view .h-container { width: 100%; max-width: 760px; position: relative; z-index: 1; margin: 0 auto; }
+#hundred-view .header { text-align: center; margin-bottom: 36px; animation: fadeDown 0.8s ease both; }
+#hundred-view .header-deco { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; }
+#hundred-view .deco-line { height: 1px; width: 60px; background: linear-gradient(90deg, transparent, var(--h-gold)); }
+#hundred-view .deco-line.right { background: linear-gradient(90deg, var(--h-gold), transparent); }
+#hundred-view .deco-diamond { width: 6px; height: 6px; background: var(--h-gold); transform: rotate(45deg); }
+#hundred-view h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(28px, 5vw, 42px); font-weight: 700; letter-spacing: 8px; color: var(--h-gold-light); text-shadow: 0 0 40px rgba(200,169,110,0.3); margin-bottom: 20px; margin-top: 0; }
+#hundred-view .description { font-size: 13px; color: var(--h-text-muted); line-height: 2; letter-spacing: 0.5px; max-width: 500px; margin: 0 auto 20px; }
+#hundred-view .slogan { font-family: 'Noto Serif TC', serif; font-size: clamp(16px, 3vw, 22px); font-weight: 600; letter-spacing: 6px; color: var(--h-gold); border: 1px solid var(--h-border-strong); display: inline-block; padding: 10px 32px; position: relative; }
+#hundred-view .slogan::before, #hundred-view .slogan::after { content: ''; position: absolute; width: 8px; height: 8px; border-color: var(--h-gold); border-style: solid; }
+#hundred-view .slogan::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+#hundred-view .slogan::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+#hundred-view .stats-bar { display: flex; justify-content: center; gap: 40px; margin-bottom: 28px; animation: fadeDown 0.8s 0.2s ease both; }
+#hundred-view .stat { text-align: center; }
+#hundred-view .stat-num { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 700; color: var(--h-gold); line-height: 1; transition: all 0.3s ease; }
+#hundred-view .stat-label { font-size: 11px; color: var(--h-text-muted); letter-spacing: 2px; margin-top: 4px; }
+#hundred-view .stat-divider { width: 1px; background: var(--h-border); align-self: stretch; }
+#hundred-view .progress-wrap { margin-bottom: 28px; animation: fadeDown 0.8s 0.3s ease both; }
+#hundred-view .progress-track { height: 3px; background: var(--h-bg3); border-radius: 2px; overflow: hidden; position: relative; }
+#hundred-view .progress-fill { height: 100%; background: linear-gradient(90deg, var(--h-gold-dark), var(--h-gold), var(--h-gold-light)); border-radius: 2px; width: 0%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; }
+#hundred-view .progress-fill::after { content: ''; position: absolute; right: 0; top: -2px; width: 7px; height: 7px; background: var(--h-gold-light); border-radius: 50%; box-shadow: 0 0 8px var(--h-gold); }
+#hundred-view .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--h-text-muted); margin-top: 8px; letter-spacing: 1px; }
+#hundred-view .grid-wrap { border: 1px solid var(--h-border-strong); position: relative; animation: fadeUp 0.8s 0.4s ease both; background: var(--h-bg2); padding: 1px; }
+#hundred-view .grid-wrap::before { content: ''; position: absolute; inset: -1px; border: 1px solid transparent; background: linear-gradient(135deg, rgba(200,169,110,0.4), transparent 40%, transparent 60%, rgba(200,169,110,0.2)) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: destination-out; mask-composite: exclude; pointer-events: none; }
+#hundred-view table.grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+#hundred-view table.grid td { border: 1px solid var(--h-border); text-align: center; vertical-align: middle; cursor: pointer; position: relative; height: 56px; transition: background 0.15s ease; overflow: hidden; }
+#hundred-view table.grid td:hover:not(.platinum) { background: var(--h-cell-hover); border-color: var(--h-border-strong); }
+#hundred-view table.grid td.checked { background: var(--h-cell-checked); }
+#hundred-view table.grid td.checked:hover { background: rgba(200, 169, 110, 0.18); }
+#hundred-view .cell-num { font-size: 11px; color: var(--h-text-muted); position: absolute; top: 4px; left: 5px; line-height: 1; user-select: none; transition: opacity 0.2s; font-family: 'Noto Sans TC', sans-serif; }
+#hundred-view td.checked .cell-num { opacity: 0.4; }
+#hundred-view .cell-check { font-size: 20px; color: var(--h-check-color); font-weight: 600; opacity: 0; transform: scale(0.5) rotate(-10deg); transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); display: block; line-height: 1; }
+#hundred-view td.checked .cell-check { opacity: 1; transform: scale(1) rotate(0deg); }
+#hundred-view td.platinum { background: linear-gradient(135deg, var(--h-gold-dark), var(--h-gold), var(--h-gold-light)); cursor: default; position: relative; }
+#hundred-view td.platinum::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent); }
+#hundred-view .platinum-text { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 700; color: var(--h-bg); letter-spacing: 2px; position: relative; z-index: 1; }
+#hundred-view .complete-banner { display: none; text-align: center; padding: 24px; margin-top: 20px; border: 1px solid var(--h-border-strong); background: linear-gradient(135deg, rgba(200,169,110,0.08), transparent); animation: fadeUp 0.6s ease both; }
+#hundred-view .complete-banner.show { display: block; }
+#hundred-view .complete-banner p { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--h-gold-light); letter-spacing: 3px; }
+#hundred-view .reset-btn { margin-top: 24px; display: flex; justify-content: center; animation: fadeUp 0.8s 0.5s ease both; }
+#hundred-view button.reset { background: transparent; border: 1px solid var(--h-border); color: var(--h-text-muted); font-family: 'Noto Sans TC', sans-serif; font-size: 12px; letter-spacing: 3px; padding: 10px 28px; cursor: pointer; transition: all 0.2s ease; }
+#hundred-view button.reset:hover { border-color: var(--h-border-strong); color: var(--h-gold); background: var(--h-cell-hover); }
+
+/* ── WINPLUS VIEW CSS ── */
 #winplus-view { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background: #fff; }
 #nav { position: absolute; top: 0; left: 0; right: 0; height: 50px; background: #1e1e1e; z-index: 9000; display: flex; align-items: center; padding: 0 8px; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 #nav::-webkit-scrollbar { display: none; }
@@ -216,9 +277,9 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .tab-btn.home-btn:hover { background: rgba(255,255,255,0.3); color: #fff; border-color: #fff; }
 .page { position: absolute; top: 50px; left: 0; right: 0; bottom: 0; overflow: hidden; display: none; visibility: hidden; pointer-events: none; z-index: 1; }
 .page.active { display: block; visibility: visible; pointer-events: auto; z-index: 10; }
-#page-mandala.active { display: flex; }
-#page-mindmap.active { display: block; }
-#page-notebook.active { display: flex; flex-direction: column; }
+#page-mandala.active    { display: flex; }
+#page-mindmap.active    { display: block; }
+#page-notebook.active   { display: flex; flex-direction: column; }
 
 /* 曼陀羅 */
 #page-mandala { background: #fff; overflow: auto; align-items: center; justify-content: center; }
@@ -340,16 +401,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   .nb-item { width: 100px; }
   .nb-item-preview, .nb-item-date { display: none; }
 }
-
-/* ══════════════════════════════════════════
-   MAP VIEW (客戶跟進地圖)
-══════════════════════════════════════════ */
-#map-view { position: relative; width: 100vw; height: 100vh; overflow: hidden; background: #f4f1ea; display: none; flex-direction: column; }
-#map-view.active { display: flex; }
-.map-topbar { background: #1e1e1e; height: 50px; display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; }
-#map-container { flex: 1; width: 100%; z-index: 1; }
-.map-refresh-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer; margin-left: 10px; }
-.map-refresh-btn:hover { background: rgba(255,255,255,0.2); }
 </style>
 </head>
 <body>
@@ -364,7 +415,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </div>
 </div>
 
-<!-- ================= HOME VIEW ================= -->
 <div id="home-view" class="app-view active noise-bg">
     <header class="header">
         <h1>Mindful Core, Digital Leverage.</h1>
@@ -413,7 +463,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </footer>
 </div>
 
-<!-- ================= NINETY VIEW ================= -->
 <div id="ninety-view" class="app-view">
   <div class="n-topbar">
     <button class="n-back" onclick="window.switchApp('home')">← 回首頁</button>
@@ -428,6 +477,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         <div class="n-chip"><div class="n-chip-dot" style="background:#1a5fb4"></div><span class="n-num" id="n-cnt0">0</span><span class="n-lbl">1–30天</span></div>
         <div class="n-chip"><div class="n-chip-dot" style="background:#0e7d5a"></div><span class="n-num" id="n-cnt1">0</span><span class="n-lbl">31–60天</span></div>
         <div class="n-chip"><div class="n-chip-dot" style="background:#a05c00"></div><span class="n-num" id="n-cnt2">0</span><span class="n-lbl">61–90天</span></div>
+        <div class="n-chip"><div class="n-chip-dot" style="background:#7c5cbf"></div><span class="n-num" id="n-cnt3">0</span><span class="n-lbl">團隊夥伴</span></div>
       </div>
       <div class="n-toolbar">
         <div class="n-search-wrap">
@@ -456,6 +506,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         <button class="n-stg-btn active" onclick="window.nSetStage(0,this)">1–30 天</button>
         <button class="n-stg-btn" onclick="window.nSetStage(1,this)">31–60 天</button>
         <button class="n-stg-btn" onclick="window.nSetStage(2,this)">61–90 天</button>
+        <button class="n-stg-btn" onclick="window.nSetStage(3,this)">團隊夥伴</button>
       </div>
       <div class="n-fgrid">
         <div>
@@ -517,7 +568,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   </div>
 </div>
 
-<!-- ================= MAP VIEW ================= -->
 <div id="map-view" class="app-view">
     <div class="map-topbar">
         <button class="n-back" onclick="window.switchApp('home')">← 回首頁</button>
@@ -528,7 +578,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     <div id="map-container"></div>
 </div>
 
-<!-- ================= REVIEW VIEW (複盤日誌) ================= -->
 <div id="review-view" class="app-view">
     <button class="back-btn" style="position: absolute; top: 1rem; left: 1rem; z-index: 100; background: rgba(255,255,255,0.8); border: 1px solid #b59871; color: #4a4036; padding: 6px 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 0.8rem; border-radius: 4px; transition: all 0.2s;" onclick="window.switchApp('home')">← 回首頁</button>
     <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 10px; align-items: center; z-index: 100;">
@@ -611,47 +660,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </div>
 </div>
 
-<!-- ================= HUNDRED VIEW (百戰成功圖) ================= -->
-<div id="hundred-view" class="app-view">
-  <button class="back-btn" style="position: absolute; top: 1rem; left: 1rem; z-index: 100; background: rgba(0,0,0,0.4); border: 1px solid var(--h-gold); color: var(--h-gold-light); padding: 6px 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; font-size: 0.8rem; border-radius: 4px; transition: all 0.2s;" onclick="window.switchApp('home')">← 回首頁</button>
-  <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 10px; align-items: center; z-index: 100;">
-      <span class="cloud-status" style="font-size: 0.75rem; color: #888;">☁️ 尚未登入</span>
-      <button class="logout-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 12px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; transition: background 0.2s;" onclick="window.logout()">登出</button>
-  </div>
-
-  <div class="noise"></div>
-  <div class="h-container">
-    <div class="header">
-      <div class="header-deco"><div class="deco-line"></div><div class="deco-diamond"></div><div class="deco-line right"></div></div>
-      <h1>百戰成功表</h1>
-      <p class="description">
-        每一次當您展示市場計畫不成功的時候，就在下面方格打一個 ✓。<br>
-        您將會發覺，在還沒有將這些方格全部填滿 ✓ 之前，您已經是一位直系直銷商了。<br>
-        要成為白金您最多碰到 100 次挫折而已，何樂而不為呢？
-      </p>
-      <div class="slogan">DO IT NOW!</div>
-    </div>
-
-    <div class="stats-bar">
-      <div class="stat"><div class="stat-num" id="h-checked-count">0</div><div class="stat-label">已記錄</div></div>
-      <div class="stat-divider"></div>
-      <div class="stat"><div class="stat-num" id="h-remain-count">100</div><div class="stat-label">剩餘</div></div>
-      <div class="stat-divider"></div>
-      <div class="stat"><div class="stat-num" id="h-pct-count">0%</div><div class="stat-label">進度</div></div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-track"><div class="progress-fill" id="h-progress-fill"></div></div>
-      <div class="progress-label"><span>0</span><span>白金之路</span><span>100</span></div>
-    </div>
-
-    <div class="grid-wrap"><table class="grid" id="h-grid"></table></div>
-    <div class="complete-banner" id="h-complete-banner"><p>🏆 恭喜！您已完成百戰，白金在望！</p></div>
-    <div class="reset-btn"><button class="reset" onclick="window.hResetAll()">RESET ALL</button></div>
-  </div>
-</div>
-
-<!-- ================= WINPLUS VIEW (組織網路&九宮格&筆記本) ================= -->
 <div id="winplus-view" class="app-view">
     <div id="nav">
       <button class="tab-btn home-btn" onclick="window.switchApp('home')">← 回首頁</button>
@@ -748,41 +756,39 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </div>
 </div>
 
-<!-- ================= 所有的彈出視窗 (Modal) ================= -->
 <div class="export-msg" id="export-msg">✔ 已複製成功！現在可以貼給 AI 請它幫你分析了。</div>
 <div class="toast" id="h-toast"></div>
 <div class="n-toast" id="n-toast"></div>
+<div id="wp-toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:9px 20px;border-radius:20px;font-size:.8rem;z-index:99999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;"></div>
 
-<!-- 檢視複盤紀錄的彈出視窗 -->
-<div id="review-record-modal" class="biz-modal-overlay" style="align-items: flex-end; padding-bottom: 40px;" onclick="if(event.target===this) window.closeReviewModal()">
+<div id="review-record-modal" class="biz-modal-overlay" style="align-items: flex-end; padding-bottom: 30px;" onclick="if(event.target===this) window.closeReviewModal()">
     <div class="biz-modal" style="max-width: 500px; display: flex; flex-direction: column; max-height: 65vh;">
-        <h3 id="rr-title" style="color: #b59871; font-family: 'Noto Serif TC', serif; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; margin-top:0;">紀錄</h3>
+        <h3 id="rr-title" style="color: #b59871; margin-top:0; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">紀錄</h3>
         <div id="rr-content" style="font-size: 14px; line-height: 1.8; color: #4a4036; white-space: pre-wrap; background: #faf8f5; padding: 15px; border-radius: 8px; overflow-y: auto; flex: 1;"></div>
         <button style="background: #b59871; width: 100%; margin-top: 20px; padding: 12px; border-radius: 30px; border: none; color: white; cursor: pointer; font-weight: bold; font-size: 16px;" onclick="window.closeReviewModal()">關閉</button>
     </div>
 </div>
 
-<!-- 組織網路圖：配對客戶彈窗 -->
-<div id="mm-link-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+<div id="mm-link-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.classList.remove('show')">
   <div class="biz-modal">
     <h3 style="color:#333; margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">配對客戶資料</h3>
     <p style="font-size:13px; color:#666; margin-bottom:15px;">選擇要與此節點配對的 90天跟進客戶：</p>
     <select id="mm-link-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
     <div style="display:flex; gap:10px; margin-top:20px;">
-      <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-link-modal').style.display='none'" style="flex:1;">取消</button>
+      <button class="n-btn n-btn-danger" onclick="window.mmUnlink()" style="flex:1;" id="mm-unlink-btn">解除配對</button>
+      <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-link-modal').classList.remove('show')" style="flex:1;">取消</button>
       <button class="n-btn n-btn-primary" onclick="window.mmSaveLink()" style="flex:1;">確認配對</button>
     </div>
   </div>
 </div>
 
-<!-- 組織網路圖：更換上層彈窗 -->
-<div id="mm-reparent-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+<div id="mm-reparent-modal" class="biz-modal-overlay" onclick="if(event.target===this) this.classList.remove('show')">
   <div class="biz-modal">
     <h3 style="color:#333; margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">更換上層項目</h3>
     <p style="font-size:13px; color:#666; margin-bottom:15px;">請選擇此節點要移動到哪一個項目下方：</p>
     <select id="mm-reparent-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; outline:none; font-family:inherit;"></select>
     <div style="display:flex; gap:10px; margin-top:20px;">
-      <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-reparent-modal').style.display='none'" style="flex:1;">取消</button>
+      <button class="n-btn n-btn-ghost" onclick="document.getElementById('mm-reparent-modal').classList.remove('show')" style="flex:1;">取消</button>
       <button class="n-btn n-btn-primary" onclick="window.mmSaveReparent()" style="flex:1;">確認更換</button>
     </div>
   </div>
@@ -800,19 +806,20 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 
     window.closeReviewModal = function() {
         const modal = document.getElementById('review-record-modal');
-        if (modal) modal.style.display = 'none';
+        if (modal) modal.classList.remove('show');
     };
 
     window.switchApp = function(appId) {
         // 隱藏所有頁面
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+        
         // 顯示目標頁面
         const targetView = document.getElementById(appId + '-view');
         if (targetView) targetView.classList.add('active');
         
         // 切換主頁面時，自動關閉所有浮動視窗
         window.closeReviewModal();
-        document.querySelectorAll('.biz-modal-overlay').forEach(m => m.style.display = 'none');
+        document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
         // 特殊頁面載入邏輯
         if (appId === 'map' && typeof window.initMap === 'function') window.initMap();
@@ -828,18 +835,14 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       if (btn) btn.classList.add('active');
       
       // 頁籤切換時，自動關閉所有浮動視窗
-      document.querySelectorAll('.biz-modal-overlay').forEach(m => m.style.display = 'none');
+      document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
       if (name === 'mindmap' && typeof window.mmLoadState === 'function') window.mmLoadState(); 
     };
 
     window.showWPToast = function(msg) { 
       let t = document.getElementById('wp-toast'); 
-      if (!t) { 
-        t = document.createElement('div'); t.id = 'wp-toast'; 
-        t.style.cssText = `position:fixed;bottom:28px;left:50%;transform:translateX(-50%); background:#222;color:#fff;padding:9px 20px;border-radius:20px;font-size:.8rem; font-family:'Noto Sans TC',sans-serif;z-index:99999;opacity:0; transition:opacity .25s;pointer-events:none;white-space:nowrap;`; 
-        document.body.appendChild(t); 
-      } 
+      if (!t) return;
       t.textContent = msg; 
       t.style.opacity = '1'; 
       clearTimeout(t._timer); 
@@ -1124,8 +1127,7 @@ window.reviewViewRecord = function(dateStr) {
     }
     
     document.getElementById('rr-content').innerHTML = contentHtml;
-    // 使用 style.display 覆蓋確保顯示
-    document.getElementById('review-record-modal').style.display = 'flex';
+    document.getElementById('review-record-modal').classList.add('show');
 };
 
 window.reviewExportToday = function() {
@@ -1257,7 +1259,7 @@ window.initMap = async function(forceRefresh = false) {
     }
 
     statusEl.textContent = `找到 ${customersWithAddress.length} 筆地址，正在呼叫圖資 API 定位...`;
-    const stageNames = ['1–30 天', '31–60 天', '61–90 天'];
+    const stageNames = ['1–30 天', '31–60 天', '61–90 天', '團隊夥伴'];
     const delay = ms => new Promise(res => setTimeout(res, ms));
     let loadedCount = 0;
 
@@ -1318,8 +1320,8 @@ window.initMap = async function(forceRefresh = false) {
     { label:'美容護理',      color:'pink',   items:['染髮','潔膚','卸妝乳','抗皺','煥膚'] },
     { label:'高科技',        color:'indigo', items:['刮痧','淨水器','空氣清淨機','不沾鍋','金鍋'] }
   ];
-  const STAGE_NAMES = ['1–30 天','31–60 天','61–90 天'];
-  const STAGE_CLS   = ['n-s1','n-s2','n-s3'];
+  const STAGE_NAMES = ['1–30 天','31–60 天','61–90 天','團隊夥伴'];
+  const STAGE_CLS   = ['n-s1','n-s2','n-s3','n-s4'];
 
   let nCustomers = [];
   let nCurrentId = null;
@@ -1352,7 +1354,7 @@ window.initMap = async function(forceRefresh = false) {
   window.nRenderList = function() {
     const filtered = nSearchQ ? nCustomers.filter(c => c.name.includes(nSearchQ)) : nCustomers;
     let html = '';
-    for (let s=0;s<3;s++) {
+    for (let s=0;s<4;s++) {
       const grp = filtered.filter(c => c.stage === s);
       html += `<div class="n-stage-block ${STAGE_CLS[s]}">
         <div class="n-stage-hdr">
@@ -1375,7 +1377,7 @@ window.initMap = async function(forceRefresh = false) {
     }
     const blocks = document.getElementById('n-stage-blocks');
     if (blocks) blocks.innerHTML = html;
-    for (let s=0;s<3;s++) {
+    for (let s=0;s<4;s++) {
       const el = document.getElementById('n-cnt'+s);
       if (el) el.textContent = nCustomers.filter(c=>c.stage===s).length;
     }
@@ -1451,7 +1453,7 @@ window.initMap = async function(forceRefresh = false) {
     document.getElementById('n-service-checks').innerHTML = SERVICES.map(s => {
       const spanCls = (s === '會自己訂貨' || s === '會用信用卡') ? 'class="chk-text-green"' : '';
       return `<div class="n-chk${sv.includes(s)?' on':''}" onclick="this.classList.toggle('on')">
-        <div class="n-chk-box"><span class="n-chk-mark">✓</span></div><span ${spanCls}>${s}</span></div>`;
+        <div class="n-chk-box"><span class="n-chk-mark">✓</span></div><span class="${spanCls}">${s}</span></div>`;
     }).join('');
     
     document.getElementById('n-course-tags').innerHTML = COURSES.map(c =>
@@ -1473,7 +1475,6 @@ window.initMap = async function(forceRefresh = false) {
     const name = document.getElementById('nf-name').value.trim();
     if (!name) { window.showWPToast('請填寫姓名'); return; }
     
-    // 正確抓取選擇的服務項目文字 (不抓到打勾符號)
     const selectedServices = [...document.querySelectorAll('#n-service-checks .n-chk.on')].map(el => {
         return el.lastElementChild.textContent;
     });
@@ -1518,7 +1519,6 @@ window.initMap = async function(forceRefresh = false) {
     setTimeout(window.nGoBack, 500);
   };
 
-  // 新增：複製客戶資料供 LINE 回報
   window.nCopyCustomerData = function() {
     const cname = document.getElementById('nf-name').value.trim();
     if (!cname) return window.showWPToast('請先填寫資料或選擇客戶');
@@ -1839,7 +1839,7 @@ window.mmOpenLinkModal = function(nodeId) {
     });
     
     const modal = document.getElementById('mm-link-modal');
-    if(modal) modal.style.display = 'flex';
+    if(modal) modal.classList.add('show');
 };
 
 window.mmSaveLink = function() {
@@ -1854,8 +1854,19 @@ window.mmSaveLink = function() {
         window.mmSaveState();
         window.mmRender();
         window.showWPToast('配對成功！');
-        document.getElementById('mm-link-modal').style.display = 'none';
+        document.getElementById('mm-link-modal').classList.remove('show');
     }
+};
+
+window.mmUnlink = function() {
+     const node = window.mmNodes.find(n => n.id === window.mmNodeToLink);
+     if(node) {
+         node.linkedCrmId = null;
+         window.mmSaveState();
+         window.mmRender();
+         window.showWPToast('解除配對！');
+         document.getElementById('mm-link-modal').classList.remove('show');
+     }
 };
 
 window.mmOpenReparentModal = function() {
@@ -1890,7 +1901,7 @@ window.mmOpenReparentModal = function() {
     }
 
     const modal = document.getElementById('mm-reparent-modal');
-    if(modal) modal.style.display = 'flex';
+    if(modal) modal.classList.add('show');
 };
 
 window.mmSaveReparent = function() {
@@ -1903,7 +1914,7 @@ window.mmSaveReparent = function() {
         window.mmSaveState();
         window.mmAutoLayout();
         window.showWPToast('更換成功！');
-        document.getElementById('mm-reparent-modal').style.display = 'none';
+        document.getElementById('mm-reparent-modal').classList.remove('show');
     }
 };
 
@@ -1949,7 +1960,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:30, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:31, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
