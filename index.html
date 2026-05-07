@@ -1911,4 +1911,306 @@ window.mmSaveLink = function() {
         node.linkedCrmId = Number(selId);
         window.mmSaveState();
         window.mmRender();
-        window
+        window.showWPToast('配對成功！');
+        document.getElementById('mm-link-modal').classList.remove('show');
+    }
+};
+
+window.mmUnlink = function() {
+     const node = window.mmNodes.find(n => n.id === window.mmNodeToLink);
+     if(node) {
+         node.linkedCrmId = null;
+         window.mmSaveState();
+         window.mmRender();
+         window.showWPToast('解除配對！');
+         document.getElementById('mm-link-modal').classList.remove('show');
+     }
+};
+
+window.mmOpenReparentModal = function() {
+    if(!window.mmSelectedId || window.mmSelectedId === 'root') {
+        window.showWPToast('請先選擇一個需要移動的子節點');
+        return;
+    }
+    const sel = document.getElementById('mm-reparent-select');
+    sel.innerHTML = '';
+    
+    function isDescendant(nodeId, targetId) {
+        if(nodeId === targetId) return true;
+        let n = window.mmNodes.find(x => x.id === nodeId);
+        while(n && n.parentId) {
+            if(n.parentId === targetId) return true;
+            n = window.mmNodes.find(x => x.id === n.parentId);
+        }
+        return false;
+    }
+
+    let hasOptions = false;
+    window.mmNodes.forEach(n => {
+        if(!isDescendant(n.id, window.mmSelectedId)) {
+            sel.innerHTML += `<option value="${n.id}">${window.nbEscape(n.text)}</option>`;
+            hasOptions = true;
+        }
+    });
+
+    if(!hasOptions) {
+        window.showWPToast('沒有合適的上層項目可以選擇');
+        return;
+    }
+
+    const modal = document.getElementById('mm-reparent-modal');
+    if(modal) modal.classList.add('show');
+};
+
+window.mmSaveReparent = function() {
+    const newParentId = document.getElementById('mm-reparent-select').value;
+    if(!newParentId) return;
+
+    const node = window.mmNodes.find(n => n.id === window.mmSelectedId);
+    if(node) {
+        node.parentId = newParentId;
+        window.mmSaveState();
+        window.mmAutoLayout();
+        window.showWPToast('更換成功！');
+        document.getElementById('mm-reparent-modal').classList.remove('show');
+    }
+};
+
+// 畫面平移 (無限畫布)
+document.addEventListener('DOMContentLoaded', () => {
+    const mmPage = document.getElementById('page-mindmap');
+    if(mmPage) {
+        let isPanning = false, startPanX = 0, startPanY = 0;
+        
+        mmPage.addEventListener('mousedown', (e) => {
+            if(e.target.closest('.mm-node') || e.target.closest('.mm-toolbar')) return;
+            isPanning = true;
+            startPanX = e.clientX - window.mmPanX;
+            startPanY = e.clientY - window.mmPanY;
+            mmPage.style.cursor = 'grabbing';
+        });
+        window.addEventListener('mousemove', (e) => {
+            if(!isPanning) return;
+            window.mmPanX = e.clientX - startPanX;
+            window.mmPanY = e.clientY - startPanY;
+            window.mmUpdateWorkspace();
+        });
+        window.addEventListener('mouseup', () => {
+            isPanning = false;
+            mmPage.style.cursor = '';
+        });
+        
+        mmPage.addEventListener('touchstart', (e) => {
+            if(e.target.closest('.mm-node') || e.target.closest('.mm-toolbar') || e.touches.length !== 1) return;
+            isPanning = true;
+            startPanX = e.touches[0].clientX - window.mmPanX;
+            startPanY = e.touches[0].clientY - window.mmPanY;
+        }, {passive: false});
+        window.addEventListener('touchmove', (e) => {
+            if(!isPanning) return;
+            window.mmPanX = e.touches[0].clientX - startPanX;
+            window.mmPanY = e.touches[0].clientY - startPanY;
+            window.mmUpdateWorkspace();
+        }, {passive: false});
+        window.addEventListener('touchend', () => {
+            isPanning = false;
+        });
+    }
+});
+})();
+
+/* ══════════════════════════════════════════
+   曼陀羅九宮格
+══════════════════════════════════════════ */
+;(function(){
+const SG = [ {n:'H',r:1,c:1,cl:'cH'},{n:'A',r:1,c:4,cl:'cA'},{n:'D',r:1,c:7,cl:'cD'}, {n:'G',r:4,c:1,cl:'cG'},{n:'' ,r:4,c:4,cl:'cM'},{n:'C',r:4,c:7,cl:'cC'}, {n:'F',r:7,c:1,cl:'cF'},{n:'B',r:7,c:4,cl:'cB'},{n:'E',r:7,c:7,cl:'cE'} ]; 
+const LM = [['2','3','4'],['1','','5'],['8','7','6']];
+const CLM = [['H','A','D'],['G','','C'],['F','B','E']]; 
+
+document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('big-grid'); 
+    if(grid) {
+        const info = Array.from({length:9}, () => Array(9).fill(0).map(() => ({code:'',cl:''}))); 
+        SG.forEach(sg => { for (let dr=0;dr<3;dr++) for (let dc=0;dc<3;dc++) { info[sg.r-1+dr][sg.c-1+dc] = { code: (dr===1&&dc===1) ? sg.n : (sg.n === '' ? CLM[dr][dc] : sg.n+LM[dr][dc]), cl: (dr===1&&dc===1) ? sg.cl : '' }; } }); 
+        for (let r=0;r<9;r++) for (let c=0;c<9;c++) { const cell = document.createElement('div'); cell.className = 'm-cell' + (c===3||c===6?' bl':'') + (r===3||r===6?' bt':''); const {code,cl} = info[r][c]; if (cl) cell.classList.add(cl); const cd = document.createElement('div'); cd.className='cell-code'; cd.textContent=code; cell.appendChild(cd); const ta = document.createElement('textarea'); const key = 'mc-'+r+'-'+c; try { ta.value = localStorage.getItem(key)||''; } catch(e){} ta.addEventListener('input', () => { try { localStorage.setItem(key, ta.value); if(window.triggerCloudSave) window.triggerCloudSave(); } catch(e){} }); cell.appendChild(ta); grid.appendChild(cell); } 
+    }
+});
+})();
+
+/* ══════════════════════════════════════════
+   雲端同步打包與解包 
+══════════════════════════════════════════ */
+window.collectAllData = function() {
+  const cells = {}; for (let r=0;r<9;r++) for (let c=0;c<9;c++) { const k = 'mc-'+r+'-'+c; const v = localStorage.getItem(k); if (v) cells[k] = v; }
+  const fields = {}; ['ml_date','ml_title','ml_name','ml_memo'].forEach(k => { const v = localStorage.getItem(k); if (v) fields[k] = v; });
+  const mindmap = JSON.parse(localStorage.getItem('mm_nodes') || '[]');
+  const ninety90 = window.nGetCustomers ? window.nGetCustomers() : JSON.parse(localStorage.getItem('crm90_v3') || '[]');
+  
+  const reviewData = {
+    goals: {
+        health: localStorage.getItem('goal-health') || '',
+        social: localStorage.getItem('goal-social') || '',
+        family: localStorage.getItem('goal-family') || '',
+        amway: localStorage.getItem('goal-amway') || '',
+        wealth: localStorage.getItem('goal-wealth') || ''
+    },
+    richLogs: JSON.parse(localStorage.getItem('richLogs') || '[]')
+  };
+  
+  const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
+
+  return { version:40, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+};
+
+window.restoreAllData = function(data) {
+  const execRestore = () => {
+      if (!data) return;
+      try {
+          if (data.cells) { Object.entries(data.cells).forEach(([k,v]) => localStorage.setItem(k, v)); document.querySelectorAll('#big-grid .m-cell textarea').forEach(ta => { const idx = Array.from(ta.closest('#big-grid').querySelectorAll('textarea')).indexOf(ta); const r=Math.floor(idx/9), c=idx%9; ta.value = data.cells['mc-'+r+'-'+c] || ''; }); }
+          if (data.fields) { ['ml_date','ml_title','ml_name','ml_memo'].forEach((k,i) => { if (data.fields[k] != null) { localStorage.setItem(k, data.fields[k]); const ids = ['ml-date','ml-title','ml-name','ml-memo']; const el = document.getElementById(ids[i]); if (el) el.value = data.fields[k]; } }); }
+          if (data.mindmap) { localStorage.setItem('mm_nodes', JSON.stringify(data.mindmap)); if(typeof window.mmLoadState === 'function') window.mmLoadState(); }
+          if (data.notebook && typeof window.NotebookApp.restoreNotes === 'function') window.NotebookApp.restoreNotes(data.notebook);
+          if (data.ninety90 && Array.isArray(data.ninety90)) { localStorage.setItem('crm90_v3', JSON.stringify(data.ninety90)); if (typeof window.nLoadCustomers === 'function') window.nLoadCustomers(data.ninety90); }
+          
+          if (data.reviewData) {
+            localStorage.setItem('goal-health', data.reviewData.goals.health || '');
+            localStorage.setItem('goal-social', data.reviewData.goals.social || '');
+            localStorage.setItem('goal-family', data.reviewData.goals.family || '');
+            localStorage.setItem('goal-amway', data.reviewData.goals.amway || '');
+            localStorage.setItem('goal-wealth', data.reviewData.goals.wealth || '');
+            localStorage.setItem('richLogs', JSON.stringify(data.reviewData.richLogs || []));
+            if(typeof window.reviewLoadGoals === 'function') {
+                window.reviewLoadGoals();
+                window.reviewRenderTracker();
+            }
+          }
+          
+          if (data.hundredState) {
+            localStorage.setItem('hundred_state', JSON.stringify(data.hundredState));
+            window.hundredState = data.hundredState;
+            if(typeof window.hRenderGrid === 'function') window.hRenderGrid();
+          }
+      } catch(err) {
+          console.error("DOM 復原時發生錯誤: ", err);
+      }
+  };
+
+  if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', execRestore);
+  } else {
+      execRestore();
+  }
+};
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithCredential, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyArBQTUSpEk2VfLMSe1lLDbhBDNEzZJgtA",
+    authDomain: "rucefar.github.io",   
+    projectId: "winplus-6fe62",
+    storageBucket: "winplus-6fe62.firebasestorage.app",
+    messagingSenderId: "635721093721",
+    appId: "1:635721093721:web:12d24d7025514608335748"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  onAuthStateChanged(auth, async (user) => {
+    const initUser = async () => {
+        window.currentUserUid = user.uid;
+        document.getElementById('login-overlay').style.display = 'none';
+        const nameEls = document.querySelectorAll('.user-profile');
+        if (nameEls.length) nameEls.forEach(el => el.textContent = user.displayName);
+        const statusEls = document.querySelectorAll('.cloud-status');
+        statusEls.forEach(el => el.textContent = '☁️ 正在讀取雲端資料...');
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) { window.restoreAllData(docSnap.data()); }
+          statusEls.forEach(el => el.textContent = '☁️ 已與雲端同步');
+        } catch (e) {
+          console.error("Firebase 讀取失敗: ", e);
+          statusEls.forEach(el => el.textContent = '⚠️ 讀取失敗');
+        }
+        window.switchApp('home');
+    };
+
+    if (user) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUser);
+        } else {
+            initUser();
+        }
+    } else {
+      window.currentUserUid = null;
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => {
+              document.getElementById('login-overlay').style.display = 'flex';
+          });
+      } else {
+          document.getElementById('login-overlay').style.display = 'flex';
+      }
+    }
+  });
+
+  window.handleCredentialResponse = async (response) => {
+      const credential = GoogleAuthProvider.credential(response.credential);
+      await signInWithCredential(auth, credential);
+  };
+
+  window.onload = function () {
+      google.accounts.id.initialize({
+          client_id: "635721093721-ebdobeukugpou646db9kt6ij873ejorb.apps.googleusercontent.com",
+          callback: window.handleCredentialResponse
+      });
+      const btnContainer = document.getElementById("google-btn-container");
+      if (btnContainer) {
+          google.accounts.id.renderButton(
+              btnContainer,
+              { 
+                  theme: "outline", 
+                  size: "large", 
+                  type: "standard", 
+                  shape: "rectangular",
+                  text: "signin_with",
+                  logo_alignment: "left",
+                  width: 250
+              }
+          );
+      }
+      google.accounts.id.prompt(); 
+  };
+
+  window.logout = async () => { await signOut(auth); localStorage.clear(); location.reload(); };
+
+  let cloudTimer = null;
+  window.triggerCloudSave = () => {
+    if (!window.currentUserUid) return;
+    clearTimeout(cloudTimer);
+    cloudTimer = setTimeout(async () => {
+      try {
+        const fullData = window.collectAllData ? window.collectAllData() : null;
+        if (fullData) {
+            await setDoc(doc(db, "users", window.currentUserUid), fullData);
+            const statusEls = document.querySelectorAll('.cloud-status');
+            statusEls.forEach(el => el.textContent = '☁️ 已與雲端同步');
+            setTimeout(() => {
+                statusEls.forEach(el => el.textContent = '☁️'); 
+            }, 2000);
+        }
+      } catch(e) {
+        console.error("雲端存檔失敗：", e);
+        const statusEls = document.querySelectorAll('.cloud-status');
+        statusEls.forEach(el => el.textContent = '⚠️ 存檔失敗');
+      }
+    }, 2000);
+  };
+</script>
+
+</body>
+</html>
