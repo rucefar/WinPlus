@@ -56,6 +56,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     font-family: 'Noto Sans TC', sans-serif; color: var(--text-main); min-height: 100vh; flex-direction: column; align-items: center; justify-content: center;
     padding: 2rem 1rem;
 }
+
 #home-view .header { text-align: center; margin-bottom: 3rem; animation: fadeInDown 1s ease-out; position: relative; }
 #home-view .header h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: 0.2em; margin-bottom: 1rem; background: linear-gradient(135deg, var(--accent-review), var(--accent-winplus)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 #home-view .header p { font-size: 1.1rem; color: #636e72; font-weight: 300; letter-spacing: 0.1em; }
@@ -115,12 +116,13 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-chip .n-lbl { font-size: 11px; color: var(--n-text3); }
 .n-chip-dot { width: 9px; height: 9px; border-radius: 50%; }
 
-.n-toolbar { display: flex; gap: 10px; margin-bottom: 24px; align-items: center; }
-.n-search-wrap { flex: 1; position: relative; }
+.n-toolbar { display: flex; gap: 10px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+.n-search-wrap { flex: 1; position: relative; min-width: 200px; }
 .n-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--n-text3); pointer-events: none; }
 .n-search { width: 100%; background: var(--n-card); border: 1px solid var(--n-border); border-radius: var(--n-radius-sm); padding: 9px 14px 9px 36px; font-size: 13px; color: var(--n-text); font-family: inherit; outline: none; transition: border-color 0.15s; }
 .n-search:focus { border-color: var(--n-blue); }
-.n-btn-add { display: flex; align-items: center; gap: 6px; background: #1a1a1a; color: white; border: none; border-radius: var(--n-radius-sm); padding: 9px 18px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; white-space: nowrap; }
+.n-btn-add { display: flex; align-items: center; gap: 6px; background: #1a1a1a; color: white; border: none; border-radius: var(--n-radius-sm); padding: 9px 16px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+.n-btn-add:hover { opacity: 0.85; }
 
 .n-stage-block { margin-bottom: 32px; }
 .n-stage-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -203,7 +205,8 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-tag.indigo.on { background: var(--n-indigo); color: white; border-color: var(--n-indigo); }
 .n-tag.purple { background: #f5f3ff; border-color: rgba(124,92,191,0.2); color: var(--n-purple); }
 .n-tag.purple.on { background: var(--n-purple); color: white; border-color: var(--n-purple); }
-.n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); }
+
+.n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); flex-wrap: wrap;}
 .n-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: var(--n-radius-sm); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .n-btn-ghost { background: none; border: 1px solid var(--n-border); color: var(--n-text2); }
 .n-btn-ghost:hover { background: var(--n-bg2); }
@@ -221,7 +224,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #review-view h1 { text-align: center; color: var(--r-primary); margin-bottom: 5px; font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight:900;}
 #review-view .subtitle { text-align: center; font-size: 14px; color: #8c7e71; margin-bottom: 30px; letter-spacing: 0.1em;}
 #review-view .section { margin-bottom: 25px; padding: 20px 25px; background: #ffffff; border-radius: 16px; border-left: 5px solid var(--r-primary); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-#review-view h2 { font-size: 18px; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-family: 'Noto Serif TC', serif;}
+#review-view h2 { font-size: 18px; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-family: 'Noto Serif TC', serif; flex-wrap: wrap; gap:10px;}
 #review-view label { display: block; margin-top: 12px; font-weight: bold; font-size: 14px; color: #5a4f44;}
 #review-view textarea, #review-view input[type="text"] { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #faf8f5; transition: 0.3s; }
 #review-view textarea:focus, #review-view input[type="text"]:focus { outline: none; border-color: var(--r-primary); background: #fff; }
@@ -293,12 +296,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 #hundred-view td.platinum { background: linear-gradient(135deg, var(--h-gold-dark), var(--h-gold), var(--h-gold-light)); cursor: default; position: relative; }
 #hundred-view td.platinum::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent); }
 #hundred-view .platinum-text { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 700; color: var(--h-bg); letter-spacing: 2px; position: relative; z-index: 1; }
-#hundred-view .complete-banner { display: none; text-align: center; padding: 24px; margin-top: 20px; border: 1px solid var(--h-border-strong); background: linear-gradient(135deg, rgba(200,169,110,0.08), transparent); animation: fadeUp 0.6s ease both; }
-#hundred-view .complete-banner.show { display: block; }
-#hundred-view .complete-banner p { font-family: 'Noto Serif TC', serif; font-size: 18px; color: var(--h-gold-light); letter-spacing: 3px; }
-#hundred-view .reset-btn { margin-top: 24px; display: flex; justify-content: center; animation: fadeUp 0.8s 0.5s ease both; }
-#hundred-view button.reset { background: transparent; border: 1px solid var(--h-border); color: var(--h-text-muted); font-family: inherit; font-size: 12px; letter-spacing: 3px; padding: 10px 28px; cursor: pointer; transition: all 0.2s ease; }
-#hundred-view button.reset:hover { border-color: var(--h-border-strong); color: var(--h-gold); background: var(--h-cell-hover); }
 
 /* ── WINPLUS VIEW CSS ── */
 #winplus-view { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans TC', sans-serif; background: #fff; }
@@ -524,9 +521,15 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input class="n-search" type="text" placeholder="搜尋客戶姓名…" oninput="window.nFilterCustomers(this.value)">
         </div>
+        <button class="n-btn-add" onclick="window.nExportData()" style="background:#27ae60; border-color:#27ae60;" title="備份匯出名單資料">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> 匯出
+        </button>
+        <button class="n-btn-add" onclick="document.getElementById('n-import-file').click()" style="background:#e8a045; border-color:#e8a045; color:#fff;" title="匯入名單資料">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg> 匯入
+        </button>
+        <input type="file" id="n-import-file" style="display:none" accept=".json" onchange="window.nImportData(event)">
         <button class="n-btn-add" onclick="window.nOpenNew(0)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          新增客戶
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> 新增客戶
         </button>
       </div>
       <div id="n-stage-blocks"></div>
@@ -768,35 +771,31 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
           </div>
           <div id="nb-note-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
             <div id="nb-toolbar">
-              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')" title="粗體"><b>B</b></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')" title="斜體"><i>I</i></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')" title="底線"><u>U</u></button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')" title="刪除線"><s>S</s></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('bold')"><b>B</b></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('italic')"><i>I</i></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('underline')"><u>U</u></button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('strikeThrough')"><s>S</s></button>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')" title="項目清單">☰</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')" title="編號清單">①</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')" title="縮排">→</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')" title="取消縮排">←</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertUnorderedList')">☰</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('insertOrderedList')">①</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('indent')">→</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('outdent')">←</button>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')" title="靠左">⬛︎</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')" title="置中">▣</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')" title="靠右">⬛</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyLeft')">⬛︎</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyCenter')">▣</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('justifyRight')">⬛</button>
               <div class="nb-tool-sep"></div>
-              <input id="nb-font-size" type="number" value="15" min="8" max="72" title="字體大小" onchange="window.NotebookApp.fontSize(this.value)">
-              <div class="nb-color-btn" title="文字顏色"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
-              <div class="nb-color-btn" title="螢光標記" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
+              <input id="nb-font-size" type="number" value="15" min="8" max="72" onchange="window.NotebookApp.fontSize(this.value)">
+              <div class="nb-color-btn"><div class="nb-color-indicator" id="nb-color-bar"></div><input type="color" value="#222222" id="nb-color-picker" oninput="window.NotebookApp.textColor(this.value)"></div>
+              <div class="nb-color-btn" style="margin-left:2px"><div class="nb-color-indicator" id="nb-hl-bar" style="background:#ffe066"></div><input type="color" value="#ffe066" id="nb-hl-picker" oninput="window.NotebookApp.highlight(this.value)"></div>
               <div class="nb-tool-sep"></div>
-              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()" title="分隔線">─</button>
-              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()" title="待辦項目">☑</button>
-              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" title="清除格式" style="font-size:.65rem">✕fmt</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertDivider()">─</button>
+              <button class="nb-tool" onclick="window.NotebookApp.insertCheckbox()">☑</button>
+              <button class="nb-tool" onclick="window.NotebookApp.exec('removeFormat')" style="font-size:.65rem">✕fmt</button>
             </div>
             <div id="nb-title-bar"><input id="nb-title-input" type="text" placeholder="筆記標題…" oninput="window.NotebookApp.titleChange(this.value)"></div>
             <div id="nb-content-area"><div id="nb-editor" contenteditable="true" oninput="window.NotebookApp.contentChange()" onkeydown="window.NotebookApp.editorKeydown(event)"></div></div>
-            <div id="nb-status">
-              <span id="nb-word-count">0 字</span>
-              <span id="nb-save-status">已儲存</span>
-              <span id="nb-note-date"></span>
-            </div>
+            <div id="nb-status"><span id="nb-word-count">0 字</span><span id="nb-save-status">已儲存</span><span id="nb-note-date"></span></div>
           </div>
         </div>
       </div>
@@ -919,13 +918,18 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     };
 
     window.switchApp = function(appId, pushHistory = true) {
+        // 隱藏所有頁面
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+        
+        // 顯示目標頁面
         const targetView = document.getElementById(appId + '-view');
         if (targetView) targetView.classList.add('active');
         
+        // 切換主頁面時，自動關閉所有浮動視窗
         window.closeReviewModal();
         document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
+        // 特殊頁面載入邏輯
         if (appId === 'map' && typeof window.initMap === 'function') window.initMap();
         if (appId === 'review' && typeof window.reviewRenderTracker === 'function') window.reviewRenderTracker();
 
@@ -1244,7 +1248,8 @@ window.reviewViewRecord = function(dateStr) {
     }
     
     document.getElementById('rr-content').innerHTML = contentHtml;
-    document.getElementById('review-record-modal').classList.add('show');
+    const modal = document.getElementById('review-record-modal');
+    if(modal) modal.classList.add('show');
 };
 
 window.reviewExportToday = function() {
@@ -1495,6 +1500,52 @@ window.initMap = async function(forceRefresh = false) {
   };
 
   window.nFilterCustomers = function(q) { nSearchQ = q; window.nRenderList(); };
+
+  window.nExportData = function() {
+    if (nCustomers.length === 0) return window.showWPToast('目前沒有資料可以匯出喔！');
+    const dataStr = JSON.stringify(nCustomers, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `WinPlus_Customers_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    window.showWPToast('📥 資料已成功匯出！');
+  };
+
+  window.nImportData = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if (!Array.isArray(importedData)) throw new Error("Invalid format");
+            
+            if (confirm(`成功讀取 ${importedData.length} 筆資料。\n請問要「覆蓋」現有資料，還是「合併」到現有資料中？\n\n[確定] = 覆蓋\n[取消] = 合併`)) {
+                nCustomers = importedData;
+            } else {
+                let maxId = nCustomers.length ? Math.max(...nCustomers.map(c=>c.id)) : 0;
+                importedData.forEach(c => {
+                    maxId++;
+                    c.id = maxId;
+                    nCustomers.push(c);
+                });
+            }
+            nSaveLocal();
+            window.nRenderList();
+            window.showWPToast('📤 資料已成功匯入！');
+        } catch(err) {
+            console.error(err);
+            alert("匯入失敗：檔案格式不正確，請確保是之前匯出的 JSON 檔案。");
+        }
+        event.target.value = ''; 
+    };
+    reader.readAsText(file);
+  };
 
   window.nOpenNew = function(stage) {
     nCurrentId = null;
@@ -2047,6 +2098,7 @@ window.mmSaveReparent = function() {
     }
 };
 
+// 畫面平移 (無限畫布)
 document.addEventListener('DOMContentLoaded', () => {
     const mmPage = document.getElementById('page-mindmap');
     if(mmPage) {
@@ -2070,6 +2122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mmPage.style.cursor = '';
         });
         
+        // Touch support for panning
         mmPage.addEventListener('touchstart', (e) => {
             if(e.target.closest('.mm-node') || e.target.closest('.mm-toolbar') || e.touches.length !== 1) return;
             isPanning = true;
@@ -2087,6 +2140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 })();
 
 /* ══════════════════════════════════════════
@@ -2129,7 +2183,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:51, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:55, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
