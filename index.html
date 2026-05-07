@@ -202,13 +202,21 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 .n-tag.purple { background: #f5f3ff; border-color: rgba(124,92,191,0.2); color: var(--n-purple); }
 .n-tag.purple.on { background: var(--n-purple); color: white; border-color: var(--n-purple); }
 
-.n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); }
+.n-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--n-border); flex-wrap: wrap; }
 .n-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: var(--n-radius-sm); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .n-btn-ghost { background: none; border: 1px solid var(--n-border); color: var(--n-text2); }
 .n-btn-ghost:hover { background: var(--n-bg2); }
 .n-btn-danger { background: none; border: 1px solid rgba(176,48,48,0.25); color: var(--n-red); }
 .n-btn-danger:hover { background: var(--n-red-l); }
 .n-btn-primary { background: #1a1a1a; border: none; color: white; }
+
+/* ── MAP VIEW CSS (地圖樣式修復) ── */
+#map-view { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
+#map-view.active { display: flex !important; }
+.map-topbar { background: #1e1e1e; height: 50px; display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+.map-refresh-btn { background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25); color: #fff; font-family: inherit; font-size: 0.75rem; padding: 4px 12px; border-radius: 18px; cursor: pointer; transition: all 0.2s; }
+.map-refresh-btn:hover { background: rgba(255,255,255,0.25); }
+#map-container { flex: 1; width: 100%; height: 100%; min-height: 400px; z-index: 1; }
 
 /* ── HUNDRED VIEW CSS (百戰成功圖) ── */
 #hundred-view {
@@ -221,7 +229,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
   display: none; flex-direction: column; align-items: center; padding: 60px 20px 60px;
   position: relative; overflow-x: hidden; font-family: 'Noto Sans TC', sans-serif;
 }
-#hundred-view.active { display: flex; }
+#hundred-view.active { display: flex !important; }
 #hundred-view::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200,169,110,0.07) 0%, transparent 70%), radial-gradient(ellipse 40% 30% at 80% 80%, rgba(200,169,110,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0; }
 #hundred-view .h-container { width: 100%; max-width: 760px; position: relative; z-index: 1; margin: 0 auto; }
 #hundred-view .header { text-align: center; margin-bottom: 36px; animation: fadeDown 0.8s ease both; }
@@ -301,9 +309,10 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 
 /* Mind Map */
 #page-mindmap { background: #f5f1ea; background-image: radial-gradient(circle at 20% 80%, rgba(74,124,142,.06) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(201,120,60,.06) 0%, transparent 60%); }
-#mm-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+#mm-wrapper { position: absolute; width: 100%; height: 100%; transform-origin: top left; }
+#mm-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
 #mm-canvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; }
-.mm-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(26,26,46,.35); pointer-events: none; white-space: nowrap; z-index: 50; }
+.mm-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: rgba(26,26,46,.35); pointer-events: none; white-space: nowrap; z-index: 50; background: rgba(255,255,255,0.7); padding: 4px 12px; border-radius: 12px; }
 .mm-toolbar { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; z-index: 100; background: #1e1e1e; padding: 7px 12px; border-radius: 40px; box-shadow: 0 6px 24px rgba(0,0,0,.25); max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center; }
 .mm-btn { padding: 6px 12px; border: none; background: rgba(255,255,255,.1); color: #f0ebe0; font-family: inherit; font-size: clamp(.65rem, 2vw, .76rem); cursor: pointer; border-radius: 22px; transition: background .15s; letter-spacing: .03em; white-space: nowrap; }
 .mm-btn:hover { background: rgba(255,255,255,.2); }
@@ -463,6 +472,34 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </footer>
 </div>
 
+<div id="hundred-view" class="app-view noise-bg">
+  <button class="n-back" style="position:absolute; top:16px; left:16px; z-index:50; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#c8a96e; padding:6px 12px; border-radius:18px; cursor:pointer;" onclick="window.switchApp('home')">← 回首頁</button>
+  <div class="h-container">
+    <div class="header">
+      <div class="header-deco"><div class="deco-line"></div><div class="deco-diamond"></div><div class="deco-line right"></div></div>
+      <h1>百戰成功圖</h1>
+      <div class="slogan">不怕千人拒絕，只怕自己妥協</div>
+      <p class="description">100次勇敢的開口，100次成長的洗禮。每一次被拒絕，都是為了篩選出真正對的人，為白金之路鋪墊基石。</p>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-num" id="h-checked-count">0</div><div class="stat-label">已戰次數</div></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><div class="stat-num" id="h-remain-count">100</div><div class="stat-label">剩餘挑戰</div></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><div class="stat-num" id="h-pct-count">0%</div><div class="stat-label">白金進度</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="h-progress-fill"></div></div>
+      <div class="progress-label"><span>起點</span><span>白金之路 100%</span></div>
+    </div>
+    <div class="grid-wrap">
+      <table class="grid"><tbody id="h-grid"></tbody></table>
+    </div>
+    <div class="complete-banner" id="h-complete-banner"><p>🏆 恭喜您完成 100 次挑戰！您已展現非凡的毅力，白金的榮耀屬於您！</p></div>
+    <div class="reset-btn"><button class="reset" onclick="window.hResetAll()">重新啟程</button></div>
+  </div>
+</div>
+
 <div id="ninety-view" class="app-view">
   <div class="n-topbar">
     <button class="n-back" onclick="window.switchApp('home')">← 回首頁</button>
@@ -484,6 +521,9 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input class="n-search" type="text" placeholder="搜尋客戶姓名…" oninput="window.nFilterCustomers(this.value)">
         </div>
+        <button class="n-btn-ghost" onclick="window.nExportAll()" style="font-size:13px; padding:9px 12px; border-radius:8px;">匯出全部</button>
+        <button class="n-btn-ghost" onclick="document.getElementById('n-import-all').click()" style="font-size:13px; padding:9px 12px; border-radius:8px;">匯入全部</button>
+        <input type="file" id="n-import-all" style="display:none" accept=".json" onchange="window.nImportAll(event)">
         <button class="n-btn-add" onclick="window.nOpenNew(0)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
           新增客戶
@@ -558,6 +598,10 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       </div>
       <div class="n-form-actions">
         <div class="n-fa-left" style="display:flex; gap:10px;">
+            <button class="n-btn n-btn-ghost" onclick="window.nExportSingle()" style="border: 1px solid #7c5cbf; color: #7c5cbf;">⬇ 匯出</button>
+            <button class="n-btn n-btn-ghost" onclick="document.getElementById('n-import-single').click()" style="border: 1px solid #7c5cbf; color: #7c5cbf;">⬆ 匯入</button>
+            <input type="file" id="n-import-single" style="display:none" accept=".json" onchange="window.nImportSingle(event)">
+            
             <button class="n-btn n-btn-ghost" style="border: 1px solid #1a5fb4; color: #1a5fb4;" onclick="window.nCopyCustomerData()">📋 複製資料</button>
             <button class="n-btn n-btn-danger" id="n-delete-btn" onclick="window.nDeleteCustomer()" style="display:none">刪除客戶</button>
         </div>
@@ -570,7 +614,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
 
 <div id="map-view" class="app-view">
     <div class="map-topbar">
-        <button class="n-back" onclick="window.switchApp('home')">← 回首頁</button>
+        <button class="n-back map-refresh-btn" onclick="window.switchApp('home')">← 回首頁</button>
         <span style="color: #fff; font-family: 'Noto Serif TC', serif; font-size: 0.95rem; font-weight: 700;">✦ 客戶跟進地圖</span>
         <button class="map-refresh-btn" onclick="window.initMap(true)">重新整理座標</button>
         <span id="map-status" style="color: #e8a045; margin-left: auto; font-size: 0.85rem;">等待載入...</span>
@@ -686,9 +730,11 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
     </div>
 
     <div class="page" id="page-mindmap">
-      <div class="mm-hint">點選節點 · 拖曳移動 · 點 ＋ 新增子節點 · 雙擊編輯文字</div>
-      <svg id="mm-svg"></svg>
-      <div id="mm-canvas"></div>
+      <div class="mm-hint">點選節點 · 拖曳移動 · 點 ＋ 新增子節點 · 雙擊編輯文字 (可拖拉背景平移畫布)</div>
+      <div id="mm-wrapper">
+          <svg id="mm-svg"></svg>
+          <div id="mm-canvas"></div>
+      </div>
       <div class="mm-toolbar">
         <button class="mm-btn" onclick="window.mmAddChildToSelected()">＋ 新增子節點</button>
         <button class="mm-btn" onclick="window.mmAutoLayout()">⟳ 自動排版</button>
@@ -809,22 +855,38 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
         if (modal) modal.classList.remove('show');
     };
 
-    window.switchApp = function(appId) {
-        // 隱藏所有頁面
+    // 整合 History API 的上一頁行為
+    window.switchApp = function(appId, skipHistory = false) {
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
         
-        // 顯示目標頁面
         const targetView = document.getElementById(appId + '-view');
         if (targetView) targetView.classList.add('active');
         
-        // 切換主頁面時，自動關閉所有浮動視窗
         window.closeReviewModal();
         document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
-        // 特殊頁面載入邏輯
-        if (appId === 'map' && typeof window.initMap === 'function') window.initMap();
+        if (appId === 'map' && typeof window.initMap === 'function') setTimeout(() => window.initMap(), 100);
         if (appId === 'review' && typeof window.reviewRenderTracker === 'function') window.reviewRenderTracker();
+
+        // 操作 history API
+        if (!skipHistory) {
+            history.pushState({ app: appId }, '', '?' + appId);
+        }
     };
+
+    // 監聽上一頁/下一頁事件
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.app) {
+            window.switchApp(e.state.app, true);
+        } else {
+            window.switchApp('home', true);
+        }
+    });
+
+    // 初始載入時設定第一個狀態
+    if(window.history.replaceState) {
+        window.history.replaceState({ app: 'home' }, '', window.location.href);
+    }
 
     window.gotoPage = function(name, btn) {
       document.querySelectorAll('#winplus-view .page').forEach(p => p.classList.remove('active'));
@@ -834,7 +896,6 @@ body { margin: 0; padding: 0; overflow-x: hidden; background: #f4f1ea; font-fami
       if (page) page.classList.add('active');
       if (btn) btn.classList.add('active');
       
-      // 頁籤切換時，自動關閉所有浮動視窗
       document.querySelectorAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
 
       if (name === 'mindmap' && typeof window.mmLoadState === 'function') window.mmLoadState(); 
@@ -1237,6 +1298,7 @@ window.initMap = async function(forceRefresh = false) {
             attribution: '© OpenStreetMap contributors'
         }).addTo(window.mapInstance);
     } else {
+        // 修正地圖無法載入：增加強制重繪，解決 display:none 切換問題
         window.mapInstance.invalidateSize();
     }
 
@@ -1309,7 +1371,7 @@ window.initMap = async function(forceRefresh = false) {
 })();
 
 /* ══════════════════════════════════════════
-   90天夥伴跟進系統 JS
+   90天夥伴跟進系統 JS 匯出/匯入實作
 ══════════════════════════════════════════ */
 ;(function() {
   const SERVICES = ['一對一 OPP','會場 OPP','與上手 DD 認識','參觀體驗館','營養評估','生命靈數','會自己訂貨','會用信用卡','營養早餐','健康管理'];
@@ -1326,6 +1388,17 @@ window.initMap = async function(forceRefresh = false) {
   let nCustomers = [];
   let nCurrentId = null;
   let nSearchQ   = '';
+
+  // 工具函式：觸發下載 JSON
+  function downloadJson(data, filename) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+  }
 
   function nSaveLocal() {
     localStorage.setItem('crm90_v3', JSON.stringify(nCustomers));
@@ -1395,15 +1468,8 @@ window.initMap = async function(forceRefresh = false) {
     nShowForm();
   };
 
-  window.nOpenEdit = function(id) {
-    const c = nCustomers.find(x => x.id === id);
-    if (!c) return;
-    nCurrentId = id;
-    document.getElementById('n-form-title').textContent = c.name || '客戶資料';
-    document.getElementById('n-delete-btn').style.display = 'block';
-    nSetStageToggle(c.stage||0);
-    nBuildFormUI(c);
-    
+  // 表單資料填寫共用函式
+  function nFillFormUI(c) {
     document.getElementById('nf-name').value    = c.name||'';
     document.getElementById('nf-type').value    = c.type||'經營者';
     document.getElementById('nf-date').value    = c.date||'';
@@ -1417,7 +1483,17 @@ window.initMap = async function(forceRefresh = false) {
     document.getElementById('nf-form-m').value = c.form_m || '';
     document.getElementById('nf-form-h').value = c.form_h || '';
     document.getElementById('nf-form-d').value = c.form_d || '';
+  }
 
+  window.nOpenEdit = function(id) {
+    const c = nCustomers.find(x => x.id === id);
+    if (!c) return;
+    nCurrentId = id;
+    document.getElementById('n-form-title').textContent = c.name || '客戶資料';
+    document.getElementById('n-delete-btn').style.display = 'block';
+    nSetStageToggle(c.stage||0);
+    nBuildFormUI(c);
+    nFillFormUI(c);
     nShowForm();
   };
 
@@ -1567,6 +1643,61 @@ window.initMap = async function(forceRefresh = false) {
     });
   };
 
+  /* 匯出匯入功能綁定 */
+  window.nExportAll = function() {
+      if(nCustomers.length === 0) return window.showWPToast('尚無客戶資料可匯出');
+      downloadJson(nCustomers, 'winplus_customers_all.json');
+  };
+
+  window.nExportSingle = function() {
+      if(!nCurrentId) return window.showWPToast('請先儲存客戶後再匯出');
+      const c = nCustomers.find(x => x.id === nCurrentId);
+      downloadJson(c, `winplus_customer_${c.name}.json`);
+  };
+
+  window.nImportAll = function(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+          try {
+              const data = JSON.parse(evt.target.result);
+              if(Array.isArray(data)) {
+                  if(confirm('匯入將覆蓋現有全部客戶資料，確定嗎？')) {
+                      window.nLoadCustomers(data);
+                      nSaveLocal();
+                      window.showWPToast('全部客戶匯入成功');
+                  }
+              } else {
+                  window.showWPToast('檔案格式錯誤，請選擇包含全部客戶的列表 JSON');
+              }
+          } catch(err) { window.showWPToast('檔案格式錯誤'); }
+          e.target.value = '';
+      };
+      reader.readAsText(file);
+  };
+
+  window.nImportSingle = function(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+          try {
+              const data = JSON.parse(evt.target.result);
+              if(data.name !== undefined) { 
+                  nBuildFormUI(data);
+                  nFillFormUI(data);
+                  nSetStageToggle(data.stage || 0);
+                  window.showWPToast('單筆客戶讀取成功，確認無誤後請點擊「儲存資料」');
+              } else {
+                  window.showWPToast('檔案格式錯誤，找不到客戶名稱');
+              }
+          } catch(err) { window.showWPToast('檔案格式錯誤'); }
+          e.target.value = '';
+      };
+      reader.readAsText(file);
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
     nInitData();
     window.nRenderList();
@@ -1611,7 +1742,7 @@ window.NotebookApp = {
 })();
 
 /* ══════════════════════════════════════════
-   組織網路圖 (Mind Map)
+   組織網路圖 (Mind Map) - 含畫布拖拉平移
 ══════════════════════════════════════════ */
 ;(function(){
 window.mmNodes = [];
@@ -1716,10 +1847,26 @@ window.mmRender = function() {
         let isDragging = false;
         el.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('mm-node-text') || e.target.tagName === 'BUTTON' || e.target.closest('.mm-node-link-btn') || e.target.closest('.mm-node-unlink-btn')) return;
+            e.stopPropagation(); // 阻止事件冒泡到畫布拖拉
             isDragging = true;
-            const startX = e.clientX - node.x; const startY = e.clientY - node.y;
-            function onMouseMove(ev) { if(!isDragging) return; node.x = ev.clientX - startX; node.y = ev.clientY - startY; el.style.left = node.x + 'px'; el.style.top = node.y + 'px'; window.mmDrawLines(); }
-            function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); window.mmSaveState(); }
+            const startX = e.clientX; 
+            const startY = e.clientY;
+            const startNodeX = node.x;
+            const startNodeY = node.y;
+            function onMouseMove(ev) { 
+                if(!isDragging) return; 
+                node.x = startNodeX + (ev.clientX - startX); 
+                node.y = startNodeY + (ev.clientY - startY); 
+                el.style.left = node.x + 'px'; 
+                el.style.top = node.y + 'px'; 
+                window.mmDrawLines(); 
+            }
+            function onMouseUp() { 
+                isDragging = false; 
+                document.removeEventListener('mousemove', onMouseMove); 
+                document.removeEventListener('mouseup', onMouseUp); 
+                window.mmSaveState(); 
+            }
             document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
         });
         canvas.appendChild(el);
@@ -1918,6 +2065,38 @@ window.mmSaveReparent = function() {
     }
 };
 
+// 實作背景畫布拖拉平移
+document.addEventListener('DOMContentLoaded', () => {
+    let mmPanX = 0, mmPanY = 0, isMmPanning = false;
+    const pageMm = document.getElementById('page-mindmap');
+    const mmWrapper = document.getElementById('mm-wrapper');
+    
+    if(pageMm && mmWrapper) {
+        pageMm.addEventListener('mousedown', (e) => {
+            if(e.target !== pageMm && e.target.id !== 'mm-wrapper' && e.target.id !== 'mm-svg') return;
+            isMmPanning = true;
+            const startX = e.clientX - mmPanX;
+            const startY = e.clientY - mmPanY;
+            pageMm.style.cursor = 'grabbing';
+            
+            function onMouseMove(ev) {
+                if(!isMmPanning) return;
+                mmPanX = ev.clientX - startX;
+                mmPanY = ev.clientY - startY;
+                mmWrapper.style.transform = `translate(${mmPanX}px, ${mmPanY}px)`;
+            }
+            function onMouseUp() {
+                isMmPanning = false;
+                pageMm.style.cursor = 'default';
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+});
+
 })();
 
 /* ══════════════════════════════════════════
@@ -1960,7 +2139,7 @@ window.collectAllData = function() {
   
   const hundredState = JSON.parse(localStorage.getItem('hundred_state') || '{}');
 
-  return { version:31, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
+  return { version:32, cells, fields, mindmap, notebook: window.NotebookApp.getAllNotes(), ninety90, reviewData, hundredState };
 };
 
 window.restoreAllData = function(data) {
