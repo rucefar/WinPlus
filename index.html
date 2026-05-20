@@ -506,6 +506,8 @@ body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
         <textarea id="log-life" rows="3" placeholder="今天採取了哪些行動？明天要怎麼調整進步？"></textarea>
         <label>2. 安麗目標行動：</label>
         <textarea id="log-amway" rows="3" placeholder="今天有做到哪些和安麗目標有關的？明天要怎麼優化？"></textarea>
+        <label>3. 目標與時間行動規劃省思 (事業、健康、時間)：</label>
+        <textarea id="log-reflection" rows="3" placeholder="今日時間分配是否合理？事業與健康的平衡狀況如何？有哪些規劃需要調整？"></textarea>
       </div>
       <div class="section">
         <h2>🙏 感恩與能量豐盛</h2>
@@ -752,14 +754,16 @@ window.reviewSaveGoals = () => { ['goal-health','goal-social','goal-family','goa
 window.reviewLoadLogByDate = () => {
   let d = document.getElementById('log-date').value; if(!d) return;
   let log = (JSON.parse(localStorage.getItem('richLogs'))||[]).find(i => i.date === d);
-  document.getElementById('log-life').value = log?.life||''; document.getElementById('log-amway').value = log?.amway||'';
+  document.getElementById('log-life').value = log?.life||''; 
+  document.getElementById('log-amway').value = log?.amway||'';
+  document.getElementById('log-reflection').value = log?.reflection||'';
   for(let i=1;i<=5;i++) document.getElementById(`gratitude-${i}`).value = log?.gratitude?.[i-1]||'';
 };
 window.reviewSaveLog = () => {
   let d = document.getElementById('log-date').value; if(!d) return window.showWPToast("請先選擇日期！");
   let g = [1,2,3,4,5].map(i=>document.getElementById(`gratitude-${i}`).value).filter(x=>x.trim()!=='');
-  let data = { date:d, life:document.getElementById('log-life').value, amway:document.getElementById('log-amway').value, gratitude:g };
-  if(!data.life && !data.amway && !g.length) return window.showWPToast("請至少填寫一點內容再打卡唷！");
+  let data = { date:d, life:document.getElementById('log-life').value, amway:document.getElementById('log-amway').value, reflection:document.getElementById('log-reflection').value, gratitude:g };
+  if(!data.life && !data.amway && !data.reflection && !g.length) return window.showWPToast("請至少填寫一點內容再打卡唷！");
   let hist = JSON.parse(localStorage.getItem('richLogs'))||[]; let idx = hist.findIndex(i=>i.date===d);
   if(idx>-1) hist[idx]=data; else hist.push(data);
   localStorage.setItem('richLogs', JSON.stringify(hist)); if(window.triggerCloudSave) window.triggerCloudSave();
@@ -792,7 +796,7 @@ window.reviewRenderTracker = () => {
 window.reviewViewRecord = dStr => {
     let log = (JSON.parse(localStorage.getItem('richLogs'))||[]).find(l=>l.date===dStr); if(!log) return window.showWPToast(`${dStr} 沒有紀錄`);
     document.getElementById('rr-title').textContent = `📅 ${dStr} 複盤紀錄`;
-    let h = `<strong>💡 人生方向行動：</strong>\n${window.nbEscape(log.life)||'無'}\n\n<strong>🎯 安麗目標行動：</strong>\n${window.nbEscape(log.amway)||'無'}\n\n<strong>🙏 感恩事項：</strong>\n`;
+    let h = `<strong>💡 人生方向行動：</strong>\n${window.nbEscape(log.life)||'無'}\n\n<strong>🎯 安麗目標行動：</strong>\n${window.nbEscape(log.amway)||'無'}\n\n<strong>🧠 目標與時間省思：</strong>\n${window.nbEscape(log.reflection)||'無'}\n\n<strong>🙏 感恩事項：</strong>\n`;
     if(log.gratitude?.length) log.gratitude.forEach((g,i)=>h+=`${i+1}. ${window.nbEscape(g)}\n`); else h+=`無\n`;
     document.getElementById('rr-content').innerHTML = h; document.getElementById('review-record-modal').classList.add('show');
 };
@@ -800,13 +804,13 @@ const copyToast = () => { let m=document.getElementById('export-msg'); m.textCon
 window.reviewExportToday = () => {
     let d = document.getElementById('log-date').value, log = (JSON.parse(localStorage.getItem('richLogs'))||[]).find(l=>l.date===d);
     if(!log) return window.showWPToast("無紀錄！");
-    navigator.clipboard.writeText(`【日期：${log.date}】\n- 人生：${log.life||'無'}\n- 目標：${log.amway||'無'}\n- 感恩：${log.gratitude.join('、')||'無'}\n`).then(copyToast);
+    navigator.clipboard.writeText(`【日期：${log.date}】\n- 人生：${log.life||'無'}\n- 目標：${log.amway||'無'}\n- 省思：${log.reflection||'無'}\n- 感恩：${log.gratitude.join('、')||'無'}\n`).then(copyToast);
 };
 window.reviewExportData = days => {
   let list = (JSON.parse(localStorage.getItem('richLogs'))||[]).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,days);
   if(!list.length) return window.showWPToast("無紀錄！");
   let t = `分析我近${days}天的「WinPlus+ 邁向目標複盤紀錄」：\n\n`;
-  list.forEach(l=>t+=`【日期：${l.date}】\n- 人生：${l.life||'無'}\n- 目標：${l.amway||'無'}\n- 感恩：${l.gratitude.join('、')||'無'}\n\n`);
+  list.forEach(l=>t+=`【日期：${l.date}】\n- 人生：${l.life||'無'}\n- 目標：${l.amway||'無'}\n- 省思：${l.reflection||'無'}\n- 感恩：${l.gratitude.join('、')||'無'}\n\n`);
   navigator.clipboard.writeText(t).then(copyToast);
 };
 window.reviewTimerInterval = null;
@@ -977,10 +981,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let px=0, py=0, p=false, pm=document.getElementById('page-mindmap'), w=document.getElementById('mm-wrapper'), sx=0, sy=0;
     if(pm&&w){
         const down=e=>{
-    // 在這裡補上 &&e.target.id!=='mm-canvas'
     if(e.target!==pm&&e.target.id!=='mm-wrapper'&&e.target.id!=='mm-svg'&&e.target.id!=='mm-canvas')return;
     p=true; let cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY;
-    sx=cx-px; sy=cy-py; pm.style.cursor='grabbing';
+    sx=cx-px; sy=cy-sy; pm.style.cursor='grabbing';
 };
         const move=e=>{
             if(!p)return;
