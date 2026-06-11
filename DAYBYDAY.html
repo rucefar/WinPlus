@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日復盤・一分鐘版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #12172a;
+  --surface: #1d2540;
+  --surface2: #252d4a;
+  --card: #f5f0e6;
+  --card-alt: #ede8dc;
+  --ink: #1a1f36;
+  --ink-soft: #3d4468;
+  --jade: #6db394;
+  --amber: #e8a030;
+  --amber-light: #f5c870;
+  --lavender: #9b92cc;
+  --red-soft: #d46b6b;
+  --gold: #c9a84c;
+  --muted: #8a8ea8;
+  --serif: 'Noto Serif TC', serif;
+  --sans: 'Noto Sans TC', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--card);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 4rem;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 38% 7%,  rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 63% 14%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 28%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 58%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 68%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 53% 82%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 8%  87%, rgba(255,255,255,0.25) 0%, transparent 100%);
+  pointer-events: none; z-index: 0;
+}
+
+.wrap { width: 100%; max-width: 640px; position: relative; z-index: 1; }
+
+/* ── Header ── */
+.header { text-align: center; margin-bottom: 1.8rem; }
+.header-date {
+  font-weight: 300; font-size: 0.8rem;
+  letter-spacing: 0.15em; color: var(--muted); margin-bottom: 0.6rem;
+}
+.header h1 {
+  font-family: var(--serif); font-size: 1.7rem; font-weight: 700;
+  color: var(--card); line-height: 1.3; letter-spacing: 0.05em;
+}
+.header-sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; letter-spacing: 0.05em; }
+
+/* ── Identity anchor ── */
+.identity-bar {
+  background: linear-gradient(135deg, #1e2640 0%, #252d4a 100%);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.identity-bar:hover {
+  border-color: rgba(201,168,76,0.6);
+  box-shadow: 0 0 20px rgba(201,168,76,0.1);
+}
+.identity-icon {
+  font-size: 1.3rem; line-height: 1; flex-shrink: 0;
+}
+.identity-content { flex: 1; min-width: 0; }
+.identity-label {
+  font-size: 0.68rem; color: var(--gold);
+  letter-spacing: 0.12em; margin-bottom: 0.2rem;
+  text-transform: uppercase;
+}
+.identity-text {
+  font-family: var(--serif); font-size: 0.95rem;
+  font-weight: 600; color: var(--card);
+  line-height: 1.4; letter-spacing: 0.02em;
+}
+.identity-text em {
+  font-style: normal;
+  color: var(--amber-light);
+}
+.identity-edit-hint {
+  font-size: 0.65rem; color: var(--muted);
+  flex-shrink: 0; white-space: nowrap;
+}
+.identity-review-badge {
+  position: absolute; top: -8px; right: 10px;
+  background: var(--red-soft); color: #fff;
+  font-size: 0.62rem; padding: 2px 8px;
+  border-radius: 10px; letter-spacing: 0.05em;
+  display: none;
+}
+.identity-review-badge.show { display: block; }
+
+/* ── Streak card ── */
+.streak-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 1rem 1.2rem 1.1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.streak-top {
+  display: flex; align-items: center;
+  gap: 0.7rem; margin-bottom: 0.9rem;
+}
+.streak-flame { font-size: 1.4rem; line-height: 1; }
+.streak-info { flex: 1; }
+.streak-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; }
+.streak-count {
+  font-family: var(--serif); font-size: 1.1rem;
+  font-weight: 600; color: var(--amber-light);
+}
+.streak-month-label {
+  font-size: 0.7rem; color: var(--muted);
+  letter-spacing: 0.1em; text-align: right; margin-bottom: 0.5rem;
+}
+.streak-grid {
+  display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px;
+}
+.s-cell {
+  aspect-ratio: 1; border-radius: 5px;
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; color: rgba(255,255,255,0.25);
+  transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+  cursor: default;
+}
+.s-cell.filled {
+  background: var(--amber); color: #fff; font-size: 0.6rem;
+  box-shadow: 0 0 6px rgba(232,160,48,0.45);
+}
+.s-cell.today-cell { outline: 2px solid var(--jade); outline-offset: 1px; }
+.s-cell.filled.today-cell {
+  background: var(--jade);
+  box-shadow: 0 0 8px rgba(109,179,148,0.5);
+}
+
+/* ── Section cards ── */
+.section {
+  background: var(--card); border-radius: 16px;
+  padding: 1.5rem; margin-bottom: 1.1rem;
+  color: var(--ink); transition: box-shadow 0.3s;
+}
+.section:focus-within {
+  box-shadow: 0 0 0 2px var(--jade), 0 8px 32px rgba(0,0,0,0.25);
+}
+.section-label {
+  display: flex; align-items: center;
+  gap: 0.5rem; margin-bottom: 0.25rem;
+}
+.section-num {
+  width: 22px; height: 22px; background: var(--ink); color: var(--card);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 600; font-family: var(--sans); flex-shrink: 0;
+}
+.section-title {
+  font-family: var(--serif); font-size: 1rem;
+  font-weight: 700; color: var(--ink); letter-spacing: 0.02em;
+}
+.section-hint {
+  font-size: 0.76rem; color: var(--ink-soft);
+  margin-bottom: 1rem; padding-left: 30px; line-height: 1.65;
+}
+/* identity-tinted hint */
+.section-hint .anchor-phrase {
+  color: #7a5c10; font-style: italic; font-weight: 500;
+}
+.section[data-type="highlight"] .section-num { background: var(--jade); }
+.section[data-type="snag"]      .section-num { background: var(--red-soft); }
+.section[data-type="tomorrow"]  .section-num { background: var(--lavender); }
+
+/* ── Energy ── */
+.energy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.energy-btn {
+  border: 2px solid transparent; background: var(--card-alt);
+  border-radius: 12px; padding: 0.8rem 0.7rem;
+  cursor: pointer; display: flex; align-items: center;
+  gap: 0.6rem; transition: all 0.2s;
+  font-family: var(--sans); color: var(--ink); text-align: left;
+}
+.energy-btn:hover { background: #e8e3d5; transform: translateY(-1px); }
+.energy-btn.selected {
+  border-color: var(--ink); background: var(--ink); color: var(--card);
+  transform: translateY(-2px); box-shadow: 0 4px 16px rgba(26,31,54,0.3);
+}
+.energy-btn .e-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
+.energy-btn .e-text { font-size: 0.8rem; line-height: 1.4; font-weight: 400; }
+.energy-btn .e-text strong { display: block; font-weight: 600; font-size: 0.85rem; }
+
+/* ── Textarea ── */
+.field-wrap { position: relative; }
+.field-wrap textarea {
+  width: 100%; background: var(--card-alt);
+  border: 2px solid transparent; border-radius: 10px;
+  padding: 0.85rem 1rem; font-family: var(--sans);
+  font-size: 0.88rem; color: var(--ink); resize: none;
+  line-height: 1.7; transition: border-color 0.2s, background 0.2s;
+  outline: none; min-height: 68px;
+}
+.field-wrap textarea:focus { border-color: var(--jade); background: #f0ebe0; }
+.field-wrap textarea::placeholder { color: #aaa8a0; font-style: italic; }
+.char-count {
+  position: absolute; bottom: 8px; right: 12px;
+  font-size: 0.68rem; color: #bbb; pointer-events: none;
+}
+
+/* ── Button row ── */
+.btn-row { display: flex; gap: 0.7rem; margin-top: 0.5rem; }
+.submit-btn {
+  flex: 1; background: var(--jade); color: white; border: none;
+  border-radius: 14px; padding: 1rem;
+  font-family: var(--serif); font-size: 1rem; font-weight: 600;
+  letter-spacing: 0.08em; cursor: pointer; transition: all 0.25s;
+}
+.submit-btn:hover {
+  background: #5da882; transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(109,179,148,0.4);
+}
+.submit-btn:active { transform: translateY(0); }
+.submit-btn.done { background: var(--amber); cursor: default; }
+.submit-btn:disabled { opacity: 0.85; }
+.pdf-btn {
+  background: var(--surface); color: rgba(245,240,230,0.8);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px; padding: 1rem 1.2rem;
+  font-family: var(--sans); font-size: 0.82rem;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.pdf-btn:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.25); transform: translateY(-1px);
+}
+
+/* ── Identity setup modal ── */
+.modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(8,12,28,0.92); z-index: 200;
+  align-items: center; justify-content: center; padding: 1.5rem;
+}
+.modal-bg.show { display: flex; animation: fadeIn 0.3s ease; }
+.modal {
+  background: var(--surface2); border-radius: 20px;
+  padding: 2rem; width: 100%; max-width: 440px;
+  border: 1px solid rgba(201,168,76,0.25);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  animation: slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.modal-icon { font-size: 2rem; text-align: center; margin-bottom: 0.8rem; }
+.modal h2 {
+  font-family: var(--serif); font-size: 1.25rem; font-weight: 700;
+  color: var(--card); text-align: center; margin-bottom: 0.5rem;
+}
+.modal-desc {
+  font-size: 0.8rem; color: var(--muted);
+  text-align: center; line-height: 1.8; margin-bottom: 1.5rem;
+}
+.modal-desc strong { color: var(--amber-light); font-weight: 500; }
+.identity-input-wrap {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 1rem 1.1rem;
+  margin-bottom: 1.2rem;
+}
+.identity-prefix {
+  font-family: var(--serif); font-size: 0.9rem;
+  color: var(--muted); margin-bottom: 0.5rem;
+}
+.identity-input {
+  width: 100%; background: transparent; border: none;
+  font-family: var(--serif); font-size: 1.1rem; font-weight: 600;
+  color: var(--amber-light); outline: none; letter-spacing: 0.02em;
+  caret-color: var(--jade);
+}
+.identity-input::placeholder { color: rgba(245,240,230,0.2); font-style: italic; }
+.identity-suffix {
+  font-family: var(--serif); font-size: 0.9rem;
+  color: var(--muted); margin-top: 0.5rem;
+}
+.modal-example {
+  font-size: 0.72rem; color: var(--muted);
+  margin-bottom: 1.5rem; line-height: 2;
+  padding: 0 0.2rem;
+}
+.modal-example span {
+  display: inline-block; background: rgba(255,255,255,0.06);
+  border-radius: 6px; padding: 2px 8px; margin: 2px 3px;
+  cursor: pointer; transition: background 0.15s;
+  font-size: 0.75rem;
+}
+.modal-example span:hover { background: rgba(201,168,76,0.2); color: var(--amber-light); }
+.modal-confirm {
+  width: 100%; background: var(--gold); color: var(--ink);
+  border: none; border-radius: 12px; padding: 0.9rem;
+  font-family: var(--serif); font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em;
+}
+.modal-confirm:hover {
+  background: var(--amber-light); transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201,168,76,0.35);
+}
+.modal-skip {
+  display: block; text-align: center; margin-top: 0.8rem;
+  font-size: 0.75rem; color: var(--muted); cursor: pointer;
+  transition: color 0.2s;
+}
+.modal-skip:hover { color: var(--card); }
+
+/* ── Success overlay ── */
+.success-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(12,16,36,0.93); z-index: 100;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 1.2rem;
+  text-align: center; padding: 2rem;
+}
+.success-overlay.show { display: flex; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.success-ring {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: var(--jade); display: flex; align-items: center;
+  justify-content: center; font-size: 2.2rem;
+  animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 40px rgba(109,179,148,0.5);
+}
+@keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: var(--card); }
+.success-identity-line {
+  font-family: var(--serif); font-size: 0.9rem;
+  color: var(--amber-light); font-style: italic;
+  max-width: 320px; line-height: 1.6;
+}
+.success-msg { font-size: 0.82rem; color: var(--muted); max-width: 300px; line-height: 1.8; }
+.success-summary {
+  background: var(--surface); border-radius: 14px;
+  padding: 1.1rem 1.4rem; width: 100%; max-width: 360px;
+  text-align: left; border: 1px solid rgba(255,255,255,0.07);
+}
+.sum-row {
+  display: flex; gap: 0.6rem; align-items: flex-start;
+  padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.8rem; color: rgba(245,240,230,0.8); line-height: 1.5;
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-label { color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+.close-btn {
+  background: transparent; border: 2px solid rgba(255,255,255,0.2);
+  color: var(--card); border-radius: 10px; padding: 0.7rem 2rem;
+  font-family: var(--sans); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.close-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+
+/* ── Print / PDF ── */
+@media print {
+  body { background: #fff !important; color: #1a1f36 !important; padding: 1cm 1.5cm; }
+  body::before { display: none; }
+  .identity-bar {
+    background: #f5f0e6 !important; border: 1px solid #c9a84c !important;
+    box-shadow: none !important;
+  }
+  .identity-label { color: #8a6a1a !important; }
+  .identity-text { color: #1a1f36 !important; }
+  .identity-text em { color: #8a6a1a !important; }
+  .identity-edit-hint, .identity-review-badge { display: none !important; }
+  .streak-card { background: #f5f0e6 !important; border: 1px solid #ddd; }
+  .s-cell { background: #eee !important; color: #999 !important; }
+  .s-cell.filled { background: #e8a030 !important; color: #fff !important; }
+  .s-cell.filled.today-cell { background: #6db394 !important; }
+  .section { background: #f5f0e6 !important; border: 1px solid #ddd; page-break-inside: avoid; }
+  .section:focus-within { box-shadow: none; }
+  .field-wrap textarea { background: #ede8dc !important; border: 1px solid #ccc !important; }
+  .btn-row, .success-overlay, .modal-bg { display: none !important; }
+  .energy-btn { border: 1px solid #ccc !important; }
+  .energy-btn.selected { background: #1a1f36 !important; color: #f5f0e6 !important; border-color: #1a1f36 !important; }
+  .streak-count { color: #c07a10 !important; }
+  .streak-label, .header-date, .header-sub, .streak-month-label { color: #666 !important; }
+  .section-hint { color: #555 !important; }
+  .section-hint .anchor-phrase { color: #7a5c10 !important; }
+  @page { margin: 1.5cm; size: A4; }
+}
+
+@media (max-width: 480px) {
+  .energy-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.4rem; }
+  .streak-grid { grid-template-columns: repeat(10, 1fr); gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="header">
+    <div class="header-date" id="dateLabel"></div>
+    <h1>每日復盤</h1>
+    <div class="header-sub">一分鐘・一句話・一點微光</div>
+  </header>
+
+  <!-- Identity anchor bar -->
+  <div class="identity-bar" onclick="openIdentityModal(false)" id="identityBar">
+    <div class="identity-review-badge" id="reviewBadge">每月重審</div>
+    <div class="identity-icon">🪞</div>
+    <div class="identity-content">
+      <div class="identity-label">我的身分錨</div>
+      <div class="identity-text" id="identityDisplay">尚未設定身分宣言</div>
+    </div>
+    <div class="identity-edit-hint">編輯 ›</div>
+  </div>
+
+  <!-- 30-day streak -->
+  <div class="streak-card">
+    <div class="streak-top">
+      <div class="streak-flame">🔥</div>
+      <div class="streak-info">
+        <div class="streak-label">連續紀錄</div>
+        <div class="streak-count" id="streakCount">載入中…</div>
+      </div>
+    </div>
+    <div class="streak-month-label" id="streakMonthLabel"></div>
+    <div class="streak-grid" id="streakGrid"></div>
+  </div>
+
+  <!-- 1. Energy -->
+  <div class="section" data-type="energy">
+    <div class="section-label">
+      <div class="section-num">1</div>
+      <div class="section-title">能量羅盤</div>
+    </div>
+    <div class="section-hint">今天整體的能量與專注度狀態如何？</div>
+    <div class="energy-grid">
+      <button class="energy-btn" data-value="excellent" onclick="selectEnergy(this)">
+        <span class="e-icon">🌟</span>
+        <span class="e-text"><strong>狀態極佳</strong>充滿幹勁，執行力滿分</span>
+      </button>
+      <button class="energy-btn" data-value="stable" onclick="selectEnergy(this)">
+        <span class="e-icon">🟢</span>
+        <span class="e-text"><strong>平穩安定</strong>順利完成預定任務</span>
+      </button>
+      <button class="energy-btn" data-value="stuck" onclick="selectEnergy(this)">
+        <span class="e-icon">🟡</span>
+        <span class="e-text"><strong>稍微卡關</strong>遇到干擾或有些拖延</span>
+      </button>
+      <button class="energy-btn" data-value="low" onclick="selectEnergy(this)">
+        <span class="e-icon">🔴</span>
+        <span class="e-text"><strong>能量低谷</strong>疲憊心不在焉，需要休息</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. Highlight -->
+  <div class="section" data-type="highlight">
+    <div class="section-label">
+      <div class="section-num">2</div>
+      <div class="section-title">亮點捕手</div>
+    </div>
+    <div class="section-hint" id="highlightHint">今天哪個行為，讓你覺得自己<span class="anchor-phrase">活得像那個人</span>？</div>
+    <div class="field-wrap">
+      <textarea id="highlight" placeholder="例：專注工作了兩小時，沒有滑手機。" maxlength="80" rows="2" oninput="updateCount(this,'hc')"></textarea>
+      <span class="char-count"><span id="hc">0</span>/80</span>
+    </div>
+  </div>
+
+  <!-- 3. Snag -->
+  <div class="section" data-type="snag">
+    <div class="section-label">
+      <div class="section-num">3</div>
+      <div class="section-title">系統抓漏</div>
+    </div>
+    <div class="section-hint" id="snagHint">今天哪個時刻，你的行為<span class="anchor-phrase">背離了那個人</span>的樣子？</div>
+    <div class="field-wrap">
+      <textarea id="snag" placeholder="例：下午焦慮時滑了一小時社群，逃避了。" maxlength="80" rows="2" oninput="updateCount(this,'sc')"></textarea>
+      <span class="char-count"><span id="sc">0</span>/80</span>
+    </div>
+  </div>
+
+  <!-- 4. Tomorrow -->
+  <div class="section" data-type="tomorrow">
+    <div class="section-label">
+      <div class="section-num">4</div>
+      <div class="section-title">明日微調</div>
+    </div>
+    <div class="section-hint" id="tomorrowHint">明天，<span class="anchor-phrase">那個人</span>會先做的一件小事是什麼？</div>
+    <div class="field-wrap">
+      <textarea id="tomorrow" placeholder="例：開工前先把手機放進抽屜，再開電腦。" maxlength="80" rows="2" oninput="updateCount(this,'tc')"></textarea>
+      <span class="char-count"><span id="tc">0</span>/80</span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">完成今日復盤 ✓</button>
+    <button class="pdf-btn" onclick="window.print()" title="儲存為 PDF">📄 存成 PDF</button>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- Identity setup modal -->
+<div class="modal-bg" id="identityModal">
+  <div class="modal">
+    <div class="modal-icon">🪞</div>
+    <h2>設定你的身分錨</h2>
+    <div class="modal-desc">
+      這句話會靜靜守在表單頂端，<br>
+      每次復盤都提醒你：<strong>你正在成為誰</strong>。
+    </div>
+    <div class="identity-input-wrap">
+      <div class="identity-prefix">我是一個</div>
+      <input class="identity-input" id="identityInput"
+        type="text" maxlength="30"
+        placeholder="持續學習、對自己誠實的人"
+        autocomplete="off" />
+      <div class="identity-suffix">的人。</div>
+    </div>
+    <div class="modal-example">
+      點擊範例快速填入 →
+      <span onclick="fillExample('有紀律、持續行動')">有紀律、持續行動</span>
+      <span onclick="fillExample('專注當下、不焦慮')">專注當下、不焦慮</span>
+      <span onclick="fillExample('對自己誠實、願意成長')">對自己誠實、願意成長</span>
+      <span onclick="fillExample('創造價值、活得清醒')">創造價值、活得清醒</span>
+    </div>
+    <button class="modal-confirm" onclick="saveIdentity()">確認，這就是我 ✓</button>
+    <span class="modal-skip" onclick="skipIdentity()">先略過，之後再設定</span>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-ring">✓</div>
+  <div class="success-title">今日復盤完成！</div>
+  <div class="success-identity-line" id="successIdentityLine"></div>
+  <div class="success-msg" id="successMsg">給自己一個擊掌 👏</div>
+  <div class="success-summary" id="summaryBox"></div>
+  <button class="close-btn" onclick="closeSuccess()">關閉 · 明天見</button>
+</div>
+
+<script>
+// ── Storage ─────────────────────────────────────────────────────────
+const DATA_KEY     = 'daily_review_v1';
+const IDENTITY_KEY = 'daily_review_identity';
+
+function loadData()     { try { return JSON.parse(localStorage.getItem(DATA_KEY))     || {}; } catch { return {}; } }
+function saveData(d)    { try { localStorage.setItem(DATA_KEY, JSON.stringify(d)); }     catch {} }
+function loadIdentity() { try { return JSON.parse(localStorage.getItem(IDENTITY_KEY)) || {}; } catch { return {}; } }
+function saveIdentity_store(obj) { try { localStorage.setItem(IDENTITY_KEY, JSON.stringify(obj)); } catch {} }
+
+// ── Date ────────────────────────────────────────────────────────────
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function todayKey() { return dateKey(new Date()); }
+function formatDate() {
+  const d = new Date();
+  const wd = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  return `${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日　${wd[d.getDay()]}`;
+}
+document.getElementById('dateLabel').textContent = formatDate();
+
+// ── Identity anchor ─────────────────────────────────────────────────
+function renderIdentity() {
+  const id = loadIdentity();
+  const display = document.getElementById('identityDisplay');
+  const badge   = document.getElementById('reviewBadge');
+
+  if (id.text) {
+    display.innerHTML = `我是一個 <em>${escHtml(id.text)}</em> 的人。`;
+    // Check if 30 days since last set
+    if (id.setAt) {
+      const daysSince = (Date.now() - id.setAt) / (1000 * 60 * 60 * 24);
+      if (daysSince >= 30) badge.classList.add('show');
+      else badge.classList.remove('show');
+    }
+    // Update question hints with identity text
+    updateHints(id.text);
+  } else {
+    display.textContent = '點此設定你的身分宣言 →';
+  }
+}
+
+function updateHints(idText) {
+  const short = idText.length > 10 ? idText.slice(0, 10) + '…' : idText;
+  document.getElementById('highlightHint').innerHTML =
+    `今天哪個行為，讓你覺得自己<span class="anchor-phrase">活得像「${escHtml(short)}的人」</span>？`;
+  document.getElementById('snagHint').innerHTML =
+    `今天哪個時刻，你的行為<span class="anchor-phrase">背離了「${escHtml(short)}的人」</span>的樣子？`;
+  document.getElementById('tomorrowHint').innerHTML =
+    `明天，<span class="anchor-phrase">「${escHtml(short)}的人」</span>會先做的一件小事是什麼？`;
+}
+
+function openIdentityModal(isFirst) {
+  const id = loadIdentity();
+  if (id.text) document.getElementById('identityInput').value = id.text;
+  document.getElementById('identityModal').classList.add('show');
+  setTimeout(() => document.getElementById('identityInput').focus(), 350);
+}
+
+function saveIdentity() {
+  const val = document.getElementById('identityInput').value.trim();
+  if (!val) { document.getElementById('identityInput').focus(); return; }
+  saveIdentity_store({ text: val, setAt: Date.now() });
+  document.getElementById('identityModal').classList.remove('show');
+  renderIdentity();
+}
+
+function skipIdentity() {
+  document.getElementById('identityModal').classList.remove('show');
+}
+
+function fillExample(text) {
+  document.getElementById('identityInput').value = text;
+  document.getElementById('identityInput').focus();
+}
+
+// Enter to confirm
+document.getElementById('identityInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveIdentity();
+});
+
+// ── Streak ──────────────────────────────────────────────────────────
+function calcStreak(data) {
+  const today = new Date(); let streak = 0;
+  for (let i = 0; i < 90; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    if (data[dateKey(d)]?.done) streak++;
+    else break;
+  }
+  return streak;
+}
+
+const energyEmoji = { excellent:'🌟', stable:'🟢', stuck:'🟡', low:'🔴' };
+
+function renderStreak() {
+  const data = loadData();
+  const streak = calcStreak(data);
+  document.getElementById('streakCount').textContent =
+    streak === 0 ? '尚未開始' : `連續 ${streak} 天`;
+
+  const today = new Date();
+  const start = new Date(today); start.setDate(start.getDate() - 29);
+  const sm = start.getMonth()+1, em = today.getMonth()+1;
+  document.getElementById('streakMonthLabel').textContent =
+    sm === em
+      ? `${today.getFullYear()} 年 ${sm} 月`
+      : `${start.getFullYear()} 年 ${sm} 月 ─ ${em} 月`;
+
+  const grid = document.getElementById('streakGrid');
+  grid.innerHTML = '';
+  const todayK = todayKey();
+
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const k = dateKey(d); const entry = data[k];
+    const cell = document.createElement('div');
+    cell.className = 's-cell' + (entry?.done ? ' filled' : '') + (k === todayK ? ' today-cell' : '');
+    cell.textContent = (entry?.done && entry.energy) ? (energyEmoji[entry.energy] || '✓') : d.getDate();
+    cell.title = `${d.getMonth()+1}/${d.getDate()}` + (entry?.done ? `\n${entry.highlight || ''}` : '');
+    grid.appendChild(cell);
+  }
+}
+
+// ── Energy ──────────────────────────────────────────────────────────
+let selectedEnergy = null;
+function selectEnergy(btn) {
+  document.querySelectorAll('.energy-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedEnergy = btn.dataset.value;
+}
+
+function updateCount(el, id) {
+  document.getElementById(id).textContent = el.value.length;
+}
+
+// ── Submit ───────────────────────────────────────────────────────────
+const energyLabels = {
+  excellent:'🌟 狀態極佳', stable:'🟢 平穩安定',
+  stuck:'🟡 稍微卡關',    low:'🔴 能量低谷'
+};
+
+function submitForm() {
+  if (!selectedEnergy) { alert('請先選擇今天的能量狀態 🙏'); return; }
+  const highlight = document.getElementById('highlight').value.trim();
+  const snag      = document.getElementById('snag').value.trim();
+  const tomorrow  = document.getElementById('tomorrow').value.trim();
+
+  const data = loadData();
+  data[todayKey()] = { done:true, energy:selectedEnergy, highlight, snag, tomorrow, ts:Date.now() };
+  saveData(data);
+
+  // Summary
+  document.getElementById('summaryBox').innerHTML = `
+    <div class="sum-row"><span class="sum-label">能量</span><span>${energyLabels[selectedEnergy]}</span></div>
+    ${highlight ? `<div class="sum-row"><span class="sum-label">亮點</span><span>${escHtml(highlight)}</span></div>` : ''}
+    ${snag      ? `<div class="sum-row"><span class="sum-label">卡點</span><span>${escHtml(snag)}</span></div>` : ''}
+    ${tomorrow  ? `<div class="sum-row"><span class="sum-label">明日</span><span>${escHtml(tomorrow)}</span></div>` : ''}
+  `;
+
+  // Identity line in success screen
+  const id = loadIdentity();
+  const idLine = document.getElementById('successIdentityLine');
+  if (id.text) {
+    idLine.textContent = `每一天都是投票：「我是一個 ${id.text} 的人。」`;
+    idLine.style.display = '';
+  } else {
+    idLine.style.display = 'none';
+  }
+
+  // Streak message
+  const streak = calcStreak(data);
+  const msgEl = document.getElementById('successMsg');
+  if (streak >= 30)      msgEl.innerHTML = `🏆 連續 ${streak} 天！習慣已經是你的一部分了。`;
+  else if (streak >= 7)  msgEl.innerHTML = `🔥 連續 ${streak} 天，你正在建立一個真正的習慣。`;
+  else if (streak >= 3)  msgEl.innerHTML = `🌱 連續 ${streak} 天，繼續保持這份動力！`;
+  else                   msgEl.innerHTML = `給自己一個擊掌 👏`;
+
+  document.getElementById('successOverlay').classList.add('show');
+  renderStreak();
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '今日已完成 ✓';
+  btn.classList.add('done');
+  btn.disabled = true;
+}
+
+function closeSuccess() {
+  document.getElementById('successOverlay').classList.remove('show');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Init ────────────────────────────────────────────────────────────
+(function init() {
+  const id = loadIdentity();
+
+  // Show identity setup modal on first visit
+  if (!id.text && !id.skipped) {
+    setTimeout(() => openIdentityModal(true), 600);
+  }
+
+  renderIdentity();
+  renderStreak();
+
+  // Pre-fill today if already done
+  const data  = loadData();
+  const entry = data[todayKey()];
+  if (!entry?.done) return;
+
+  if (entry.energy) {
+    const btn = document.querySelector(`.energy-btn[data-value="${entry.energy}"]`);
+    if (btn) { btn.classList.add('selected'); selectedEnergy = entry.energy; }
+  }
+  ['highlight','snag','tomorrow'].forEach(id => {
+    if (entry[id]) {
+      document.getElementById(id).value = entry[id];
+      document.getElementById({highlight:'hc',snag:'sc',tomorrow:'tc'}[id]).textContent = entry[id].length;
+    }
+  });
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '今日已完成 ✓';
+  btn.classList.add('done');
+  btn.disabled = true;
+})();
+
+// Handle skip with memory
+document.querySelector('.modal-skip').addEventListener('click', function() {
+  const id = loadIdentity();
+  saveIdentity_store({ ...id, skipped: true });
+  skipIdentity();
+});
+</script>
+</body>
+</html>

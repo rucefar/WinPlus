@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>41 讀書法｜實踐表單</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Noto+Sans+TC:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5f0e8;
+    --warm-white: #faf8f3;
+    --gold: #c8962a;
+    --gold-light: #e8c76a;
+    --rust: #b5441a;
+    --sage: #5c7a5a;
+    --mist: #8a9aa8;
+    --line: #d4c9b0;
+    --shadow: rgba(26,18,8,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: relative;
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    border-bottom: 2px solid var(--line);
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '閱';
+    position: absolute;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18rem;
+    font-weight: 900;
+    color: rgba(200,150,42,0.05);
+    top: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .header-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 0.3rem 1rem;
+    margin-bottom: 1.2rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+  }
+
+  header h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  header h1 span {
+    color: var(--gold);
+  }
+
+  .header-subtitle {
+    font-size: 0.9rem;
+    color: var(--mist);
+    letter-spacing: 0.15em;
+    margin-top: 0.8rem;
+    font-weight: 300;
+  }
+
+  /* ─── MAIN LAYOUT ─── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ─── PHASE LABELS ─── */
+  .phase-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2.5rem 0 1.2rem;
+  }
+
+  .phase-label::before, .phase-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .phase-text {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    color: var(--mist);
+    font-weight: 400;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 1.8rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 24px var(--shadow);
+    transform: translateY(-1px);
+  }
+
+  .card-accent {
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    border-radius: 2px 0 0 2px;
+  }
+
+  .accent-gold { background: var(--gold); }
+  .accent-rust { background: var(--rust); }
+  .accent-sage { background: var(--sage); }
+  .accent-mist { background: var(--mist); }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .card-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .card-guide {
+    font-size: 0.8rem;
+    color: var(--mist);
+    margin-top: 0.3rem;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* ─── INPUTS ─── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  @media (max-width: 600px) {
+    .field-row { grid-template-columns: 1fr; }
+  }
+
+  .field {
+    position: relative;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    font-weight: 400;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    padding: 0.5rem 0;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s ease;
+    resize: none;
+    line-height: 1.6;
+  }
+
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  textarea:focus {
+    border-color: var(--gold);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #c8bba0;
+    font-weight: 300;
+  }
+
+  /* Quote input - special */
+  .quote-input {
+    background: rgba(200,150,42,0.04);
+    border: 1px solid rgba(200,150,42,0.2);
+    border-radius: 2px;
+    padding: 1rem 1.2rem;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.8;
+    min-height: 80px;
+  }
+
+  .quote-input:focus {
+    border-color: var(--gold);
+    background: rgba(200,150,42,0.07);
+    outline: none;
+  }
+
+  /* ─── 41 CORE SECTION ─── */
+  .core-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .core-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    flex-shrink: 0;
+    margin-right: 0.3rem;
+  }
+
+  .num-gold { background: var(--gold); color: white; }
+  .num-rust { background: var(--rust); color: white; }
+  .num-sage { background: var(--sage); color: white; }
+  .num-mist { background: var(--mist); color: white; }
+
+  /* ─── ACTION SECTION ─── */
+  .action-card {
+    background: var(--ink);
+    color: var(--parchment);
+    border: none;
+  }
+
+  .action-card .card-title { color: var(--parchment); }
+  .action-card .card-guide { color: #8a7f6e; }
+
+  .action-card input[type="text"],
+  .action-card textarea {
+    color: var(--parchment);
+    border-bottom-color: #3a3020;
+  }
+
+  .action-card input[type="text"]:focus,
+  .action-card textarea:focus {
+    border-color: var(--gold-light);
+  }
+
+  .action-card input::placeholder,
+  .action-card textarea::placeholder {
+    color: #5a5040;
+  }
+
+  /* ─── CHECKLIST ─── */
+  .checklist-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: #8a7f6e;
+    text-transform: uppercase;
+    margin-top: 1.2rem;
+    margin-bottom: 0.7rem;
+    display: block;
+  }
+
+  .checklist {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .check-item input[type="checkbox"] {
+    appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 1.5px solid #5a5040;
+    border-radius: 1px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+
+  .check-item input[type="checkbox"]:checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .check-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .check-item label {
+    color: #8a7f6e;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+
+  /* ─── REVIEW SECTION ─── */
+  .review-card {
+    background: linear-gradient(135deg, #f0ece0, #e8e0cc);
+    border: 1px solid #d0c4a0;
+  }
+
+  .line-count {
+    font-size: 0.72rem;
+    color: var(--mist);
+    text-align: right;
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+
+  /* ─── SUBMIT ─── */
+  .submit-area {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--ink);
+    color: var(--parchment);
+    border: none;
+    padding: 0.9rem 2.5rem;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 1px;
+  }
+
+  .btn-save:hover {
+    background: var(--gold);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,150,42,0.3);
+  }
+
+  .btn-print {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: transparent;
+    color: var(--mist);
+    border: 1px solid var(--line);
+    padding: 0.9rem 2rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 1px;
+    margin-left: 0.8rem;
+  }
+
+  .btn-print:hover {
+    border-color: var(--mist);
+    color: var(--ink);
+  }
+
+  .submit-note {
+    font-size: 0.75rem;
+    color: #b0a088;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(4rem);
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 0.8rem 2rem;
+    border-radius: 2px;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--parchment);
+    border-bottom: 1px solid var(--line);
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .progress-label {
+    font-size: 0.72rem;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-pct {
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    min-width: 2.5rem;
+    text-align: right;
+  }
+
+  /* ─── PHASE BADGE ─── */
+  .phase-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+  }
+
+  .badge-before { background: var(--sage); }
+  .badge-during { background: var(--gold); }
+  .badge-after { background: var(--rust); }
+
+  /* ─── DECORATIVE DIVIDER ─── */
+  .ornament {
+    text-align: center;
+    color: var(--gold);
+    opacity: 0.4;
+    font-size: 1rem;
+    letter-spacing: 0.5em;
+    margin: 0.5rem 0;
+  }
+
+  /* ─── PRINT ─── */
+  @media print {
+    .progress-bar-wrap, .submit-area, .btn-print, .btn-save { display: none; }
+    body { background: white; }
+    .card { break-inside: avoid; box-shadow: none; }
+    .action-card { background: #f0f0f0 !important; color: black !important; }
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar-wrap">
+  <span class="progress-label">完成進度</span>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <span class="progress-pct" id="progressPct">0%</span>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-tag">Reading Practice Form</div>
+  <h1><span>4</span>1 讀書法<br>實踐表單</h1>
+  <p class="header-subtitle">1 個金句 × 1 個故事 × 我的金句 × 1 個具體行動｜將閱讀化為真實改變</p>
+</header>
+
+<main>
+
+  <!-- ── PHASE 1: 啟航 ── -->
+  <div class="phase-label">
+    <span class="phase-text">第一區塊 ── 啟航與定位</span>
+  </div>
+
+  <!-- 書名 & 日期 -->
+  <div class="card">
+    <div class="card-accent accent-gold"></div>
+    <div class="card-header">
+      <span class="card-icon">📖</span>
+      <div>
+        <div class="card-title">書名與日期 <span class="phase-badge badge-before">閱讀前</span></div>
+        <div class="card-guide">這本書的名字？今天是哪一天？</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>書名</label>
+        <input type="text" id="bookTitle" placeholder="輸入書名…" data-track>
+      </div>
+      <div class="field">
+        <label>日期</label>
+        <input type="date" id="readDate" data-track>
+      </div>
+    </div>
+    <div class="field">
+      <label>作者（選填）</label>
+      <input type="text" id="bookAuthor" placeholder="作者姓名…">
+    </div>
+  </div>
+
+  <!-- 閱讀動機 -->
+  <div class="card">
+    <div class="card-accent accent-sage"></div>
+    <div class="card-header">
+      <span class="card-icon">🎯</span>
+      <div>
+        <div class="card-title">閱讀動機 <span class="phase-badge badge-before">閱讀前</span></div>
+        <div class="card-guide">我為什麼想讀這本書？想解決什麼問題，或回答什麼疑惑？</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea id="motivation" rows="3" placeholder="寫下你的動機，哪怕只是一句話也好…" data-track></textarea>
+    </div>
+  </div>
+
+  <!-- ── PHASE 2: 核心萃取 ── -->
+  <div class="phase-label">
+    <span class="phase-text">第二區塊 ── 核心萃取</span>
+  </div>
+
+  <div class="ornament">❧ ❧ ❧</div>
+
+  <!-- 1個金句 -->
+  <div class="card">
+    <div class="card-accent accent-gold"></div>
+    <div class="card-header">
+      <span class="card-icon">💡</span>
+      <div>
+        <div class="card-title">
+          <span class="core-number num-gold">1</span>
+          個金句
+          <span class="phase-badge badge-during">閱讀中</span>
+        </div>
+        <div class="card-guide">哪一句話像閃電一樣擊中了我？請把它完整抄錄下來。</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea id="quote" class="quote-input" rows="3" placeholder="「在這裡抄下那句令你心跳加速的話……」" data-track></textarea>
+    </div>
+    <div class="field" style="margin-top:0.8rem">
+      <label>出自哪一頁 / 哪一章（選填）</label>
+      <input type="text" id="quotePage" placeholder="例：第 87 頁，第三章">
+    </div>
+  </div>
+
+  <!-- 我的金句 -->
+  <div class="card">
+    <div class="card-accent accent-rust"></div>
+    <div class="card-header">
+      <span class="card-icon">✍️</span>
+      <div>
+        <div class="card-title">
+          <span class="core-number num-rust">我</span>
+          的金句
+          <span class="phase-badge badge-during">閱讀中／後</span>
+        </div>
+        <div class="card-guide">讀完這本書，如果只能留下一句「你自己說的話」，會是什麼？用自己的語言，寫下屬於你的那句話。</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea id="insight" class="quote-input" rows="3" placeholder="「用你自己的話，說出這本書給你的最大啟發……」" data-track></textarea>
+    </div>
+  </div>
+
+  <!-- 1個故事 -->
+  <div class="card">
+    <div class="card-accent accent-mist"></div>
+    <div class="card-header">
+      <span class="card-icon">🎬</span>
+      <div>
+        <div class="card-title">
+          <span class="core-number num-mist">1</span>
+          個故事
+          <span class="phase-badge badge-during">閱讀中／後</span>
+        </div>
+        <div class="card-guide">書中哪個案例或故事讓我印象最深？關鍵字提醒即可，不需完整複述。</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea id="story" rows="3" placeholder="主角 / 事件關鍵字 / 一句話點睛……" data-track></textarea>
+    </div>
+  </div>
+
+  <!-- ── PHASE 3: 落地與轉化 ── -->
+  <div class="phase-label">
+    <span class="phase-text">第三區塊 ── 落地與轉化</span>
+  </div>
+
+  <!-- 1個行動 -->
+  <div class="card action-card">
+    <div style="position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold-light);border-radius:2px 0 0 2px;"></div>
+    <div class="card-header">
+      <span class="card-icon">🏃</span>
+      <div>
+        <div class="card-title">
+          <span class="core-number num-gold">1</span>
+          個具體行動
+          <span class="phase-badge badge-after">閱讀後</span>
+        </div>
+        <div class="card-guide">結合以上收穫，我明天就可以立刻去做的一件小事是什麼？越具體越好，具體到可以直接開始。</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea id="action" rows="2" placeholder="一個具體的小行動，兩分鐘內可以開始的那種……" data-track></textarea>
+    </div>
+
+    <!-- 三天打卡 -->
+    <span class="checklist-label">行動打卡 ── 接下來三天，做了就勾起來</span>
+    <div class="checklist">
+      <div class="check-item">
+        <input type="checkbox" id="day1">
+        <label for="day1">Day 1 ── 今天就做</label>
+      </div>
+      <div class="check-item">
+        <input type="checkbox" id="day2">
+        <label for="day2">Day 2 ── 明天繼續</label>
+      </div>
+      <div class="check-item">
+        <input type="checkbox" id="day3">
+        <label for="day3">Day 3 ── 鞏固習慣</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 如何介紹這本書 -->
+  <div class="card review-card">
+    <div class="card-accent accent-sage"></div>
+    <div class="card-header">
+      <span class="card-icon">🗣️</span>
+      <div>
+        <div class="card-title">如何介紹這本書 <span class="phase-badge badge-after">閱讀後</span></div>
+        <div class="card-guide">如果有人問你「這本書在說什麼？」，你會怎麼用三句話回答他？寫完這裡，你就準備好在讀書會開口了。</div>
+      </div>
+    </div>
+    <div class="field">
+      <textarea id="review" rows="4" placeholder="這本書主要在說……它讓我看見……我會推薦它給……" data-track></textarea>
+    </div>
+    <div class="line-count" id="lineCount">0 / 3 句</div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-area">
+    <button class="btn-save" onclick="window.print()">
+      🖨️ 列印 / 匯出 PDF
+    </button>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ 筆記已儲存！</div>
+
+<script>
+  // ── 今天日期預設 ──
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('readDate').value = today;
+
+  // ── 進度計算 ──
+  const tracked = document.querySelectorAll('[data-track]');
+  const fill = document.getElementById('progressFill');
+  const pct = document.getElementById('progressPct');
+
+  function updateProgress() {
+    let filled = 0;
+    tracked.forEach(el => {
+      if (el.value && el.value.trim().length > 0) filled++;
+    });
+    const p = Math.round((filled / tracked.length) * 100);
+    fill.style.width = p + '%';
+    pct.textContent = p + '%';
+  }
+
+  tracked.forEach(el => el.addEventListener('input', updateProgress));
+
+  // ── 句數計算（review）──
+  const reviewEl = document.getElementById('review');
+  const lineEl = document.getElementById('lineCount');
+
+  reviewEl.addEventListener('input', () => {
+    const sentences = reviewEl.value
+      .split(/[。！？\.\!\?]/)
+      .filter(s => s.trim().length > 0).length;
+    const count = Math.min(sentences, 99);
+    lineEl.textContent = count + ' / 3 句';
+    lineEl.style.color = count > 3 ? '#b5441a' : '#8a9aa8';
+  });
+
+  // ── 儲存 ──
+  function saveForm() {
+    const data = {
+      savedAt: new Date().toLocaleString('zh-TW'),
+      bookTitle: document.getElementById('bookTitle').value,
+      readDate: document.getElementById('readDate').value,
+      bookAuthor: document.getElementById('bookAuthor').value,
+      motivation: document.getElementById('motivation').value,
+      quote: document.getElementById('quote').value,
+      quotePage: document.getElementById('quotePage').value,
+      insight: document.getElementById('insight').value,
+      story: document.getElementById('story').value,
+      action: document.getElementById('action').value,
+      day1: document.getElementById('day1').checked,
+      day2: document.getElementById('day2').checked,
+      day3: document.getElementById('day3').checked,
+      review: document.getElementById('review').value,
+    };
+
+    const key = 'reading41_' + (data.bookTitle || 'untitled') + '_' + data.readDate;
+    localStorage.setItem(key, JSON.stringify(data));
+
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // ── 自動載入最後一筆（如果書名一樣）──
+  document.getElementById('bookTitle').addEventListener('blur', function() {
+    const title = this.value.trim();
+    if (!title) return;
+    const today = document.getElementById('readDate').value;
+    const key = 'reading41_' + title + '_' + today;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const d = JSON.parse(saved);
+      ['motivation','quote','quotePage','insight','story','action','review','bookAuthor'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && d[id]) el.value = d[id];
+      });
+      ['day1','day2','day3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && d[id] !== undefined) el.checked = d[id];
+      });
+      updateProgress();
+    }
+  });
+
+  // ── 快捷鍵 Ctrl+S ──
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveForm();
+    }
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>
