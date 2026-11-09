@@ -43,3 +43,8 @@ body[data-data-scope="shared"] .tab-btn[onclick*="notebook"],body[data-data-scop
 #open-personal,#open-shared{align-items:center;justify-content:center;text-align:center}
 
 #workspace-view #scope-banner{position:static;display:table;max-width:100%;margin:0 0 16px;overflow-wrap:anywhere}
+
+body:has(#home-view.active) #scope-banner,
+body:has(#home-view.active) #share-launcher,
+body:has(#shared-view.active) #scope-banner,
+body[data-data-scope="personal"]:not(:has(#shared-view.active)) #share-launcher{display:none}

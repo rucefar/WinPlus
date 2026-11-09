@@ -53,6 +53,7 @@ try{
   await owner.waitForFunction(()=>document.getElementById('share-workspace').value!=='');
   const workspace=await owner.locator('#share-workspace').inputValue();
   await owner.locator('#share-email').fill('MEMBER@gmail.com');await owner.locator('#share-invite-form button').click();
+  await member.locator('#open-shared').click();
   await member.locator('#share-launcher').click();
   await member.locator(`#share-workspace option[value="${workspace}"]`).waitFor({state:'attached'});
   await member.locator('#share-workspace').selectOption(workspace);
