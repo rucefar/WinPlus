@@ -242,7 +242,12 @@ export function installCollaboration({db, auth, api}) {
   });
 
   // Separate landing pages make the current ownership scope explicit.
-  const originalSwitch=window.switchApp;
+  const navigate=window.switchApp;
+  const originalSwitch=(id,...args)=>{
+    const banner=document.getElementById('scope-banner');
+    if(banner){if(id==='workspace')workspace.prepend(banner);else document.body.prepend(banner);}
+    navigate(id,...args);
+  };
   const home=document.getElementById('home-view');
   const personal=document.createElement('section');personal.id='personal-view';personal.className='app-view data-hub';
   personal.innerHTML='<button class="data-home">← 資料首頁</button><h1>🚀 我的事業</h1><p>這裡的名單、組織網與成長紀錄僅自己可見。</p>';
@@ -254,7 +259,7 @@ export function installCollaboration({db, auth, api}) {
   hub.innerHTML='<button class="data-home">← 資料首頁</button><h1>📓 團隊工作區</h1><p>選擇工作區後，變更會同步給該區所有成員。</p><button id="hub-create">建立團隊工作區</button><div id="workspace-list"></div>';
   document.body.append(hub);
   const workspace=document.createElement('section');workspace.id='workspace-view';workspace.className='app-view data-hub';
-  workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><div class="data-doors"><button id="workspace-customers">名單</button><button id="workspace-grid">九宮格</button><button id="workspace-organization">組織網</button></div><button id="workspace-manage">管理成員與同步</button>';
+  workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><div class="data-doors"><button id="workspace-customers">👥 名單</button><button id="workspace-grid">🔲 九宮格</button><button id="workspace-organization">🕸️ 組織網</button></div>';
   document.body.append(workspace);
   const banner=document.createElement('div');banner.id='scope-banner';banner.setAttribute('role','status');document.body.prepend(banner);
   window.openDataHome=()=>originalSwitch('home');
@@ -268,7 +273,6 @@ export function installCollaboration({db, auth, api}) {
   document.getElementById('open-shared').onclick=()=>{renderHub();originalSwitch('shared');};
   document.getElementById('back-shared').onclick=()=>originalSwitch('shared');
   document.getElementById('hub-create').onclick=launcher.onclick;
-  document.getElementById('workspace-manage').onclick=launcher.onclick;
   document.getElementById('workspace-customers').onclick=()=>window.switchApp('ninety');
   document.getElementById('workspace-grid').onclick=()=>{window.switchApp('winplus');window.gotoPage('mandala');};
   document.getElementById('workspace-organization').onclick=()=>{window.switchApp('winplus');window.gotoPage('mindmap');};
