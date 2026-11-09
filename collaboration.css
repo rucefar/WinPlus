@@ -39,3 +39,5 @@ body[data-data-scope="shared"] .tab-btn[onclick*="notebook"],body[data-data-scop
 #share-source legend{font-size:14px}#share-source input[type="checkbox"]{width:auto;margin-right:8px}
 #share-dialog #share-customer-options{max-height:180px;overflow:auto}#share-source label{font-weight:normal}
 @media(max-width:600px){.data-doors{padding:0 16px}.data-doors button{width:100%;min-width:0}.data-hub .data-doors{padding:0}}
+
+#open-personal,#open-shared{align-items:center;justify-content:center;text-align:center}
