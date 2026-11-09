@@ -1,0 +1,19 @@
+.todo-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:28px}
+.todo-panel{min-width:0;border:1px solid #cdbda5;border-radius:20px;background:#fffdf8;padding:24px;box-shadow:0 5px 20px #493b2808}
+.todo-panel h2{font-size:22px;margin:0 0 22px}.todo-panel h2 small{display:block;font-size:12px;font-weight:normal;color:#736854;margin-top:8px}
+.todo-panel form>label{display:block;font-size:13px;margin-bottom:8px;color:#736854}
+.todo-panel input:not([type=checkbox]),.todo-panel select{width:100%;min-width:0;padding:11px;border:1px solid #cdbda5;border-radius:9px;font:inherit;color:#493b28;background:white}
+.todo-form-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 22px}.todo-form-row select{flex:1;min-width:130px}
+.todo-panel button{padding:8px 12px;border:1px solid #b59871;border-radius:9px;background:#fffaf0;color:#493b28;cursor:pointer;font:inherit;font-size:13px}
+.todo-panel ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+.todo-item{border:1px solid #ddd;border-left:5px solid;border-radius:12px;padding:14px;overflow-wrap:anywhere}
+.todo-item>label{display:flex;align-items:flex-start;gap:10px;line-height:1.7;cursor:pointer}.todo-item input[type=checkbox]{flex-shrink:0;width:18px;height:18px;margin-top:5px;accent-color:#52734d}
+.todo-red{border-color:#edaaaa;background:#fff1f1}.todo-yellow{border-color:#e2c35e;background:#fff9df}.todo-blue{border-color:#8db7e5;background:#eff6ff}
+.todo-item-actions{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}.todo-item-actions small{margin-right:auto;font-size:12px}
+.todo-done>label span{text-decoration:line-through;color:#777}.todo-done{opacity:.65}
+.todo-empty{padding:20px 0;font-size:14px;color:#8b8170;text-align:center}.todo-legend{display:block;margin-top:12px;font-size:14px}
+.todo-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.todo-panel [hidden]{display:none}.todo-card{font:inherit;color:inherit}.todo-card p{line-height:1.8}
+@media(max-width:700px){.todo-columns{grid-template-columns:1fr}.todo-panel{padding:18px}}
+
+#todos-view #scope-banner{position:static;display:table;max-width:100%;margin:0 0 16px}

@@ -116,6 +116,37 @@ try{
   assert.equal(memberData.ninety90.length,1);assert.equal(memberData.cells['mc-0-0'],'member私人目標');
   console.log('PASS: workspace switching restores personal data; shared records never overwrite private account');
 
+  await member.locator('#share-dialog .share-close').click();
+  await member.locator('.todo-card').click();
+  for(const [category,title,priority] of [['action','聯絡客戶','red'],['shopping','買筆記本','yellow'],['action','整理文件','blue']]){
+    await member.locator(`#todo-text-${category}`).fill(title);
+    await member.locator(`#todo-priority-${category}`).selectOption(priority);
+    await member.locator(`#todo-form-${category} [type=submit]`).click();
+  }
+  assert.equal(await member.locator('.todo-item').count(),3);
+  await member.locator('#todo-list-action .todo-red button').filter({hasText:'編輯'}).click();
+  await member.locator('#todo-text-action').fill('聯絡客戶安排拜訪');
+  await member.locator('#todo-form-action [type=submit]').click();
+  await member.locator('#todo-list-action .todo-red input').check();
+  assert.equal(await member.locator('.todo-done').count(),1);
+  await member.locator('#todo-list-action .todo-blue button').filter({hasText:'刪除'}).click();
+  assert.equal(await member.locator('.todo-item').count(),2);
+  await member.evaluate(()=>window.testCollaboration.flush());
+  await env.withSecurityRulesDisabled(async context=>{
+    const privateData=(await getDoc(doc(context.firestore(),'users/member'))).data();
+    const sharedData=(await getDoc(doc(context.firestore(),`workspaces/${workspace}/content/state`))).data();
+    assert.equal(privateData.todoData.length,2);
+    assert.equal(sharedData.data.todoData,undefined);
+  });
+  await member.setViewportSize({width:390,height:844});
+  assert(await member.evaluate(()=>[...document.querySelectorAll('.todo-panel')].every(panel=>panel.getBoundingClientRect().right<=innerWidth)));
+  await member.screenshot({path:'test-results/todos-mobile.png',fullPage:true});
+  await member.goto(`${url}/?user=member`);await member.waitForFunction(()=>window.testReady);
+  await member.locator('#open-personal').click();await member.locator('.todo-card').click();
+  assert.equal(await member.locator('.todo-item').count(),2);
+  assert.equal(await member.locator('.todo-done').count(),1);
+  console.log('PASS: private to-do action/shopping colors, edit, completion, delete, cloud persistence, reload and mobile layout');
+  await member.evaluate(()=>window.openDataHome());await member.locator('#open-shared').click();await member.locator('#share-launcher').click();
   await member.locator('#share-workspace').selectOption(workspace);
   await member.waitForFunction(()=>window.nGetCustomers().length===2);
   await owner.locator('#share-launcher').click();await owner.locator('#share-members button').click();

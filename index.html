@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="stylesheet" href="./collaboration.css">
+<link rel="stylesheet" href="./todos.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
@@ -1020,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.collectAllData = () => {
   let cls={}, fds={}; for(let r=0;r<9;r++)for(let c=0;c<9;c++){let k='mc-'+r+'-'+c,v=localStorage.getItem(k);if(v)cls[k]=v;}
   ['ml_date','ml_title','ml_name','ml_memo'].forEach(k=>{let v=localStorage.getItem(k);if(v)fds[k]=v;});
-  return { version:34, cells:cls, fields:fds, mindmap:JSON.parse(localStorage.getItem('mm_nodes')||'[]'), notebook:window.NotebookApp.getAllNotes(), ninety90:window.nGetCustomers?window.nGetCustomers():JSON.parse(localStorage.getItem('crm90_v3')||'[]'), reviewData:{goals:{health:localStorage.getItem('goal-health')||'',social:localStorage.getItem('goal-social')||'',family:localStorage.getItem('goal-family')||'',amway:localStorage.getItem('goal-amway')||'',wealth:localStorage.getItem('goal-wealth')||''},richLogs:JSON.parse(localStorage.getItem('richLogs')||'[]')}, hundredState:JSON.parse(localStorage.getItem('hundred_state')||'{}') };
+  return { version:35, todoData:window.todoItems || [], cells:cls, fields:fds, mindmap:JSON.parse(localStorage.getItem('mm_nodes')||'[]'), notebook:window.NotebookApp.getAllNotes(), ninety90:window.nGetCustomers?window.nGetCustomers():JSON.parse(localStorage.getItem('crm90_v3')||'[]'), reviewData:{goals:{health:localStorage.getItem('goal-health')||'',social:localStorage.getItem('goal-social')||'',family:localStorage.getItem('goal-family')||'',amway:localStorage.getItem('goal-amway')||'',wealth:localStorage.getItem('goal-wealth')||''},richLogs:JSON.parse(localStorage.getItem('richLogs')||'[]')}, hundredState:JSON.parse(localStorage.getItem('hundred_state')||'{}') };
 };
 
 window.restoreAllData = d => {
@@ -1031,6 +1032,7 @@ window.restoreAllData = d => {
       if(d.notebook&&typeof window.NotebookApp.restoreNotes==='function') window.NotebookApp.restoreNotes(d.notebook);
       if(d.ninety90){ localStorage.setItem('crm90_v3',JSON.stringify(d.ninety90)); if(typeof window.nLoadCustomers==='function')window.nLoadCustomers(d.ninety90); }
       if(d.reviewData){ ['health','social','family','amway','wealth'].forEach(g=>localStorage.setItem('goal-'+g,d.reviewData.goals[g]||'')); localStorage.setItem('richLogs',JSON.stringify(d.reviewData.richLogs||[])); if(typeof window.reviewLoadGoals==='function'){window.reviewLoadGoals();window.reviewRenderTracker();} }
+      if(d.todoData && window.restoreTodos)window.restoreTodos(d.todoData);
       if(d.hundredState){ localStorage.setItem('hundred_state',JSON.stringify(d.hundredState)); window.hundredState=d.hundredState; if(typeof window.hRenderGrid==='function')window.hRenderGrid(); }
   }catch(e){}};
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',rst):rst();

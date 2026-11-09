@@ -1,3 +1,4 @@
+import {installTodos} from './todos.mjs';
 import {copy, equal, sharedPart, merge, validateShared, selectSharedData} from './shared-data.mjs';
 
 // Firebase is injected so the collaboration lifecycle can also be tested offline.
@@ -245,13 +246,14 @@ export function installCollaboration({db, auth, api}) {
   const navigate=window.switchApp;
   const originalSwitch=(id,...args)=>{
     const banner=document.getElementById('scope-banner');
-    if(banner){if(id==='workspace')workspace.prepend(banner);else document.body.prepend(banner);}
+    if(banner){if(id==='workspace')workspace.prepend(banner);else if(id==='todos')document.getElementById('todos-view').prepend(banner);else document.body.prepend(banner);}
     navigate(id,...args);
   };
   const home=document.getElementById('home-view');
   const personal=document.createElement('section');personal.id='personal-view';personal.className='app-view data-hub';
   personal.innerHTML='<button class="data-home">← 資料首頁</button><h1>🚀 我的事業</h1><p>這裡的名單、組織網與成長紀錄僅自己可見。</p>';
   personal.append(home.querySelector('main.container'));document.body.append(personal);
+  installTodos(personal);
   const doors=document.createElement('div');doors.className='data-doors';
   doors.innerHTML='<button id="open-personal"><strong>🚀 我的事業</strong><span>私人名單、組織網與成長紀錄</span></button><button id="open-shared"><strong>📓 團隊工作區</strong><span>與指定 Google 帳號共同查看、編輯</span></button>';
   home.querySelector('header').after(doors);
@@ -265,7 +267,7 @@ export function installCollaboration({db, auth, api}) {
   window.openDataHome=()=>originalSwitch('home');
   window.switchApp=(id,...args)=>{
     if(id==='home')id=active?'workspace':'personal';
-    if(active && ['review','hundred'].includes(id))return;
+    if(active && ['review','hundred','todos'].includes(id))return;
     originalSwitch(id,...args);
   };
   document.querySelectorAll('.data-home').forEach(button=>button.onclick=window.openDataHome);
@@ -315,7 +317,7 @@ export function installCollaboration({db, auth, api}) {
       // Never carry another account's cached records into a newly authenticated account.
       apply({cells:{},fields:{},mindmap:[],ninety90:[]});
       const snapshot=await getDoc(doc(db,'users',user.uid));
-      window.restoreAllData({notebook:{notes:[],nextId:1},reviewData:{goals:{},richLogs:[]},hundredState:{},...(snapshot.exists()?snapshot.data():{})});
+      window.restoreAllData({notebook:{notes:[],nextId:1},reviewData:{goals:{},richLogs:[]},hundredState:{},todoData:[],...(snapshot.exists()?snapshot.data():{})});
       personalSaved=copy(window.collectAllData());
       ready=true;launcher.hidden=false;render();status('✓ 個人資料已載入');
       if(!user.email || !user.emailVerified){status('請使用已驗證的 Google 帳號才能共用');return;}
