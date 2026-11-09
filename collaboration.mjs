@@ -1,4 +1,4 @@
-import {copy, equal, sharedPart, merge, validateShared} from './shared-data.mjs';
+import {copy, equal, sharedPart, merge, validateShared, selectSharedData} from './shared-data.mjs';
 
 // Firebase is injected so the collaboration lifecycle can also be tested offline.
 export function installCollaboration({db, auth, api}) {
@@ -6,7 +6,7 @@ export function installCollaboration({db, auth, api}) {
   let user = null, active = null, own = null, base = null, remote = null;
   let stopList = () => {}, stopState = () => {}, spaces = [], ready = false;
   let timer, saving = null, dirty = false, conflict = false, generation = 0, pendingSnapshot = null;
-  let ownCommit = null;
+  let ownCommit = null, actionBusy = false;
   let customerBase = null, personalSave = Promise.resolve(), personalSaved = null;
   const status = text => { document.getElementById('share-status').textContent = text; document.querySelectorAll('.cloud-status').forEach(element=>element.textContent=text); };
   const errorText = error => error.code === 'permission-denied' ? '沒有共用權限，或 Firebase 共用規則尚未設定。' : error.message || '連線失敗，請稍後重試';
@@ -132,6 +132,9 @@ export function installCollaboration({db, auth, api}) {
   window.addEventListener('online',()=>flush().catch(()=>{}));
 
   function render() {
+    renderHub();
+    document.body.dataset.dataScope=active?'shared':'personal';
+    document.getElementById('scope-banner').textContent=active?'共用工作區 · '+(spaces.find(space=>space.id===active)?.name || '')+' · 成員共同編輯':'我的資料 · 僅自己可見';
     const select=document.getElementById('share-workspace'); select.replaceChildren(new Option('我的個人資料',''));
     spaces.forEach(space=>select.add(new Option(space.name,space.id)));
     select.value=active || '';
@@ -151,14 +154,15 @@ export function installCollaboration({db, auth, api}) {
     });
   }
   async function action(fn) {
-    const buttons=[...document.querySelectorAll('#share-dialog button, #share-dialog select')];
+    if(actionBusy)return;actionBusy=true;
+    const buttons=[...document.querySelectorAll('#share-dialog button, #share-dialog select, .data-hub button, .data-doors button')];
     buttons.forEach(button=>button.disabled=true);
     try { await fn(); } catch(error){showError(error);}
-    finally {buttons.forEach(button=>button.disabled=false);render();}
+    finally {actionBusy=false;buttons.forEach(button=>button.disabled=false);render();}
   }
   function discardToPersonal(message) {
     clearTimeout(timer);timer=null; generation++;stopState();active=null;base=null;remote=null;pendingSnapshot=null;ownCommit=null;dirty=false;conflict=false;
-    closeEditors();if(own) apply(own);own=null;clearError();render();status(message);
+    closeEditors();if(own) apply(own);own=null;clearError();render();originalSwitch('personal');status(message);
   }
   async function selectWorkspace(id) {
     if(id===active || (!id&&!active)) return;
@@ -169,7 +173,7 @@ export function installCollaboration({db, auth, api}) {
     if(!active)own=local();
     generation++;stopState();pendingSnapshot=null;ownCommit=null;closeEditors();clearError();
     active=id || null;base=null;remote=null;dirty=false;
-    if(!active){apply(own);own=null;render();status('✓ 已切回個人資料');return;}
+    if(!active){apply(own);own=null;render();originalSwitch('personal');status('✓ 已切回個人資料');return;}
     let draft=null;
     try{draft=JSON.parse(sessionStorage.getItem(draftKey()));}catch{}
     apply(next);base=copy(next);
@@ -185,7 +189,7 @@ export function installCollaboration({db, auth, api}) {
         sessionStorage.removeItem(draftKey());discardToPersonal('共用權限已移除或規則拒絕存取，已切回個人資料');
       }else showError(error);
     });
-    render();status(dirty?'有尚未同步的修改，請按重試':'正在連接共用資料…');
+    render();originalSwitch('workspace');status(dirty?'有尚未同步的修改，請按重試':'正在連接共用資料…');
   }
   async function changeMember(email,add) {
     await runTransaction(db,async transaction=>{
@@ -206,24 +210,25 @@ export function installCollaboration({db, auth, api}) {
     <h2>共用名單與組織網</h2><p>共用工作區內的名單、九宮格及組織網會即時同步。筆記、複盤和打卡保留私人。</p>
     <label for="share-workspace">目前工作區</label><select id="share-workspace"></select>
     <p class="share-note">受邀者用指定的 Google 帳號登入 WinPlus，從此處選擇工作區即可共同編輯，不需要傳送檔案。</p>
-    <form id="share-create-form"><label for="share-name">建立工作區（複製目前的名單、九宮格和組織網）</label><div class="share-row"><input id="share-name" maxlength="80" placeholder="例如：團隊共同名單" required><button>建立</button></div></form>
+    <form id="share-create-form"><label for="share-name">建立工作區</label><input id="share-name" maxlength="80" placeholder="例如：團隊共同名單" required>
+    <fieldset id="share-source"><legend>從我的資料選擇要共用的內容</legend><p class="share-note">預設不帶入資料，可建立空白工作區。組織網節點文字也會共用，未選名單的連結會解除。</p><div id="share-customer-options"></div><label><input type="checkbox" id="share-include-grid">帶入我的九宮格與標題</label><label><input type="checkbox" id="share-include-organization">帶入我的整份組織網</label></fieldset><button>建立共用工作區</button></form>
     <h3 id="share-member-heading" hidden>共用成員</h3><ul id="share-members"></ul>
     <form id="share-invite-form" hidden><label for="share-email">指定對方的 Google 帳號 Email</label><div class="share-row"><input type="email" id="share-email" placeholder="name@gmail.com" required><button>加入共用</button></div><p class="share-note">成員可以查看、編輯和刪除工作區資料；只有擁有者能新增或移除共用成員。此操作不寄送通知信。</p></form>
     <p id="share-error" role="alert"></p><button id="share-retry" hidden>重試同步</button> <button id="share-reload" hidden>放棄未同步修改，載入最新資料</button>`;
   document.body.append(dialog);
-  launcher.onclick=()=>{render();dialog.showModal();};
+  launcher.onclick=()=>{render();refreshSource();dialog.showModal();};
   document.getElementById('share-workspace').onchange=event=>action(()=>selectWorkspace(event.target.value));
   document.getElementById('share-create-form').onsubmit=event=>{
     event.preventDefault();action(async()=>{
       await flush();const name=document.getElementById('share-name').value.trim();if(!name)throw new Error('請填寫工作區名稱');
-      const data=validateShared(local()),ref=doc(collection(db,'workspaces'));
+      const data=selectSharedData(own || local(),{customerIds:[...document.querySelectorAll('#share-customer-options input:checked')].map(input=>Number(input.value)),includeGrid:document.getElementById('share-include-grid').checked,includeOrganization:document.getElementById('share-include-organization').checked}),ref=doc(collection(db,'workspaces'));
       await runTransaction(db,async transaction=>{
         transaction.set(ref,{name,ownerUid:user.uid,ownerEmail:user.email.toLowerCase(),memberEmails:[user.email.toLowerCase()],createdAt:serverTimestamp()});
         transaction.set(stateRef(ref.id),{data,updatedBy:user.uid,updatedAt:serverTimestamp()});
       });
       // Query listeners may not have emitted the new workspace yet.
       if(!spaces.some(space=>space.id===ref.id))spaces.push({id:ref.id,name,ownerUid:user.uid,ownerEmail:user.email.toLowerCase(),memberEmails:[user.email.toLowerCase()]});
-      await selectWorkspace(ref.id);document.getElementById('share-name').value='';
+      await selectWorkspace(ref.id);document.getElementById('share-create-form').reset();refreshSource();
     });
   };
   document.getElementById('share-invite-form').onsubmit=event=>{
@@ -235,6 +240,56 @@ export function installCollaboration({db, auth, api}) {
     const snapshot=await getDoc(stateRef(active));if(!snapshot.exists())throw new Error('工作區不存在');
     closeEditors();clearError();base=sharedPart(snapshot.data().data);remote=copy(base);pendingSnapshot=null;apply(base);dirty=false;sessionStorage.removeItem(draftKey());status('✓ 已載入最新共用資料');
   });
+
+  // Separate landing pages make the current ownership scope explicit.
+  const originalSwitch=window.switchApp;
+  const home=document.getElementById('home-view');
+  const personal=document.createElement('section');personal.id='personal-view';personal.className='app-view data-hub';
+  personal.innerHTML='<button class="data-home">← 資料首頁</button><h1>我的資料</h1><p>這裡的名單、組織網與成長紀錄僅自己可見。</p>';
+  personal.append(home.querySelector('main.container'));document.body.append(personal);
+  const doors=document.createElement('div');doors.className='data-doors';
+  doors.innerHTML='<button id="open-personal"><strong>我的資料</strong><span>私人名單、組織網與成長紀錄</span></button><button id="open-shared"><strong>共用工作區</strong><span>與指定 Google 帳號共同查看、編輯</span></button>';
+  home.querySelector('header').after(doors);
+  const hub=document.createElement('section');hub.id='shared-view';hub.className='app-view data-hub';
+  hub.innerHTML='<button class="data-home">← 資料首頁</button><h1>共用工作區</h1><p>選擇工作區後，變更會同步給該區所有成員。</p><button id="hub-create">建立共用工作區</button><div id="workspace-list"></div>';
+  document.body.append(hub);
+  const workspace=document.createElement('section');workspace.id='workspace-view';workspace.className='app-view data-hub';
+  workspace.innerHTML='<button id="back-shared">← 共用工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><div class="data-doors"><button id="workspace-customers">名單</button><button id="workspace-grid">九宮格</button><button id="workspace-organization">組織網</button></div><button id="workspace-manage">管理成員與同步</button>';
+  document.body.append(workspace);
+  const banner=document.createElement('div');banner.id='scope-banner';banner.setAttribute('role','status');document.body.prepend(banner);
+  window.openDataHome=()=>originalSwitch('home');
+  window.switchApp=(id,...args)=>{
+    if(id==='home')id=active?'workspace':'personal';
+    if(active && ['review','hundred'].includes(id))return;
+    originalSwitch(id,...args);
+  };
+  document.querySelectorAll('.data-home').forEach(button=>button.onclick=window.openDataHome);
+  document.getElementById('open-personal').onclick=()=>action(async()=>{await selectWorkspace('');if(!active)originalSwitch('personal');});
+  document.getElementById('open-shared').onclick=()=>{renderHub();originalSwitch('shared');};
+  document.getElementById('back-shared').onclick=()=>originalSwitch('shared');
+  document.getElementById('hub-create').onclick=launcher.onclick;
+  document.getElementById('workspace-manage').onclick=launcher.onclick;
+  document.getElementById('workspace-customers').onclick=()=>window.switchApp('ninety');
+  document.getElementById('workspace-grid').onclick=()=>{window.switchApp('winplus');window.gotoPage('mandala');};
+  document.getElementById('workspace-organization').onclick=()=>{window.switchApp('winplus');window.gotoPage('mindmap');};
+  function renderHub(){
+    const list=document.getElementById('workspace-list');if(!list)return;
+    list.replaceChildren();
+    if(!spaces.length){const empty=document.createElement('p');empty.textContent='目前沒有共用工作區。你可以建立一個，或請對方將你的 Google Email 加入共用。';list.append(empty);}
+    spaces.forEach(space=>{
+      const button=document.createElement('button');button.className='workspace-card';
+      const title=document.createElement('strong');title.textContent=space.name;
+      const detail=document.createElement('span');detail.textContent=`${space.ownerUid===user?.uid?'我建立的':'受邀共用'} · ${space.memberEmails.length} 位成員`;
+      button.append(title,detail);button.onclick=()=>action(async()=>{await selectWorkspace(space.id);if(active===space.id)originalSwitch('workspace');});list.append(button);
+    });
+    document.getElementById('workspace-title').textContent=spaces.find(space=>space.id===active)?.name || '共用工作區';
+  }
+  function refreshSource(){
+    const source=own || local(),options=document.getElementById('share-customer-options');options.replaceChildren();
+    if(!source.ninety90.length){const empty=document.createElement('p');empty.textContent='我的資料目前沒有名單';options.append(empty);}
+    source.ninety90.forEach(row=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=row.id;label.append(input,document.createTextNode(row.name));options.append(label);});
+    document.getElementById('share-include-grid').checked=false;document.getElementById('share-include-organization').checked=false;
+  }
 
   const originalOpen=window.nOpenEdit;
   window.nOpenEdit=id=>{customerBase=copy(window.nGetCustomers().find(row=>row.id===id));originalOpen(id);};

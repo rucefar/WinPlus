@@ -4,6 +4,19 @@ export const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 export const sharedPart = data => copy({cells:data.cells || {}, fields:data.fields || {}, mindmap:data.mindmap || [], ninety90:data.ninety90 || []});
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 
+export function selectSharedData(source, {customerIds=[],includeGrid=false,includeOrganization=false}={}) {
+  const selected=new Set(customerIds);
+  return validateShared({
+    cells:includeGrid ? copy(source.cells || {}) : {},
+    fields:includeGrid ? copy(source.fields || {}) : {},
+    ninety90:copy((source.ninety90 || []).filter(row=>selected.has(row.id))),
+    mindmap:includeOrganization ? copy(source.mindmap || []).map(row=>{
+      if(row.linkedCrmId && !selected.has(row.linkedCrmId))delete row.linkedCrmId;
+      return row;
+    }) : []
+  });
+}
+
 export function merge(base, local, remote, path = '') {
   if (equal(local, base)) return copy(remote);
   if (equal(remote, base) || equal(local, remote)) return copy(local);

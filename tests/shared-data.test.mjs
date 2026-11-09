@@ -1,8 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {merge,sharedPart,validateShared} from '../shared-data.mjs';
+import {merge,sharedPart,validateShared,selectSharedData} from '../shared-data.mjs';
 
 const seed=()=>({cells:{'mc-0-0':'目標'},fields:{},mindmap:[{id:'root',text:'團隊',parentId:null}],ninety90:[{id:1,name:'小王',address:'台北',stage:0}]});
+test('new workspaces default to empty and only include selected private data',()=>{
+  const source=seed();source.mindmap[0].linkedCrmId=1;
+  assert.deepEqual(selectSharedData(source),{cells:{},fields:{},ninety90:[],mindmap:[]});
+  const selected=selectSharedData(source,{includeOrganization:true});
+  assert.equal(selected.mindmap[0].linkedCrmId,undefined);
+  assert.equal(source.mindmap[0].linkedCrmId,1);
+  const included=selectSharedData(source,{customerIds:[1],includeGrid:true,includeOrganization:true});
+  assert.deepEqual(included,source);
+});
 test('only the intended scope is shared',()=>{
   const data=sharedPart({...seed(),notebook:{notes:['private']},reviewData:{secret:true},hundredState:{secret:true}});
   assert.deepEqual(Object.keys(data).sort(),['cells','fields','mindmap','ninety90']);

@@ -1055,7 +1055,7 @@ window.restoreAllData = d => {
       await collaboration.login(u);
       document.getElementById('login-error').textContent='';
       document.getElementById('login-overlay').style.display='none';
-      window.switchApp('home');
+      window.openDataHome();
     } catch(error) {
       document.getElementById('login-error').textContent='雲端資料讀取失敗，請重新整理後再試。';
     }

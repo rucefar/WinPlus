@@ -12,7 +12,7 @@ const bundle=await build({entryPoints:['tests/browser-harness.mjs'],bundle:true,
 const env=await initializeTestEnvironment({projectId:'demo-winplus',firestore:{host:'127.0.0.1',port:8085,rules:await readFile('firestore.rules','utf8')}});
 const personal=who=>({cells:{'mc-0-0':`${who}私人目標`},fields:{},mindmap:[{id:'root',text:`${who}組織`,parentId:null,x:300,y:200}],ninety90:[{id:who==='owner'?1:2,name:`${who}私人名單`,type:'經營者',stage:0,address:'原地址'}],notebook:{notes:[{id:1,title:`${who}私人筆記`,content:'private',updatedAt:1}],nextId:2},reviewData:{goals:{},richLogs:[]},hundredState:{}});
 await env.withSecurityRulesDisabled(async context=>{
-  await Promise.all(['owner','member'].map(who=>setDoc(doc(context.firestore(),`users/${who}`),personal(who))));
+  await Promise.all(['owner','member'].map(who=>{const data=personal(who);if(who==='owner')data.ninety90.push({id:3,name:'未勾選的私人名單',type:'經營者',stage:0});return setDoc(doc(context.firestore(),`users/${who}`),data);}));
 });
 const server=createServer(async(req,res)=>{
   try{
@@ -39,10 +39,16 @@ try{
     page.on('dialog',dialog=>dialog.accept());
     await page.route('https://**/*',route=>route.abort());
     await page.goto(`${url}/?user=${who}`);await page.waitForFunction(()=>window.testReady);
+    assert(await page.locator('#open-personal').isVisible());
   }
   const [owner,member]=pages;
-  await owner.locator('#share-launcher').click();
+  await owner.locator('#open-shared').click();
+  await owner.locator('#hub-create').click();
+  assert.equal(await owner.locator('#share-customer-options input:checked').count(),0);
   await owner.locator('#share-name').fill('團隊共同名單');
+  await owner.locator('#share-customer-options input').first().check();
+  await owner.locator('#share-include-grid').check();
+  await owner.locator('#share-include-organization').check();
   await owner.locator('#share-create-form button').click();
   await owner.waitForFunction(()=>document.getElementById('share-workspace').value!=='');
   const workspace=await owner.locator('#share-workspace').inputValue();
@@ -52,6 +58,9 @@ try{
   await member.locator('#share-workspace').selectOption(workspace);
   await member.waitForFunction(()=>window.nGetCustomers()[0]?.name==='owner私人名單');
   assert.equal(await member.evaluate(()=>window.NotebookApp.notes[0].title),'member私人筆記');
+  assert.equal(await member.evaluate(()=>window.nGetCustomers().length),1);
+  assert.equal(await member.evaluate(()=>window.nGetCustomers().some(row=>row.id===3)),false);
+  console.log('PASS: unchecked private customers are excluded from the shared workspace');
   await Promise.all(pages.map(page=>page.locator('#share-dialog .share-close').click()));
 
   await owner.evaluate(()=>window.switchApp('winplus'));
@@ -100,6 +109,7 @@ try{
   await member.locator('#share-workspace').selectOption('');
   await member.waitForFunction(()=>window.nGetCustomers()[0]?.name==='member私人名單');
   assert.equal(await member.evaluate(()=>localStorage.getItem('mc-0-0')),'member私人目標');
+  assert(await member.locator('#personal-view').isVisible());
   let memberData;
   await env.withSecurityRulesDisabled(async context=>{memberData=(await getDoc(doc(context.firestore(),'users/member'))).data();});
   assert.equal(memberData.ninety90.length,1);assert.equal(memberData.cells['mc-0-0'],'member私人目標');
