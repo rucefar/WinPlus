@@ -64,6 +64,33 @@ try{
   console.log('PASS: unchecked private customers are excluded from the shared workspace');
   await Promise.all(pages.map(page=>page.locator('#share-dialog .share-close').click()));
 
+  await Promise.all(pages.map(page=>page.locator('#workspace-todos').click()));
+  await owner.locator('#team-todo-text-action').fill('團隊拜訪客戶');
+  await owner.locator('#team-todo-priority-action').selectOption('red');
+  await owner.locator('#team-todo-assignee-action').selectOption('member@gmail.com');
+  await owner.locator('#team-todo-form-action [type=submit]').click();
+  await member.locator('#team-todo-list-action .todo-item').waitFor();
+  assert((await member.locator('#team-todo-list-action .todo-assignee').textContent()).includes('member@gmail.com'));
+  assert((await member.locator('#team-todo-list-action .todo-publisher').textContent()).includes('owner@gmail.com'));
+  await member.locator('#team-todo-list-action button').filter({hasText:'編輯'}).click();
+  await member.locator('#team-todo-text-action').fill('團隊拜訪客戶已安排');
+  await member.locator('#team-todo-assignee-action').selectOption('owner@gmail.com');
+  await member.locator('#team-todo-form-action [type=submit]').click();
+  await owner.waitForFunction(()=>document.querySelector('#team-todo-list-action .todo-item')?.textContent.includes('團隊拜訪客戶已安排'));
+  assert((await owner.locator('#team-todo-list-action .todo-publisher').textContent()).includes('owner@gmail.com'));
+  assert((await owner.locator('#team-todo-list-action .todo-assignee').textContent()).includes('owner@gmail.com'));
+  await member.locator('#team-todo-list-action input[type=checkbox]').check();
+  await owner.locator('#team-todo-list-action .todo-done').waitFor();
+  await member.locator('#team-todo-text-shopping').fill('採買活動用品');
+  await member.locator('#team-todo-assignee-shopping').selectOption('member@gmail.com');
+  await member.locator('#team-todo-form-shopping [type=submit]').click();
+  await owner.locator('#team-todo-list-shopping .todo-item').waitFor();
+  assert((await owner.locator('#team-todo-list-shopping .todo-publisher').textContent()).includes('member@gmail.com'));
+  await owner.setViewportSize({width:390,height:844});
+  await owner.screenshot({path:'test-results/team-todos-mobile.png',fullPage:true});
+  await owner.setViewportSize({width:1280,height:900});
+  console.log('PASS: team task assignment, publisher identity, member editing/reassignment, completion and two-way synchronization');
+
   await owner.evaluate(()=>window.switchApp('winplus'));
   await owner.locator('#big-grid textarea').first().fill('雙向同步目標');
   await member.waitForFunction(()=>localStorage.getItem('mc-0-0')==='雙向同步目標');

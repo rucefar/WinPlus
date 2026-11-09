@@ -1,3 +1,4 @@
+import {installTeamTodos} from './team-todos.mjs';
 import {installTodos} from './todos.mjs';
 import {copy, equal, sharedPart, merge, validateShared, selectSharedData} from './shared-data.mjs';
 
@@ -140,6 +141,7 @@ export function installCollaboration({db, auth, api}) {
     spaces.forEach(space=>select.add(new Option(space.name,space.id)));
     select.value=active || '';
     const current=spaces.find(space=>space.id===active);
+    teamTodos.setContext(active && user ? {id:active,user,members:current?.memberEmails || []} : null);
     document.getElementById('share-current').textContent=current ? current.name : '我的個人資料';
     document.getElementById('share-launcher').dataset.shared=String(!!active);
     document.getElementById('share-members').replaceChildren();
@@ -246,8 +248,9 @@ export function installCollaboration({db, auth, api}) {
   const navigate=window.switchApp;
   const originalSwitch=(id,...args)=>{
     const banner=document.getElementById('scope-banner');
-    if(banner){if(id==='workspace')workspace.prepend(banner);else if(id==='todos')document.getElementById('todos-view').prepend(banner);else document.body.prepend(banner);}
+    if(banner){if(id==='workspace')workspace.prepend(banner);else if(['todos','team-todos'].includes(id))document.getElementById(id+'-view').prepend(banner);else document.body.prepend(banner);}
     navigate(id,...args);
+    if(id==='team-todos')teamTodos.open();
   };
   const home=document.getElementById('home-view');
   const personal=document.createElement('section');personal.id='personal-view';personal.className='app-view data-hub';
@@ -261,12 +264,14 @@ export function installCollaboration({db, auth, api}) {
   hub.innerHTML='<button class="data-home">← 資料首頁</button><h1>📓 團隊工作區</h1><p>選擇工作區後，變更會同步給該區所有成員。</p><button id="hub-create">建立團隊工作區</button><div id="workspace-list"></div>';
   document.body.append(hub);
   const workspace=document.createElement('section');workspace.id='workspace-view';workspace.className='app-view data-hub';
-  workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><div class="data-doors"><button id="workspace-customers">👥 名單</button><button id="workspace-grid">🔲 九宮格</button><button id="workspace-organization">🕸️ 組織網</button></div>';
+  workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><div class="data-doors"><button id="workspace-customers">👥 名單</button><button id="workspace-grid">🔲 九宮格</button><button id="workspace-organization">🕸️ 組織網</button><button id="workspace-todos">📝 團隊待辦</button></div>';
   document.body.append(workspace);
+  const teamTodos=installTeamTodos({db,api});
   const banner=document.createElement('div');banner.id='scope-banner';banner.setAttribute('role','status');document.body.prepend(banner);
   window.openDataHome=()=>originalSwitch('home');
   window.switchApp=(id,...args)=>{
     if(id==='home')id=active?'workspace':'personal';
+    if(id==='team-todos' && !active)return;
     if(active && ['review','hundred','todos'].includes(id))return;
     originalSwitch(id,...args);
   };
@@ -275,6 +280,7 @@ export function installCollaboration({db, auth, api}) {
   document.getElementById('open-shared').onclick=()=>{renderHub();originalSwitch('shared');};
   document.getElementById('back-shared').onclick=()=>originalSwitch('shared');
   document.getElementById('hub-create').onclick=launcher.onclick;
+  document.getElementById('workspace-todos').onclick=()=>window.switchApp('team-todos');
   document.getElementById('workspace-customers').onclick=()=>window.switchApp('ninety');
   document.getElementById('workspace-grid').onclick=()=>{window.switchApp('winplus');window.gotoPage('mandala');};
   document.getElementById('workspace-organization').onclick=()=>{window.switchApp('winplus');window.gotoPage('mindmap');};
@@ -313,6 +319,7 @@ export function installCollaboration({db, auth, api}) {
 
   return {
     async login(nextUser) {
+      teamTodos.stop();
       ready=false;user=nextUser;generation++;clearTimeout(timer);timer=null;stopList();stopState();active=null;own=null;base=null;remote=null;spaces=[];dirty=false;conflict=false;pendingSnapshot=null;
       // Never carry another account's cached records into a newly authenticated account.
       apply({cells:{},fields:{},mindmap:[],ninety90:[]});
@@ -330,6 +337,6 @@ export function installCollaboration({db, auth, api}) {
       },showError);
     },
     flush,
-    stop() {ready=false;clearTimeout(timer);timer=null;stopList();stopState();generation++;launcher.hidden=true;}
+    stop() {teamTodos.stop();ready=false;clearTimeout(timer);timer=null;stopList();stopState();generation++;launcher.hidden=true;}
   };
 }
