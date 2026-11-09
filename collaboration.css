@@ -1,0 +1,23 @@
+#share-launcher{position:fixed;right:14px;bottom:14px;z-index:9000;display:flex;flex-direction:column;gap:3px;max-width:min(340px,90vw);padding:10px 16px;background:#fffaf0;color:#493b28;border:1px solid #b59871;border-radius:14px;box-shadow:0 3px 16px #0002;text-align:left;cursor:pointer;font-family:inherit}
+#share-launcher[hidden]{display:none}
+#share-launcher[data-shared="true"]{border-color:#23734b;background:#f0fff7}
+#share-launcher span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#share-launcher small{font-size:11px;max-width:300px}
+#share-dialog{margin:auto;border:1px solid #cdbda5;border-radius:18px;padding:24px;width:min(580px,94vw);max-height:88vh;overflow:auto;background:#fffdf8;color:#493b28;font-family:'Noto Sans TC',sans-serif;box-shadow:0 20px 70px #0003}
+#share-dialog::backdrop{background:#0007}
+#share-dialog h2{font-size:21px;margin:0 24px 14px 0}
+#share-dialog h3{font-size:16px;margin:18px 0 8px}
+#share-dialog p{font-size:14px;line-height:1.7;margin:10px 0}
+#share-dialog .share-note{font-size:12px;color:#736854}
+#share-dialog label{display:block;font-size:14px;margin:16px 0 6px;font-weight:bold}
+#share-dialog input,#share-dialog select{width:100%;min-width:0;padding:10px;border:1px solid #cdbda5;border-radius:8px;font:inherit;background:white;color:inherit}
+#share-dialog button{padding:9px 12px;border:1px solid #b59871;border-radius:8px;background:#fff;color:#493b28;cursor:pointer;font:inherit;font-size:13px}
+#share-dialog button:disabled{opacity:.5;cursor:wait}
+#share-dialog .share-close{position:absolute;top:15px;right:15px;padding:3px 8px}
+#share-dialog .share-row{display:flex;gap:8px}
+#share-dialog .share-row button{flex-shrink:0}
+#share-dialog ul{list-style:none;padding:0}
+#share-dialog li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;overflow-wrap:anywhere;padding:8px 0;border-bottom:1px solid #eee}
+#share-dialog #share-error{color:#a32323;white-space:pre-wrap}
+#share-dialog [hidden]{display:none}
+@media(max-width:600px){#share-launcher{max-width:220px;padding:8px 12px}#share-dialog{padding:18px}}

@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function googleAccount() {
+      return signedIn() && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com';
+    }
+    function email() { return request.auth.token.email.lower(); }
+    function member(workspace) {
+      return googleAccount() && email() in workspace.memberEmails;
+    }
+    function validMeta(data) {
+      return data.keys().hasAll(['name','ownerUid','ownerEmail','memberEmails','createdAt'])
+        && data.keys().hasOnly(['name','ownerUid','ownerEmail','memberEmails','createdAt'])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 80
+        && data.ownerUid is string && data.ownerEmail is string
+        && data.memberEmails is list && data.memberEmails.size() <= 30
+        && data.memberEmails.hasAll([data.ownerEmail]) && data.createdAt is timestamp;
+    }
+    match /users/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+    match /workspaces/{id} {
+      allow read: if member(resource.data);
+      allow create: if googleAccount() && validMeta(request.resource.data)
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerEmail == email()
+        && request.resource.data.memberEmails == [email()]
+        && request.resource.data.createdAt == request.time;
+      allow update: if member(resource.data) && resource.data.ownerUid == request.auth.uid
+        && validMeta(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberEmails','name']);
+      allow delete: if false;
+      match /content/{contentId} {
+        function workspace() {
+          return getAfter(/databases/$(database)/documents/workspaces/$(id)).data;
+        }
+        function validContent(data) {
+          return contentId == 'state'
+            && data.keys().hasAll(['data','updatedAt','updatedBy'])
+            && data.keys().hasOnly(['data','updatedAt','updatedBy'])
+            && data.updatedAt == request.time && data.updatedBy == request.auth.uid
+            && data.data is map
+            && data.data.keys().hasAll(['cells','fields','mindmap','ninety90'])
+            && data.data.keys().hasOnly(['cells','fields','mindmap','ninety90'])
+            && data.data.cells is map && data.data.fields is map
+            && data.data.mindmap is list && data.data.ninety90 is list;
+        }
+        allow read: if member(get(/databases/$(database)/documents/workspaces/$(id)).data);
+        allow create, update: if member(workspace()) && validContent(request.resource.data);
+        allow delete: if false;
+      }
+    }
+  }
+}
