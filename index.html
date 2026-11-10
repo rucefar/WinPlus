@@ -285,7 +285,7 @@ body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
 @media(max-width:480px){.nav-logo{display:none} #nb-layout{flex-direction:column;height:100%} #nb-sidebar{width:100%;height:auto;max-height:180px;flex-shrink:0;border-right:none;border-bottom:1px solid #e8e2d8;overflow:hidden} #nb-sidebar-top{padding:7px 10px 6px} #nb-list{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:4px 8px 6px;gap:6px;scrollbar-width:none;flex:1} #nb-list::-webkit-scrollbar{display:none} #nb-empty-hint{padding:6px 12px;font-size:.68rem} .nb-item{width:120px;flex-shrink:0;border-left:none;border-bottom:3px solid transparent;border-radius:8px;background:#faf8f5;padding:7px 8px} .nb-item.active{background:#fdf5e8;border-bottom-color:#e8a045;border-left:none} .nb-item-del{display:none!important} #nb-editor-wrap{flex:1;min-height:0;overflow:hidden} #nb-note-view{flex:1;min-height:0} #nb-toolbar{padding:4px 6px;gap:2px} .nb-tool{width:22px;height:22px;font-size:.7rem} .nb-tool-sep{display:none} #nb-font-size{width:36px} #nb-title-input{font-size:.9rem} #nb-title-bar{padding:6px 12px 2px} #nb-content-area{padding:4px 12px 16px} .mm-toolbar{bottom:auto;top:8px;border-radius:20px;padding:5px 10px} .mm-hint{display:none}}
 @media(max-width:360px){#nb-sidebar{max-height:150px} .nb-item{width:100px} .nb-item-preview,.nb-item-date{display:none}}
 </style>
-<link rel="stylesheet" href="./mobile.css">
+<link rel="stylesheet" href="./mobile.css?v=mobile-20261110">
 </head>
 <body>
 
@@ -1010,7 +1010,7 @@ window.restoreAllData = d => {
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithCredential, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
   import { getFirestore, doc, collection, query, where, onSnapshot, setDoc, getDoc, getDocFromServer, runTransaction, serverTimestamp, getDocsFromServer, writeBatch, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-  import { installCollaboration } from './collaboration.mjs';
+  import { installCollaboration } from './collaboration.mjs?v=mobile-20261110';
 
   const app = initializeApp({ apiKey:"AIzaSyArBQTUSpEk2VfLMSe1lLDbhBDNEzZJgtA", authDomain:"rucefar.github.io", projectId:"winplus-6fe62", storageBucket:"winplus-6fe62.firebasestorage.app", messagingSenderId:"635721093721", appId:"1:635721093721:web:12d24d7025514608335748" });
   const auth = getAuth(app), db = getFirestore(app);
