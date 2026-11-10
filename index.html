@@ -285,6 +285,7 @@ body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
 @media(max-width:480px){.nav-logo{display:none} #nb-layout{flex-direction:column;height:100%} #nb-sidebar{width:100%;height:auto;max-height:180px;flex-shrink:0;border-right:none;border-bottom:1px solid #e8e2d8;overflow:hidden} #nb-sidebar-top{padding:7px 10px 6px} #nb-list{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:4px 8px 6px;gap:6px;scrollbar-width:none;flex:1} #nb-list::-webkit-scrollbar{display:none} #nb-empty-hint{padding:6px 12px;font-size:.68rem} .nb-item{width:120px;flex-shrink:0;border-left:none;border-bottom:3px solid transparent;border-radius:8px;background:#faf8f5;padding:7px 8px} .nb-item.active{background:#fdf5e8;border-bottom-color:#e8a045;border-left:none} .nb-item-del{display:none!important} #nb-editor-wrap{flex:1;min-height:0;overflow:hidden} #nb-note-view{flex:1;min-height:0} #nb-toolbar{padding:4px 6px;gap:2px} .nb-tool{width:22px;height:22px;font-size:.7rem} .nb-tool-sep{display:none} #nb-font-size{width:36px} #nb-title-input{font-size:.9rem} #nb-title-bar{padding:6px 12px 2px} #nb-content-area{padding:4px 12px 16px} .mm-toolbar{bottom:auto;top:8px;border-radius:20px;padding:5px 10px} .mm-hint{display:none}}
 @media(max-width:360px){#nb-sidebar{max-height:150px} .nb-item{width:100px} .nb-item-preview,.nb-item-date{display:none}}
 </style>
+<link rel="stylesheet" href="./mobile.css">
 </head>
 <body>
 
@@ -557,7 +558,7 @@ body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
     <div id="nav">
       <button class="tab-btn home-btn" onclick="window.switchApp('home')">← 回首頁</button>
       <span class="nav-logo">✦ WinPlus+Team</span>
-      <button class="tab-btn active" onclick="window.gotoPage('mandala',this)">⊞ 曼陀羅九宮格</button>
+      <button class="tab-btn active" onclick="window.gotoPage('mandala',this)">⊞ 九宮格</button>
       <button class="tab-btn" onclick="window.gotoPage('mindmap',this)">🕸 組織網路圖</button>
       <button class="tab-btn" onclick="window.gotoPage('notebook',this)">📓 筆記本</button>
       <span class="cloud-status">☁️ 尚未登入</span>
@@ -577,12 +578,15 @@ body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
       </div>
     </div>
     <div class="page" id="page-mindmap">
-      <div class="mm-hint">點選節點 · 拖曳移動 · 點 ＋ 新增子節點 · 雙擊編輯文字 (可點擊空白處拖拉平移畫布)</div>
+      <div class="mm-hint">單指拖移畫面 · 雙指縮放 · 點節點後可編輯文字或移動節點</div>
       <div id="mm-wrapper">
           <svg id="mm-svg"></svg>
           <div id="mm-canvas"></div>
       </div>
       <div class="mm-toolbar">
+        <div class="mm-viewport-controls"><button class="mm-btn" id="mm-zoom-out" aria-label="縮小組織圖" onclick="window.mmZoomBy(0.8)">−</button><span id="mm-zoom-level" aria-live="polite">100%</span><button class="mm-btn" id="mm-zoom-in" aria-label="放大組織圖" onclick="window.mmZoomBy(1.25)">＋</button><button class="mm-btn" id="mm-fit" onclick="window.mmFitView()">顯示全部</button></div>
+        <button class="mm-btn" id="mm-edit-selected" onclick="window.mmEditSelected()">✎ 編輯文字</button>
+        <button class="mm-btn" id="mm-move-mode" aria-pressed="false" onclick="window.mmToggleMoveMode()">↔ 移動節點</button>
         <button class="mm-btn" onclick="window.mmAddChildToSelected()">＋ 新增子節點</button>
         <button class="mm-btn" onclick="window.mmAutoLayout()">⟳ 自動排版</button>
         <div style="width:1px;height:20px;background:rgba(255,255,255,0.2);margin:0 2px;"></div>
@@ -711,7 +715,7 @@ body{overflow-x:hidden;background:#f4f1ea;font-family:'Noto Sans TC',sans-serif}
       $qAll('#winplus-view .tab-btn:not(.home-btn)').forEach(b => b.classList.remove('active'));
       let p = $id('page-' + name); if(p) p.classList.add('active'); if(btn) btn.classList.add('active');
       $qAll('.biz-modal-overlay').forEach(m => m.classList.remove('show'));
-      if(name === 'mindmap' && typeof window.mmLoadState === 'function') window.mmLoadState(); 
+      if(name === 'mindmap' && typeof window.mmLoadState === 'function'){window.mmLoadState();requestAnimationFrame(()=>window.mmFitView?.());}
     };
     window.showWPToast = msg => { 
       let t = $id('wp-toast'); if(!t) return;
@@ -939,42 +943,24 @@ window.mmDrawLines = () => { let s=document.getElementById('mm-svg'); if(!s)retu
 window.mmRender = () => {
     let cvs=document.getElementById('mm-canvas'); if(!cvs)return; cvs.innerHTML=''; window.mmDrawLines();
     window.mmNodes.forEach(n=>{
-        let e=document.createElement('div'); e.className='mm-node'+(n.id==='root'?' root':'')+(n.id===window.mmSelectedId?' selected':''); e.style.left=n.x+'px'; e.style.top=n.y+'px';
+        let e=document.createElement('div'); e.className='mm-node'+(n.id==='root'?' root':'')+(n.id===window.mmSelectedId?' selected':''); e.dataset.nodeId=n.id; e.style.left=n.x+'px'; e.style.top=n.y+'px';
         let li=n.linkedCrmId?'🔗':'➕', lc=n.linkedCrmId?'#4CAF50':'#888', uBtn=n.linkedCrmId?`<div class="mm-node-unlink-btn" style="position:absolute;top:-10px;left:calc(50% + 15px);cursor:pointer;background:#ffe0e0;color:#c03030;border-radius:50%;border:1px solid #ffcccc;width:20px;height:20px;font-size:10px;display:none;align-items:center;justify-content:center;z-index:16;">✕</div>`:'';
         e.innerHTML=`<div class="mm-node-inner"><span class="mm-node-text" contenteditable="true">${window.nbEscape(n.text)}</span></div><div class="mm-node-link-btn" style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);cursor:pointer;background:#fff;border-radius:50%;border:1px solid #ddd;width:20px;height:20px;font-size:10px;align-items:center;justify-content:center;color:${lc};display:none;z-index:15;">${li}</div>${uBtn}${n.id!=='root'?'<button class="mm-node-del">✕</button>':''}`;
         
         if(n.color)e.querySelector('.mm-node-inner').style.color=n.color;
         if(n.bgColor)e.querySelector('.mm-node-inner').style.backgroundColor=n.bgColor;
+        const textElement=e.querySelector('.mm-node-text');textElement.contentEditable=window.mmIsTouch?'false':'true';textElement.onblur=()=>{if(window.mmIsTouch)textElement.contentEditable='false';};
         e.querySelector('.mm-node-text').oninput=ev=>{ n.text=ev.target.innerText; window.mmSaveState(); };
         let dBtn=e.querySelector('.mm-node-del'); if(dBtn) dBtn.onclick=ev=>{ ev.stopPropagation(); window.mmDeleteNode(n.id); };
-        let lBtn=e.querySelector('.mm-node-link-btn'); if(lBtn) lBtn.onmousedown=ev=>{ ev.stopPropagation(); if(n.linkedCrmId) { let c=(window.nGetCustomers?window.nGetCustomers():JSON.parse(localStorage.getItem('crm90_v3')||'[]')).find(x=>x.id===n.linkedCrmId); if(c){window.switchApp('ninety');window.nOpenEdit(c.id);}else{window.showWPToast('客戶已刪除');n.linkedCrmId=null;window.mmSaveState();window.mmRender();window.mmOpenLinkModal(n.id);} } else window.mmOpenLinkModal(n.id); };
-        let uB=e.querySelector('.mm-node-unlink-btn'); if(uB) uB.onmousedown=ev=>{ ev.stopPropagation(); if(confirm('解除？')){n.linkedCrmId=null;window.mmSaveState();window.mmRender();} };
+        let lBtn=e.querySelector('.mm-node-link-btn'); if(lBtn) lBtn.onclick=ev=>{ ev.stopPropagation(); if(n.linkedCrmId) { let c=(window.nGetCustomers?window.nGetCustomers():JSON.parse(localStorage.getItem('crm90_v3')||'[]')).find(x=>x.id===n.linkedCrmId); if(c){window.switchApp('ninety');window.nOpenEdit(c.id);}else{window.showWPToast('客戶已刪除');n.linkedCrmId=null;window.mmSaveState();window.mmRender();window.mmOpenLinkModal(n.id);} } else window.mmOpenLinkModal(n.id); };
+        let uB=e.querySelector('.mm-node-unlink-btn'); if(uB) uB.onclick=ev=>{ ev.stopPropagation(); if(confirm('解除？')){n.linkedCrmId=null;window.mmSaveState();window.mmRender();} };
         
-        let isD=false; 
-        const downNode=(evX,evY,ev)=>{
-            if(ev.target.classList.contains('mm-node-text')||ev.target.tagName==='BUTTON'||ev.target.closest('.mm-node-link-btn')||ev.target.closest('.mm-node-unlink-btn'))return;
-            ev.stopPropagation(); isD=true; window.mmDragging=true;
-            if(window.mmSelectedId!==n.id){window.mmSelectedId=n.id;document.querySelectorAll('.mm-node').forEach(x=>x.classList.remove('selected'));e.classList.add('selected');}
-            let sx=evX, sy=evY, nx=n.x, ny=n.y;
-            const mv=e2=>{
-                if(!isD)return;
-                if(e2.touches&&e2.cancelable)e2.preventDefault();
-                let cx=e2.touches?e2.touches[0].clientX:e2.clientX, cy=e2.touches?e2.touches[0].clientY:e2.clientY;
-                n.x=nx+(cx-sx); n.y=ny+(cy-sy); e.style.left=n.x+'px'; e.style.top=n.y+'px'; window.mmDrawLines();
-            };
-            const up=()=>{isD=false;window.mmDragging=false;document.removeEventListener('mousemove',mv);document.removeEventListener('touchmove',mv);document.removeEventListener('mouseup',up);document.removeEventListener('touchend',up);window.mmSaveState();};
-            document.addEventListener('mousemove',mv); document.addEventListener('touchmove',mv,{passive:false});
-            document.addEventListener('mouseup',up); document.addEventListener('touchend',up);
-        };
-        e.addEventListener('mousedown',ev=>downNode(ev.clientX,ev.clientY,ev));
-        e.addEventListener('touchstart',ev=>downNode(ev.touches[0].clientX,ev.touches[0].clientY,ev),{passive:false});
-
         cvs.appendChild(e);
     });
 };
 window.mmAddChildToSelected = () => { let pid=window.mmSelectedId||'root', p=window.mmNodes.find(n=>n.id===pid); if(!p)return; let n={id:'mm_'+crypto.randomUUID(),text:'新節點',x:p.x+120,y:p.y+(Math.random()-0.5)*100,parentId:pid}; window.mmNodes.push(n); window.mmSelectedId=n.id; window.mmSaveState(); window.mmRender(); };
-window.mmAutoLayout = () => { let r=window.mmNodes.find(n=>n.id==='root'); if(!r)return; let cM={}; window.mmNodes.forEach(n=>cM[n.id]=[]); window.mmNodes.forEach(n=>{if(n.parentId&&cM[n.parentId])cM[n.parentId].push(n);}); let cX=0; const tr=(id,dp)=>{ let n=window.mmNodes.find(x=>x.id===id); if(!n)return; n.y=80+dp*120; let ch=cM[id]; if(!ch.length){n.x=cX;cX+=180;}else{ch.forEach(c=>tr(c.id,dp+1));n.x=(ch[0].x+ch[ch.length-1].x)/2;} }; tr('root',0); let ox=(window.innerWidth/2)-r.x; window.mmNodes.forEach(n=>n.x+=ox); window.mmSaveState(); window.mmRender(); };
-window.mmClearAll = () => { if(confirm('重置？')){localStorage.removeItem('mm_nodes');window.mmLoadState();if(window.triggerCloudSave)window.triggerCloudSave();} };
+window.mmAutoLayout = () => { let r=window.mmNodes.find(n=>n.id==='root'); if(!r)return; let cM={}; window.mmNodes.forEach(n=>cM[n.id]=[]); window.mmNodes.forEach(n=>{if(n.parentId&&cM[n.parentId])cM[n.parentId].push(n);}); let cX=0; const tr=(id,dp)=>{ let n=window.mmNodes.find(x=>x.id===id); if(!n)return; n.y=80+dp*120; let ch=cM[id]; if(!ch.length){n.x=cX;cX+=180;}else{ch.forEach(c=>tr(c.id,dp+1));n.x=(ch[0].x+ch[ch.length-1].x)/2;} }; tr('root',0); let ox=(window.innerWidth/2)-r.x; window.mmNodes.forEach(n=>n.x+=ox); window.mmSaveState(); window.mmRender(); window.mmFitView?.(); };
+window.mmClearAll = () => { if(confirm('重置？')){localStorage.removeItem('mm_nodes');window.mmLoadState();window.mmFitView?.();if(window.triggerCloudSave)window.triggerCloudSave();} };
 window.mmDeleteNode = id => { if(id==='root')return; let dS=new Set([id]), add=true; while(add){add=false;window.mmNodes.forEach(n=>{if(n.parentId&&dS.has(n.parentId)&&!dS.has(n.id)){dS.add(n.id);add=true;}});} window.mmNodes=window.mmNodes.filter(n=>!dS.has(n.id)); if(dS.has(window.mmSelectedId))window.mmSelectedId='root'; window.mmSaveState(); window.mmRender(); };
 window.mmChangeTextColor = v => { if(!window.mmSelectedId)return window.showWPToast('請選節點'); let n=window.mmNodes.find(x=>x.id===window.mmSelectedId); if(n){n.color=v;window.mmSaveState();window.mmRender();} };
 window.mmChangeBgColor = v => { if(!window.mmSelectedId)return window.showWPToast('請選節點'); let n=window.mmNodes.find(x=>x.id===window.mmSelectedId); if(n){n.bgColor=v;window.mmSaveState();window.mmRender();} };
@@ -985,26 +971,7 @@ window.mmUnlink = () => { let n=window.mmNodes.find(x=>x.id===window.mmNodeToLin
 window.mmOpenReparentModal = () => { if(!window.mmSelectedId||window.mmSelectedId==='root')return window.showWPToast('選子節點'); let sel=document.getElementById('mm-reparent-select'); sel.innerHTML=''; const isD=(nI,tI)=>{if(nI===tI)return true;let n=window.mmNodes.find(x=>x.id===nI);while(n&&n.parentId){if(n.parentId===tI)return true;n=window.mmNodes.find(x=>x.id===n.parentId);}return false;}; window.mmNodes.forEach(n=>{if(!isD(n.id,window.mmSelectedId))sel.innerHTML+=`<option value="${n.id}">${window.nbEscape(n.text)}</option>`;}); if(sel.innerHTML)document.getElementById('mm-reparent-modal').classList.add('show'); else window.showWPToast('無選項'); };
 window.mmSaveReparent = () => { let v=document.getElementById('mm-reparent-select').value, n=window.mmNodes.find(x=>x.id===window.mmSelectedId); if(v&&n){n.parentId=v;window.mmSaveState();window.mmAutoLayout();document.getElementById('mm-reparent-modal').classList.remove('show');} };
 
-document.addEventListener('DOMContentLoaded', () => {
-    let px=0, py=0, p=false, pm=document.getElementById('page-mindmap'), w=document.getElementById('mm-wrapper'), sx=0, sy=0;
-    if(pm&&w){
-        const down=e=>{
-    if(e.target!==pm&&e.target.id!=='mm-wrapper'&&e.target.id!=='mm-svg'&&e.target.id!=='mm-canvas')return;
-    p=true; let cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY;
-    sx=cx-px; sy=cy-sy; pm.style.cursor='grabbing';
-};
-        const move=e=>{
-            if(!p)return;
-            if(e.touches&&e.cancelable)e.preventDefault();
-            let cx=e.touches?e.touches[0].clientX:e.clientX, cy=e.touches?e.touches[0].clientY:e.clientY;
-            px=cx-sx; py=cy-sy; w.style.transform=`translate(${px}px, ${py}px)`;
-        };
-        const up=()=>{p=false;pm.style.cursor='default';};
-        pm.addEventListener('mousedown',down); pm.addEventListener('touchstart',down,{passive:false});
-        document.addEventListener('mousemove',move); document.addEventListener('touchmove',move,{passive:false});
-        document.addEventListener('mouseup',up); document.addEventListener('touchend',up);
-    }
-});
+
 })();
 
 ;(function(){

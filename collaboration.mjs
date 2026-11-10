@@ -1,3 +1,4 @@
+import {installMindmapViewport} from './mindmap-viewport.mjs';
 import {installTeamTodos} from './team-todos.mjs';
 import {installTodos} from './todos.mjs';
 import {copy, equal, sharedPart, merge, validateShared, selectSharedData, addSelectedData} from './shared-data.mjs';
@@ -90,6 +91,7 @@ export function installCollaboration({db, auth, api}) {
   document.addEventListener('touchend', ()=>setTimeout(()=>{
     if(pendingSnapshot && !window.mmDragging){const next=pendingSnapshot;pendingSnapshot=null;receive(next.data,next.acknowledged);}
   },0));
+  document.addEventListener('mm-gesture-end',()=>{if(pendingSnapshot){const next=pendingSnapshot;pendingSnapshot=null;receive(next.data,next.acknowledged);}});
 
   async function savePersonal() {
     const data = window.collectAllData();
@@ -280,6 +282,7 @@ export function installCollaboration({db, auth, api}) {
   personal.innerHTML='<button class="data-home">← 資料首頁</button><h1>🚀 我的事業</h1><p>這裡的名單、組織網與成長紀錄僅自己可見。</p>';
   personal.append(home.querySelector('main.container'));document.body.append(personal);
   installTodos(personal);
+  installMindmapViewport();
   const doors=document.createElement('div');doors.className='data-doors';
   doors.innerHTML='<button id="open-personal"><strong>🚀 我的事業</strong><span>私人名單、組織網與成長紀錄</span></button><button id="open-shared"><strong>📓 團隊工作區</strong><span>與指定 Google 帳號共同查看、編輯</span></button>';
   home.querySelector('header').after(doors);
