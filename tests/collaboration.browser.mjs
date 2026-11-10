@@ -176,6 +176,15 @@ try{
   await member.evaluate(()=>window.openDataHome());await member.locator('#open-shared').click();await member.locator('#share-launcher').click();
   await member.locator('#share-workspace').selectOption(workspace);
   await member.waitForFunction(()=>window.nGetCustomers().length===2);
+  await owner.evaluate(()=>window.switchApp('workspace'));
+  await owner.locator('#workspace-add-private').click();
+  await owner.locator('#share-customer-options input[value="3"]').check();
+  await owner.locator('#share-create-form button').click();
+  await member.waitForFunction(()=>window.nGetCustomers().some(row=>row.id===3));
+  assert.equal(await member.evaluate(()=>window.nGetCustomers().find(row=>row.id===1).name),'擁有者改的新名字');
+  assert.equal(await member.evaluate(()=>window.nGetCustomers().find(row=>row.id===1).address),'夥伴改的新地址');
+  assert((await owner.locator('#workspace-summary').textContent()).includes('名單 3 位'));
+  console.log('PASS: owner adds selected private data to an existing workspace; recipient receives it without overwriting team edits');
   await owner.locator('#share-launcher').click();await owner.locator('#share-members button').click();
   await member.waitForFunction(()=>document.getElementById('share-workspace').value==='');
   assert.equal(await member.evaluate(()=>window.nGetCustomers()[0].name),'member私人名單');
