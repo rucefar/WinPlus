@@ -50,3 +50,5 @@ body:has(#shared-view.active) #scope-banner,
 body[data-data-scope="personal"]:not(:has(#shared-view.active)) #share-launcher{display:none}
 
 #pending-invitations{margin:28px 0}.workspace-invitation{padding:20px;margin:16px 0;border:1px solid #c8a96e;border-radius:16px;background:#fff9e9}.workspace-invitation p{font-size:13px;overflow-wrap:anywhere}.workspace-invitation button{padding:10px 14px;margin-right:12px;border:1px solid #b59871;border-radius:9px;background:#fff;color:#493b28;font:inherit;cursor:pointer}.workspace-invitation button:first-of-type{background:#e9f5ed;border-color:#23734b}
+
+.workspace-entry{display:flex;flex-direction:column;gap:10px;min-width:0}.workspace-entry .workspace-card{width:100%;flex:1}.workspace-entry .workspace-delete{padding:10px 14px;border:1px solid #b96a62;background:#fff5f3;color:#973b31;border-radius:10px;font:inherit;cursor:pointer}.workspace-delete:disabled{opacity:.5;cursor:not-allowed}.workspace-entry small{line-height:1.6;color:#736854}

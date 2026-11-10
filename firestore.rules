@@ -10,18 +10,26 @@ service cloud.firestore {
     function member(workspace) {
       return googleAccount() && email() in workspace.memberEmails;
     }
+    function activeMember(workspace) {
+      return member(workspace) && !workspace.get('deleting', false);
+    }
+    function deletingOwner(workspace) {
+      return member(workspace) && workspace.ownerUid == request.auth.uid
+        && workspace.get('deleting', false);
+    }
     function invited(workspace) {
       return googleAccount() && email() in workspace.get('invitedEmails', []);
     }
     function validMeta(data) {
       return data.keys().hasAll(['name','ownerUid','ownerEmail','memberEmails','createdAt'])
-        && data.keys().hasOnly(['name','ownerUid','ownerEmail','memberEmails','createdAt','invitedEmails'])
+        && data.keys().hasOnly(['name','ownerUid','ownerEmail','memberEmails','createdAt','invitedEmails','deleting'])
         && data.name is string && data.name.size() > 0 && data.name.size() <= 80
         && data.ownerUid is string && data.ownerEmail is string
         && data.memberEmails is list && data.memberEmails.size() <= 30
         && data.memberEmails.hasAll([data.ownerEmail]) && data.createdAt is timestamp
         && data.get('invitedEmails', []) is list
-        && data.memberEmails.size() + data.get('invitedEmails', []).size() <= 30;
+        && data.memberEmails.size() + data.get('invitedEmails', []).size() <= 30
+        && data.get('deleting', false) is bool;
     }
     match /users/{uid} {
       allow read, write: if signedIn() && request.auth.uid == uid;
@@ -33,18 +41,22 @@ service cloud.firestore {
         && request.resource.data.ownerEmail == email()
         && request.resource.data.memberEmails == [email()]
         && request.resource.data.get('invitedEmails', []) == []
+        && request.resource.data.get('deleting', false) == false
         && request.resource.data.createdAt == request.time;
       allow update: if member(resource.data) && resource.data.ownerUid == request.auth.uid
         && validMeta(request.resource.data)
         && request.resource.data.memberEmails.hasOnly(resource.data.memberEmails)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberEmails','invitedEmails','name']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberEmails','invitedEmails','name','deleting'])
+        && (!request.resource.data.get('deleting', false)
+          || (request.resource.data.memberEmails == [resource.data.ownerEmail] && request.resource.data.get('invitedEmails', []) == []))
+        && (!resource.data.get('deleting', false) || request.resource.data.get('deleting', false));
       // Only the invited account can accept/decline its own invitation.
       allow update: if invited(resource.data) && validMeta(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberEmails','invitedEmails'])
         && request.resource.data.invitedEmails == resource.data.invitedEmails.removeAll([email()])
         && (request.resource.data.memberEmails == resource.data.memberEmails
           || request.resource.data.memberEmails == resource.data.memberEmails.concat([email()]));
-      allow delete: if false;
+      allow delete: if deletingOwner(resource.data);
       match /tasks/{taskId} {
         function team() {
           return get(/databases/$(database)/documents/workspaces/$(id)).data;
@@ -61,13 +73,13 @@ service cloud.firestore {
         function validAssignee(data) {
           return data.assigneeEmail == '' || data.assigneeEmail in team().memberEmails;
         }
-        allow read, delete: if member(team());
-        allow create: if member(team()) && validTask(request.resource.data)
+        allow read, delete: if activeMember(team()) || deletingOwner(team());
+        allow create: if activeMember(team()) && validTask(request.resource.data)
           && validAssignee(request.resource.data)
           && request.resource.data.createdBy == request.auth.uid
           && request.resource.data.creatorEmail == email()
           && request.resource.data.createdAt == request.time;
-        allow update: if member(team()) && validTask(request.resource.data)
+        allow update: if activeMember(team()) && validTask(request.resource.data)
           && (validAssignee(request.resource.data) || request.resource.data.assigneeEmail == resource.data.assigneeEmail)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title','priority','assigneeEmail','done','updatedAt','updatedBy']);
       }
@@ -87,8 +99,8 @@ service cloud.firestore {
             && data.data.mindmap is list && data.data.ninety90 is list;
         }
         allow read: if member(get(/databases/$(database)/documents/workspaces/$(id)).data);
-        allow create, update: if member(workspace()) && validContent(request.resource.data);
-        allow delete: if false;
+        allow create, update: if activeMember(workspace()) && validContent(request.resource.data);
+        allow delete: if deletingOwner(get(/databases/$(database)/documents/workspaces/$(id)).data);
       }
     }
   }

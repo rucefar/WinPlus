@@ -1,7 +1,7 @@
 import test,{before,after} from 'node:test';
 import {readFile} from 'node:fs/promises';
 import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
-import {doc,setDoc,getDoc,updateDoc,collection,query,where,getDocs,writeBatch,serverTimestamp,onSnapshot} from 'firebase/firestore';
+import {doc,setDoc,getDoc,updateDoc,collection,query,where,getDocs,writeBatch,serverTimestamp,onSnapshot,deleteDoc} from 'firebase/firestore';
 import assert from 'node:assert/strict';
 let env,owner,member,stranger;
 const identity=email=>({email,email_verified:true,firebase:{sign_in_provider:'google.com'}});
@@ -90,4 +90,18 @@ test('invitee can decline and owner can cancel pending invitations',async()=>{
  await updateDoc(doc(owner,'workspaces/pending'),{invitedEmails:['member@gmail.com']});
  await updateDoc(doc(owner,'workspaces/pending'),{invitedEmails:[]});
  await assertFails(updateDoc(doc(member,'workspaces/pending'),{memberEmails:['owner@gmail.com','member@gmail.com'],invitedEmails:[]}));
+});
+
+test('workspace deletion is owner-only, requires no collaborators, locks edits and permits child cleanup',async()=>{
+ const ref=doc(owner,'workspaces/delete-test');
+ const batch=writeBatch(owner);batch.set(ref,{name:'刪除測試',ownerUid:'owner',ownerEmail:'owner@gmail.com',memberEmails:['owner@gmail.com'],createdAt:serverTimestamp()});
+ batch.set(doc(owner,'workspaces/delete-test/content/state'),{data:state,updatedBy:'owner',updatedAt:serverTimestamp()});await batch.commit();
+ await assertFails(deleteDoc(ref));await assertFails(updateDoc(doc(member,'workspaces/delete-test'),{deleting:true}));
+ await updateDoc(ref,{invitedEmails:['member@gmail.com']});await assertFails(updateDoc(ref,{deleting:true}));
+ await updateDoc(doc(member,'workspaces/delete-test'),{memberEmails:['owner@gmail.com','member@gmail.com'],invitedEmails:[]});
+ await assertFails(updateDoc(ref,{deleting:true}));await updateDoc(ref,{memberEmails:['owner@gmail.com']});
+ await assertSucceeds(updateDoc(ref,{deleting:true}));
+ await assertFails(updateDoc(ref,{deleting:false}));await assertFails(updateDoc(ref,{invitedEmails:['member@gmail.com']}));
+ await assertFails(setDoc(doc(owner,'workspaces/delete-test/content/state'),{data:state,updatedBy:'owner',updatedAt:serverTimestamp()}));
+ const cleanup=writeBatch(owner);cleanup.delete(doc(owner,'workspaces/delete-test/content/state'));cleanup.delete(ref);await assertSucceeds(cleanup.commit());
 });

@@ -1,11 +1,11 @@
 import {initializeApp} from 'firebase-web/app';
-import {getFirestore,connectFirestoreEmulator,doc,collection,query,where,onSnapshot,getDoc,getDocFromServer,setDoc,runTransaction,serverTimestamp,disableNetwork,enableNetwork} from 'firebase-web/firestore';
+import {getFirestore,connectFirestoreEmulator,doc,collection,query,where,onSnapshot,getDoc,getDocFromServer,setDoc,runTransaction,serverTimestamp,getDocsFromServer,writeBatch,limit,disableNetwork,enableNetwork} from 'firebase-web/firestore';
 import {installCollaboration} from '../collaboration.mjs';
 const uid=new URLSearchParams(location.search).get('user');
 const user={uid,email:`${uid}@gmail.com`,emailVerified:true};
 const db=getFirestore(initializeApp({projectId:'demo-winplus',apiKey:'demo'}));
 connectFirestoreEmulator(db,'127.0.0.1',8085,{mockUserToken:{sub:uid,email:user.email,email_verified:true,firebase:{sign_in_provider:'google.com'}}});
-window.testCollaboration=installCollaboration({db,auth:null,api:{doc,collection,query,where,onSnapshot,getDoc,getDocFromServer,setDoc,runTransaction,serverTimestamp}});
+window.testCollaboration=installCollaboration({db,auth:null,api:{doc,collection,query,where,onSnapshot,getDoc,getDocFromServer,setDoc,runTransaction,serverTimestamp,getDocsFromServer,writeBatch,limit}});
 window.testOffline=()=>disableNetwork(db);window.testOnline=()=>enableNetwork(db);
 await window.testCollaboration.login(user);
 document.getElementById('login-overlay').style.display='none';
