@@ -4,7 +4,7 @@ import {resolve,extname} from 'node:path';
 import {build} from 'esbuild';
 import {chromium} from 'playwright';
 import {initializeTestEnvironment} from '@firebase/rules-unit-testing';
-import {doc,setDoc,getDoc} from 'firebase/firestore';
+import {doc,setDoc,getDoc,getDocs,collection,writeBatch,serverTimestamp} from 'firebase/firestore';
 import assert from 'node:assert/strict';
 
 await mkdir('test-results',{recursive:true});
@@ -198,4 +198,23 @@ try{
   await owner.screenshot({path:'test-results/sharing-mobile.png',fullPage:true});
   assert.deepEqual(errors,[]);
   console.log('PASS: mobile dialog fits viewport; no browser JavaScript errors');
+  await owner.locator('#share-dialog .share-close').click();
+  await owner.evaluate(()=>window.switchApp('shared'));
+  const deletion=owner.locator('.workspace-entry').filter({hasText:'團隊共同名單'});
+  await env.withSecurityRulesDisabled(async context=>{
+    const db=context.firestore(),batch=writeBatch(db);
+    for(let i=0;i<405;i++)batch.set(doc(db,`workspaces/${workspace}/tasks/bulk-${i}`),{title:'批次清除測試',category:'action',priority:'blue',assigneeEmail:'',done:false,createdBy:'owner',creatorEmail:'owner@gmail.com',createdAt:serverTimestamp(),updatedAt:serverTimestamp(),updatedBy:'owner'});
+    await batch.commit();
+  });
+  await deletion.locator('.workspace-delete').click();
+  await deletion.waitFor({state:'detached'});
+  await env.withSecurityRulesDisabled(async context=>{
+    const db=context.firestore();
+    assert.equal((await getDoc(doc(db,`workspaces/${workspace}`))).exists(),false);
+    assert.equal((await getDoc(doc(db,`workspaces/${workspace}/content/state`))).exists(),false);
+    assert.equal((await getDocs(collection(db,`workspaces/${workspace}/tasks`))).size,0);
+    assert.equal((await getDoc(doc(db,'users/member'))).data().todoData.length,2);
+  });
+  console.log('PASS: owner deletes empty-member workspace, removes shared content/tasks, preserves personal data');
+
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));await env.cleanup();}

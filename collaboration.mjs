@@ -4,13 +4,13 @@ import {copy, equal, sharedPart, merge, validateShared, selectSharedData, addSel
 
 // Firebase is injected so the collaboration lifecycle can also be tested offline.
 export function installCollaboration({db, auth, api}) {
-  const {doc, collection, query, where, onSnapshot, getDoc, getDocFromServer, setDoc, runTransaction, serverTimestamp} = api;
+  const {doc, collection, query, where, onSnapshot, getDoc, getDocFromServer, setDoc, runTransaction, serverTimestamp, getDocsFromServer, writeBatch, limit} = api;
   let user = null, active = null, own = null, base = null, remote = null, activeMeta = null;
   let stopList = () => {}, stopState = () => {}, spaces = [], ready = false;
   let spacesLoaded=false,listError='',hubActionError='';
   let memberSpaces=[],pendingSpaces=[];
   let timer, saving = null, dirty = false, conflict = false, generation = 0, pendingSnapshot = null;
-  let ownCommit = null, actionBusy = false;
+  let ownCommit = null, actionBusy = false, deletionPending = false;
   let customerBase = null, personalSave = Promise.resolve(), personalSaved = null;
   const status = text => { document.getElementById('share-status').textContent = text; document.querySelectorAll('.cloud-status').forEach(element=>element.textContent=text); };
   const errorText = error => error.code === 'permission-denied' ? '沒有共用權限，或 Firebase 共用規則尚未設定。' : error.message || '連線失敗，請稍後重試';
@@ -135,7 +135,7 @@ export function installCollaboration({db, auth, api}) {
   window.addEventListener('beforeunload', event=>{
     const data=ready ? window.collectAllData() : null;
     const personalDirty=ready && !equal(active ? {...data,...own} : data,personalSaved);
-    if(timer || saving || dirty || personalDirty){event.preventDefault();event.returnValue='';}
+    if(timer || saving || dirty || personalDirty || deletionPending){event.preventDefault();event.returnValue='';}
   });
   window.addEventListener('online',()=>flush().catch(()=>{}));
 
@@ -329,9 +329,40 @@ export function installCollaboration({db, auth, api}) {
       const button=document.createElement('button');button.className='workspace-card';
       const title=document.createElement('strong');title.textContent=space.name;
       const detail=document.createElement('span');detail.textContent=`${space.ownerUid===user?.uid?'我建立的':'受邀共用'} · ${space.memberEmails.length} 位成員`;
-      button.append(title,detail);button.onclick=()=>action(async()=>{await selectWorkspace(space.id);if(active===space.id)originalSwitch('workspace');});list.append(button);
+      button.append(title,detail);button.disabled=!!space.deleting;button.onclick=()=>action(async()=>{await selectWorkspace(space.id);if(active===space.id)originalSwitch('workspace');});
+      const entry=document.createElement('article');entry.className='workspace-entry';entry.append(button);
+      if(space.ownerUid===user?.uid){
+        const remove=document.createElement('button');remove.className='workspace-delete';remove.type='button';
+        const empty=space.memberEmails.length===1 && !(space.invitedEmails || []).length;
+        remove.textContent=space.deleting?'繼續刪除工作區':'🗑️ 刪除團隊工作區';remove.disabled=!empty;
+        remove.onclick=()=>action(()=>deleteWorkspace(space));entry.append(remove);
+        if(!empty){const hint=document.createElement('small');hint.textContent='先移除其他成員與待確認邀請，才能刪除工作區';entry.append(hint);}
+      }
+      list.append(entry);
     });
     document.getElementById('workspace-title').textContent=spaces.find(space=>space.id===active)?.name || '團隊工作區';
+  }
+  async function deleteWorkspace(space){
+    if(!confirm(`確定永久刪除「${space.name}」及其中的共用名單、九宮格、組織網和團隊待辦？此操作無法復原；「我的事業」的私人資料會保留。`))return;
+    await flush();
+    if(active===space.id)discardToPersonal('準備刪除團隊工作區');
+    originalSwitch('shared');deletionPending=true;
+    try{
+      await runTransaction(db,async transaction=>{
+        const ref=metaRef(space.id),snapshot=await transaction.get(ref);
+        if(!snapshot.exists())throw new Error('工作區已被刪除，請重新整理');
+        const data=snapshot.data();
+        if(data.ownerUid!==user.uid || data.memberEmails.length!==1 || (data.invitedEmails || []).length)throw new Error('請先移除其他共用成員與待確認邀請');
+        transaction.update(ref,{deleting:true});
+      });
+      while(true){
+        const tasks=await getDocsFromServer(query(collection(db,'workspaces',space.id,'tasks'),limit(400)));
+        if(tasks.empty)break;
+        const batch=writeBatch(db);tasks.docs.forEach(task=>batch.delete(task.ref));await batch.commit();status('正在清除團隊待辦…');
+      }
+      const batch=writeBatch(db);batch.delete(stateRef(space.id));batch.delete(metaRef(space.id));await batch.commit();
+      memberSpaces=memberSpaces.filter(item=>item.id!==space.id);spaces=memberSpaces;render();status('✓ 團隊工作區已刪除，私人資料保留');
+    }finally{deletionPending=false;}
   }
   function updateWorkspaceSummary(data){
     const summary=document.getElementById('workspace-summary');if(!summary)return;
