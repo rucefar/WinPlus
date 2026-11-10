@@ -23,12 +23,12 @@ service cloud.firestore {
     function validMeta(data) {
       return data.keys().hasAll(['name','ownerUid','ownerEmail','memberEmails','createdAt'])
         && data.keys().hasOnly(['name','ownerUid','ownerEmail','memberEmails','createdAt','invitedEmails','deleting'])
-        && data.name is string && data.name.size() > 0 && data.name.size() <= 80
+        && data.name is string && data.name.size() > 0 && !(data.name.size() > 80)
         && data.ownerUid is string && data.ownerEmail is string
-        && data.memberEmails is list && data.memberEmails.size() <= 30
+        && data.memberEmails is list && !(data.memberEmails.size() > 30)
         && data.memberEmails.hasAll([data.ownerEmail]) && data.createdAt is timestamp
         && data.get('invitedEmails', []) is list
-        && data.memberEmails.size() + data.get('invitedEmails', []).size() <= 30
+        && !(data.memberEmails.size() + data.get('invitedEmails', []).size() > 30)
         && data.get('deleting', false) is bool;
     }
     match /users/{uid} {
@@ -64,7 +64,7 @@ service cloud.firestore {
         function validTask(data) {
           return data.keys().hasAll(['title','category','priority','assigneeEmail','done','createdBy','creatorEmail','createdAt','updatedAt','updatedBy'])
             && data.keys().hasOnly(['title','category','priority','assigneeEmail','done','createdBy','creatorEmail','createdAt','updatedAt','updatedBy'])
-            && data.title is string && data.title.size() > 0 && data.title.size() <= 240
+            && data.title is string && data.title.size() > 0 && !(data.title.size() > 240)
             && data.category in ['action','shopping'] && data.priority in ['red','yellow','blue']
             && data.assigneeEmail is string && data.done is bool
             && data.createdBy is string && data.creatorEmail is string && data.createdAt is timestamp
