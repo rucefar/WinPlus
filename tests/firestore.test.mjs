@@ -20,7 +20,14 @@ test('owner creates workspace and content atomically; only members can discover 
   await assertSucceeds(batch.commit());
   await assertFails(getDoc(doc(stranger,'workspaces/team')));
   await assertFails(getDoc(doc(stranger,'workspaces/team/content/state')));
-  await assertSucceeds(updateDoc(doc(owner,'workspaces/team'),{memberEmails:['owner@gmail.com','member@gmail.com']}));
+  await assertSucceeds(updateDoc(doc(owner,'workspaces/team'),{invitedEmails:['member@gmail.com']}));
+  const invitations=await assertSucceeds(getDocs(query(collection(member,'workspaces'),where('invitedEmails','array-contains','member@gmail.com'))));
+  assert.equal(invitations.size,1);
+  await assertFails(getDoc(doc(member,'workspaces/team/content/state')));
+  await assertFails(getDocs(collection(member,'workspaces/team/tasks')));
+  await assertFails(updateDoc(doc(stranger,'workspaces/team'),{memberEmails:['owner@gmail.com','stranger@gmail.com'],invitedEmails:[]}));
+  await assertFails(updateDoc(doc(member,'workspaces/team'),{memberEmails:['owner@gmail.com','member@gmail.com','stranger@gmail.com'],invitedEmails:[]}));
+  await assertSucceeds(updateDoc(doc(member,'workspaces/team'),{memberEmails:['owner@gmail.com','member@gmail.com'],invitedEmails:[]}));
   const list=await assertSucceeds(getDocs(query(collection(member,'workspaces'),where('memberEmails','array-contains','member@gmail.com'))));
   assert.equal(list.size,1);
   await assertFails(getDocs(collection(member,'workspaces')));
@@ -72,4 +79,15 @@ test('revoked members immediately lose read and write access',async()=>{
   await assertFails(updateDoc(doc(member,'workspaces/team/tasks/task1'),{done:false,updatedBy:'member',updatedAt:serverTimestamp()}));
   await assertFails(setDoc(doc(member,'workspaces/team/content/state'),{data:state,updatedBy:'member',updatedAt:serverTimestamp()}));
   await assertSucceeds(getDoc(doc(owner,'workspaces/team/content/state')));
+});
+
+test('invitee can decline and owner can cancel pending invitations',async()=>{
+ const data={name:'邀請測試',ownerUid:'owner',ownerEmail:'owner@gmail.com',memberEmails:['owner@gmail.com'],createdAt:serverTimestamp()};
+ await setDoc(doc(owner,'workspaces/pending'),data);
+ await updateDoc(doc(owner,'workspaces/pending'),{invitedEmails:['member@gmail.com']});
+ await assertSucceeds(updateDoc(doc(member,'workspaces/pending'),{invitedEmails:[]}));
+ await assertFails(getDoc(doc(member,'workspaces/pending')));
+ await updateDoc(doc(owner,'workspaces/pending'),{invitedEmails:['member@gmail.com']});
+ await updateDoc(doc(owner,'workspaces/pending'),{invitedEmails:[]});
+ await assertFails(updateDoc(doc(member,'workspaces/pending'),{memberEmails:['owner@gmail.com','member@gmail.com'],invitedEmails:[]}));
 });

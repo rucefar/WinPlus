@@ -54,9 +54,13 @@ try{
   const workspace=await owner.locator('#share-workspace').inputValue();
   await owner.locator('#share-email').fill('MEMBER@gmail.com');await owner.locator('#share-invite-form button').click();
   await member.locator('#open-shared').click();
+  await member.locator('#pending-invitation-list article').waitFor();
+  assert.equal(await member.locator(`#share-workspace option[value="${workspace}"]`).count(),0);
+  assert.equal(await member.evaluate(()=>window.nGetCustomers()[0].name),'member私人名單');
+  await member.goto(`${url}/?user=member`);await member.waitForFunction(()=>window.testReady);
+  await member.locator('#open-shared').click();
+  await member.locator('#pending-invitation-list button').filter({hasText:'接受共用'}).click();
   await member.locator('#share-launcher').click();
-  await member.locator(`#share-workspace option[value="${workspace}"]`).waitFor({state:'attached'});
-  await member.locator('#share-workspace').selectOption(workspace);
   await member.waitForFunction(()=>window.nGetCustomers()[0]?.name==='owner私人名單');
   assert.equal(await member.evaluate(()=>window.NotebookApp.notes[0].title),'member私人筆記');
   assert.equal(await member.evaluate(()=>window.nGetCustomers().length),1);
@@ -64,21 +68,6 @@ try{
   console.log('PASS: unchecked private customers are excluded from the shared workspace');
   await Promise.all(pages.map(page=>page.locator('#share-dialog .share-close').click()));
 
-  for(const who of ['member','stranger']){
-    const directContext=await browser.newContext();const direct=await directContext.newPage();
-    await direct.route('https://**/*',route=>route.abort());
-    await direct.goto(`${url}/?user=${who}&noList=1&workspace=${workspace}`);await direct.waitForFunction(()=>window.testReady);
-    if(who==='member'){
-      assert(await direct.locator('#workspace-view').isVisible());
-      assert.equal(await direct.evaluate(()=>window.nGetCustomers()[0]?.name),'owner私人名單');
-    }else{
-      assert(await direct.locator('#shared-view').isVisible());
-      assert((await direct.locator('#hub-message').textContent()).includes('未授予'));
-      assert.equal(await direct.evaluate(()=>window.nGetCustomers().length),0);
-    }
-    await directContext.close();
-  }
-  console.log('PASS: direct team link works when discovery fails; unauthorized accounts still cannot read it');
   await Promise.all(pages.map(page=>page.locator('#workspace-todos').click()));
   await owner.locator('#team-todo-text-action').fill('團隊拜訪客戶');
   await owner.locator('#team-todo-priority-action').selectOption('red');
