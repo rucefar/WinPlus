@@ -4,6 +4,19 @@ export const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 export const sharedPart = data => copy({cells:data.cells || {}, fields:data.fields || {}, mindmap:data.mindmap || [], ninety90:data.ninety90 || []});
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 
+// Add private selections without replacing work already edited by the team.
+export function addSelectedData(current, selected) {
+  const next=sharedPart(current);
+  for(const key of ['cells','fields'])for(const [id,value] of Object.entries(selected[key])){
+    if(next[key][id] == null || next[key][id] === '')next[key][id]=copy(value);
+  }
+  for(const key of ['ninety90','mindmap']){
+    const existing=new Set(next[key].map(row=>row.id));
+    for(const row of selected[key])if(!existing.has(row.id)){next[key].push(copy(row));existing.add(row.id);}
+  }
+  return validateShared(next);
+}
+
 export function selectSharedData(source, {customerIds=[],includeGrid=false,includeOrganization=false}={}) {
   const selected=new Set(customerIds);
   return validateShared({

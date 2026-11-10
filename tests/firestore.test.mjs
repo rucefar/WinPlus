@@ -53,9 +53,23 @@ test('owner receives collaborator updates live',async()=>{
   await setDoc(doc(member,'workspaces/team/content/state'),{data:{...state,cells:{live:'updated'}},updatedBy:'member',updatedAt:serverTimestamp()});
   await received;
 });
+test('team task assignment, publisher identity and member editing are enforced',async()=>{
+  const data={title:'聯絡客戶',category:'action',priority:'red',assigneeEmail:'member@gmail.com',done:false,createdBy:'owner',creatorEmail:'owner@gmail.com',createdAt:serverTimestamp(),updatedAt:serverTimestamp(),updatedBy:'owner'};
+  await assertSucceeds(setDoc(doc(owner,'workspaces/team/tasks/task1'),data));
+  await assertFails(getDoc(doc(stranger,'workspaces/team/tasks/task1')));
+  await assertFails(setDoc(doc(owner,'workspaces/team/tasks/outsider'),{...data,assigneeEmail:'stranger@gmail.com'}));
+  await assertFails(setDoc(doc(member,'workspaces/team/tasks/spoofed'),{...data,updatedBy:'member'}));
+  await assertSucceeds(updateDoc(doc(member,'workspaces/team/tasks/task1'),{done:true,updatedBy:'member',updatedAt:serverTimestamp()}));
+  await assertFails(updateDoc(doc(member,'workspaces/team/tasks/task1'),{creatorEmail:'member@gmail.com',updatedBy:'member',updatedAt:serverTimestamp()}));
+  await assertFails(updateDoc(doc(member,'workspaces/team/tasks/task1'),{createdBy:'member',updatedBy:'member',updatedAt:serverTimestamp()}));
+  await assertFails(updateDoc(doc(owner,'workspaces/team/tasks/task1'),{assigneeEmail:'stranger@gmail.com',updatedBy:'owner',updatedAt:serverTimestamp()}));
+  await assertSucceeds(updateDoc(doc(owner,'workspaces/team/tasks/task1'),{assigneeEmail:'owner@gmail.com',updatedBy:'owner',updatedAt:serverTimestamp()}));
+});
 test('revoked members immediately lose read and write access',async()=>{
   await assertSucceeds(updateDoc(doc(owner,'workspaces/team'),{memberEmails:['owner@gmail.com']}));
   await assertFails(getDoc(doc(member,'workspaces/team/content/state')));
+  await assertFails(getDoc(doc(member,'workspaces/team/tasks/task1')));
+  await assertFails(updateDoc(doc(member,'workspaces/team/tasks/task1'),{done:false,updatedBy:'member',updatedAt:serverTimestamp()}));
   await assertFails(setDoc(doc(member,'workspaces/team/content/state'),{data:state,updatedBy:'member',updatedAt:serverTimestamp()}));
   await assertSucceeds(getDoc(doc(owner,'workspaces/team/content/state')));
 });

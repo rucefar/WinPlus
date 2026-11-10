@@ -32,6 +32,32 @@ service cloud.firestore {
         && validMeta(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberEmails','name']);
       allow delete: if false;
+      match /tasks/{taskId} {
+        function team() {
+          return get(/databases/$(database)/documents/workspaces/$(id)).data;
+        }
+        function validTask(data) {
+          return data.keys().hasAll(['title','category','priority','assigneeEmail','done','createdBy','creatorEmail','createdAt','updatedAt','updatedBy'])
+            && data.keys().hasOnly(['title','category','priority','assigneeEmail','done','createdBy','creatorEmail','createdAt','updatedAt','updatedBy'])
+            && data.title is string && data.title.size() > 0 && data.title.size() <= 240
+            && data.category in ['action','shopping'] && data.priority in ['red','yellow','blue']
+            && data.assigneeEmail is string && data.done is bool
+            && data.createdBy is string && data.creatorEmail is string && data.createdAt is timestamp
+            && data.updatedAt == request.time && data.updatedBy == request.auth.uid;
+        }
+        function validAssignee(data) {
+          return data.assigneeEmail == '' || data.assigneeEmail in team().memberEmails;
+        }
+        allow read, delete: if member(team());
+        allow create: if member(team()) && validTask(request.resource.data)
+          && validAssignee(request.resource.data)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.creatorEmail == email()
+          && request.resource.data.createdAt == request.time;
+        allow update: if member(team()) && validTask(request.resource.data)
+          && (validAssignee(request.resource.data) || request.resource.data.assigneeEmail == resource.data.assigneeEmail)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title','priority','assigneeEmail','done','updatedAt','updatedBy']);
+      }
       match /content/{contentId} {
         function workspace() {
           return getAfter(/databases/$(database)/documents/workspaces/$(id)).data;

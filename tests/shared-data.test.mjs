@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {merge,sharedPart,validateShared,selectSharedData} from '../shared-data.mjs';
+import {merge,sharedPart,validateShared,selectSharedData,addSelectedData} from '../shared-data.mjs';
 
 const seed=()=>({cells:{'mc-0-0':'目標'},fields:{},mindmap:[{id:'root',text:'團隊',parentId:null}],ninety90:[{id:1,name:'小王',address:'台北',stage:0}]});
 test('new workspaces default to empty and only include selected private data',()=>{
@@ -50,4 +50,10 @@ test('concurrent reparent creates no unnoticed cycle',()=>{
 test('unsafe identifiers and duplicate records are rejected',()=>{
   const data=seed();data.mindmap[0].id='\" onclick=\"';assert.throws(()=>validateShared(data));
   const duplicate=seed();duplicate.ninety90.push(duplicate.ninety90[0]);assert.throws(()=>validateShared(duplicate),/重複/);
+});
+
+test('adding selected private records preserves existing team edits',()=>{
+  const current=seed(),selected=seed();current.ninety90[0].name='團隊已修改';selected.ninety90.push({id:2,name:'新加入'});selected.cells['mc-0-0']='私人不同內容';
+  const result=addSelectedData(current,selected);
+  assert.equal(result.ninety90[0].name,'團隊已修改');assert.equal(result.ninety90[1].name,'新加入');assert.equal(result.cells['mc-0-0'],'目標');assert.equal(current.ninety90.length,1);
 });
