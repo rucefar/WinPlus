@@ -48,3 +48,5 @@ body:has(#home-view.active) #scope-banner,
 body:has(#home-view.active) #share-launcher,
 body:has(#shared-view.active) #scope-banner,
 body[data-data-scope="personal"]:not(:has(#shared-view.active)) #share-launcher{display:none}
+
+#open-workspace-link{margin:20px 0;padding:16px;background:#fffdf8;border:1px solid #cdbda5;border-radius:12px}#open-workspace-link label{display:block;margin-bottom:8px}#open-workspace-link input{padding:10px;width:min(100%,480px);border:1px solid #cdbda5;border-radius:8px;font:inherit}#open-workspace-link button{margin:8px;padding:10px;border:1px solid #b59871;border-radius:8px;background:#fffaf0;color:#493b28;font:inherit;cursor:pointer}

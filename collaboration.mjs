@@ -4,10 +4,12 @@ import {copy, equal, sharedPart, merge, validateShared, selectSharedData, addSel
 
 // Firebase is injected so the collaboration lifecycle can also be tested offline.
 export function installCollaboration({db, auth, api}) {
-  const {doc, collection, query, where, onSnapshot, getDoc, setDoc, runTransaction, serverTimestamp} = api;
+  const {doc, collection, query, where, onSnapshot, getDoc, getDocFromServer, setDoc, runTransaction, serverTimestamp} = api;
   let user = null, active = null, own = null, base = null, remote = null;
   let stopList = () => {}, stopState = () => {}, spaces = [], ready = false;
   let spacesLoaded=false,listError='',hubActionError='';
+  const requestedWorkspace=new URL(location.href).searchParams.get('workspace');
+  let directSpace=null,stopDirect=()=>{},directVersion=0;
   let timer, saving = null, dirty = false, conflict = false, generation = 0, pendingSnapshot = null;
   let ownCommit = null, actionBusy = false;
   let customerBase = null, personalSave = Promise.resolve(), personalSaved = null;
@@ -147,6 +149,9 @@ export function installCollaboration({db, auth, api}) {
     select.value=active || '';
     const current=spaces.find(space=>space.id===active);
     teamTodos.setContext(active && user ? {id:active,user,members:current?.memberEmails || []} : null);
+    const link=document.getElementById('share-direct-link');
+    link.value=active?workspaceUrl(active):'';
+    document.getElementById('share-link-section').hidden=!active;
     document.getElementById('workspace-add-private').hidden=!current || current.ownerUid!==user?.uid;
     if(active)updateWorkspaceSummary(local());
     document.getElementById('share-current').textContent=current ? current.name : '我的個人資料';
@@ -222,11 +227,13 @@ export function installCollaboration({db, auth, api}) {
     <p class="share-note">受邀者用指定的 Google 帳號登入 WinPlus，從此處選擇工作區即可共同編輯，不需要傳送檔案。</p>
     <form id="share-create-form"><label for="share-name">建立工作區</label><input id="share-name" maxlength="80" placeholder="例如：團隊共同名單" required>
     <fieldset id="share-source"><legend>從我的事業選擇要共用的內容</legend><p class="share-note">預設不帶入資料，可建立空白工作區。組織網節點文字也會共用，未選名單的連結會解除。</p><div id="share-customer-options"></div><label><input type="checkbox" id="share-include-grid">帶入我的九宮格與標題</label><label><input type="checkbox" id="share-include-organization">帶入我的整份組織網</label></fieldset><button>建立團隊工作區</button></form>
+    <section id="share-link-section" hidden><label for="share-direct-link">直接開啟此工作區（仍需共用權限）</label><div class="share-row"><input id="share-direct-link" readonly><button id="share-copy-link" type="button">複製團隊連結</button></div><p class="share-note">受邀者列表未顯示時，可用此連結登入並直接開啟。未受邀的帳號仍無法讀取資料。</p></section>
     <h3 id="share-member-heading" hidden>共用成員</h3><ul id="share-members"></ul>
     <form id="share-invite-form" hidden><label for="share-email">指定對方的 Google 帳號 Email</label><div class="share-row"><input type="email" id="share-email" placeholder="name@gmail.com" required><button>加入共用</button></div><p class="share-note">成員可以查看、編輯和刪除工作區資料；只有擁有者能新增或移除共用成員。此操作不寄送通知信。</p></form>
     <p id="share-error" role="alert"></p><button id="share-retry" hidden>重試同步</button> <button id="share-reload" hidden>放棄未同步修改，載入最新資料</button>`;
   document.body.append(dialog);
   launcher.onclick=()=>{render();refreshSource();sourceMode('create');if(!dialog.open)dialog.showModal();};
+  document.getElementById('share-copy-link').onclick=async()=>{try{await navigator.clipboard.writeText(document.getElementById('share-direct-link').value);window.showWPToast('團隊連結已複製');}catch{document.getElementById('share-direct-link').select();window.showWPToast('請複製已選取的團隊連結');}};
   document.getElementById('share-workspace').onchange=event=>action(()=>selectWorkspace(event.target.value));
   document.getElementById('share-create-form').onsubmit=event=>{
     event.preventDefault();action(async()=>{
@@ -254,7 +261,7 @@ export function installCollaboration({db, auth, api}) {
     });
   };
   document.getElementById('share-invite-form').onsubmit=event=>{
-    event.preventDefault();action(async()=>{const email=document.getElementById('share-email').value.trim().toLowerCase();await changeMember(email,true);document.getElementById('share-email').value='';status('✓ 已加入共用；對方登入後即可選取工作區');});
+    event.preventDefault();action(async()=>{const email=document.getElementById('share-email').value.trim().toLowerCase();await changeMember(email,true);document.getElementById('share-email').value='';status('✓ 已加入共用；對方若列表未顯示，可傳送上方團隊連結');});
   };
   document.getElementById('share-retry').onclick=()=>action(()=>flush());
   document.getElementById('share-reload').onclick=()=>action(async()=>{
@@ -280,7 +287,7 @@ export function installCollaboration({db, auth, api}) {
   doors.innerHTML='<button id="open-personal"><strong>🚀 我的事業</strong><span>私人名單、組織網與成長紀錄</span></button><button id="open-shared"><strong>📓 團隊工作區</strong><span>與指定 Google 帳號共同查看、編輯</span></button>';
   home.querySelector('header').after(doors);
   const hub=document.createElement('section');hub.id='shared-view';hub.className='app-view data-hub';
-  hub.innerHTML='<button class="data-home">← 資料首頁</button><h1>📓 團隊工作區</h1><p>選擇工作區後，變更會同步給該區所有成員。</p><p id="hub-account"></p><p id="hub-message" role="status" aria-live="polite"></p><button id="hub-refresh">重新整理工作區</button> <button id="hub-create">建立團隊工作區</button><div id="workspace-list"></div>';
+  hub.innerHTML='<button class="data-home">← 資料首頁</button><h1>📓 團隊工作區</h1><p>選擇工作區後，變更會同步給該區所有成員。</p><p id="hub-account"></p><p id="hub-message" role="status" aria-live="polite"></p><button id="hub-refresh">重新整理工作區</button> <button id="hub-create">建立團隊工作區</button><form id="open-workspace-link"><label for="workspace-link-input">收到團隊連結？</label><input id="workspace-link-input" type="url" placeholder="貼上團隊連結" required><button type="submit">驗證帳號並開啟</button></form><div id="workspace-list"></div>';
   document.body.append(hub);
   const workspace=document.createElement('section');workspace.id='workspace-view';workspace.className='app-view data-hub';
   workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><p id="workspace-summary"></p><p id="workspace-empty" hidden>此工作區目前沒有名單、九宮格或組織網資料。私人內容不會自動共用，請擁有者選擇資料加入。</p><button id="workspace-add-private" hidden>＋ 從我的事業加入資料</button><div class="data-doors"><button id="workspace-customers">👥 名單</button><button id="workspace-grid">🔲 九宮格</button><button id="workspace-organization">🕸️ 組織網</button><button id="workspace-todos">📝 團隊待辦</button></div>';
@@ -299,6 +306,7 @@ export function installCollaboration({db, auth, api}) {
   document.getElementById('open-shared').onclick=()=>{renderHub();originalSwitch('shared');};
   document.getElementById('back-shared').onclick=()=>originalSwitch('shared');
   document.getElementById('hub-create').onclick=launcher.onclick;
+  document.getElementById('open-workspace-link').onsubmit=event=>{event.preventDefault();action(async()=>{const url=new URL(document.getElementById('workspace-link-input').value);if(url.origin!==location.origin||url.pathname!==location.pathname)throw new Error('請使用此 WinPlus 網站的團隊連結');await openDirect(url.searchParams.get('workspace'));});};
   document.getElementById('hub-refresh').onclick=()=>listenWorkspaces();
   document.getElementById('workspace-add-private').onclick=()=>{launcher.onclick();sourceMode('append');document.getElementById('share-create-form').scrollIntoView({block:'start'});};
   document.getElementById('workspace-todos').onclick=()=>window.switchApp('team-todos');
@@ -331,12 +339,33 @@ export function installCollaboration({db, auth, api}) {
     document.querySelector('label[for="share-name"]').hidden=mode==='append';
     form.querySelector('button').textContent=mode==='append'?'加入選取資料（保留團隊已有內容）':'建立團隊工作區';
   }
+  function workspaceUrl(id){const url=new URL(location.pathname,location.origin);url.searchParams.set('workspace',id);return url.href;}
+  async function openDirect(id){
+    if(!id || !/^[a-zA-Z0-9_-]{1,128}$/.test(id))throw new Error('團隊連結格式不正確');
+    let snapshot;
+    try{snapshot=await getDocFromServer(metaRef(id));}
+    catch(error){if(error.code==='permission-denied')throw new Error('目前登入 '+user.email+'，Firebase 未授予此工作區權限；請擁有者確認此帳號已列在共用成員，並確認規則已發布。');throw error;}
+    if(!snapshot.exists())throw new Error('此團隊工作區不存在');
+    stopDirect();const version=++directVersion;directSpace={id,...snapshot.data()};
+    if(!spaces.some(space=>space.id===id))spaces.push(directSpace);
+    stopDirect=onSnapshot(metaRef(id),docSnapshot=>{
+      if(version!==directVersion || !docSnapshot.exists())return;
+      directSpace={id,...docSnapshot.data()};spaces=spaces.filter(space=>space.id!==id);spaces.push(directSpace);render();
+    },error=>{
+      if(version!==directVersion)return;
+      directSpace=null;spaces=spaces.filter(space=>space.id!==id);
+      if(active===id)discardToPersonal('此工作區權限已移除');
+      showError(error);render();
+    });
+    await selectWorkspace(id);render();
+  }
   function listenWorkspaces(){
     if(!user || !ready)return;
     stopList();spacesLoaded=false;listError='';hubActionError='';render();
     stopList=onSnapshot(query(collection(db,'workspaces'),where('memberEmails','array-contains',user.email.toLowerCase())),{includeMetadataChanges:true},snapshot=>{
       spacesLoaded=!snapshot.metadata.fromCache;listError='';hubActionError='';
       spaces=snapshot.docs.map(row=>({id:row.id,...row.data()}));
+      if(directSpace && !spaces.some(space=>space.id===directSpace.id))spaces.push(directSpace);
       if(active && spacesLoaded && !spaces.some(space=>space.id===active)){
         sessionStorage.removeItem(draftKey());discardToPersonal('共用權限已移除，已切回個人資料');
       }
@@ -366,7 +395,7 @@ export function installCollaboration({db, auth, api}) {
 
   return {
     async login(nextUser) {
-      teamTodos.stop();
+      teamTodos.stop();stopDirect();directVersion++;directSpace=null;
       ready=false;spacesLoaded=false;listError='';hubActionError='';user=nextUser;generation++;clearTimeout(timer);timer=null;stopList();stopState();active=null;own=null;base=null;remote=null;spaces=[];dirty=false;conflict=false;pendingSnapshot=null;
       // Never carry another account's cached records into a newly authenticated account.
       apply({cells:{},fields:{},mindmap:[],ninety90:[]});
@@ -378,6 +407,7 @@ export function installCollaboration({db, auth, api}) {
       listenWorkspaces();
     },
     flush,
-    stop() {teamTodos.stop();ready=false;clearTimeout(timer);timer=null;stopList();stopState();generation++;launcher.hidden=true;}
+    async openRequestedWorkspace(){if(!requestedWorkspace)return false;try{await openDirect(requestedWorkspace);}catch(error){originalSwitch('shared');showError(error);}return true;},
+    stop() {stopDirect();directVersion++;directSpace=null;teamTodos.stop();ready=false;clearTimeout(timer);timer=null;stopList();stopState();generation++;launcher.hidden=true;}
   };
 }

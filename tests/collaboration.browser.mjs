@@ -64,6 +64,21 @@ try{
   console.log('PASS: unchecked private customers are excluded from the shared workspace');
   await Promise.all(pages.map(page=>page.locator('#share-dialog .share-close').click()));
 
+  for(const who of ['member','stranger']){
+    const directContext=await browser.newContext();const direct=await directContext.newPage();
+    await direct.route('https://**/*',route=>route.abort());
+    await direct.goto(`${url}/?user=${who}&noList=1&workspace=${workspace}`);await direct.waitForFunction(()=>window.testReady);
+    if(who==='member'){
+      assert(await direct.locator('#workspace-view').isVisible());
+      assert.equal(await direct.evaluate(()=>window.nGetCustomers()[0]?.name),'owner私人名單');
+    }else{
+      assert(await direct.locator('#shared-view').isVisible());
+      assert((await direct.locator('#hub-message').textContent()).includes('未授予'));
+      assert.equal(await direct.evaluate(()=>window.nGetCustomers().length),0);
+    }
+    await directContext.close();
+  }
+  console.log('PASS: direct team link works when discovery fails; unauthorized accounts still cannot read it');
   await Promise.all(pages.map(page=>page.locator('#workspace-todos').click()));
   await owner.locator('#team-todo-text-action').fill('團隊拜訪客戶');
   await owner.locator('#team-todo-priority-action').selectOption('red');

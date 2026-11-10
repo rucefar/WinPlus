@@ -1042,13 +1042,13 @@ window.restoreAllData = d => {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithCredential, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-  import { getFirestore, doc, collection, query, where, onSnapshot, setDoc, getDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { getFirestore, doc, collection, query, where, onSnapshot, setDoc, getDoc, getDocFromServer, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { installCollaboration } from './collaboration.mjs';
 
   const app = initializeApp({ apiKey:"AIzaSyArBQTUSpEk2VfLMSe1lLDbhBDNEzZJgtA", authDomain:"rucefar.github.io", projectId:"winplus-6fe62", storageBucket:"winplus-6fe62.firebasestorage.app", messagingSenderId:"635721093721", appId:"1:635721093721:web:12d24d7025514608335748" });
   const auth = getAuth(app), db = getFirestore(app);
 
-  const collaboration = installCollaboration({db, auth, api:{doc, collection, query, where, onSnapshot, setDoc, getDoc, runTransaction, serverTimestamp}});
+  const collaboration = installCollaboration({db, auth, api:{doc, collection, query, where, onSnapshot, setDoc, getDoc, getDocFromServer, runTransaction, serverTimestamp}});
   onAuthStateChanged(auth, async u => {
     if(!u){collaboration.stop();window.currentUserUid=null;document.getElementById('login-overlay').style.display='flex';return;}
     window.currentUserUid=u.uid;
@@ -1057,7 +1057,7 @@ window.restoreAllData = d => {
       await collaboration.login(u);
       document.getElementById('login-error').textContent='';
       document.getElementById('login-overlay').style.display='none';
-      window.openDataHome();
+      if(!await collaboration.openRequestedWorkspace())window.openDataHome();
     } catch(error) {
       document.getElementById('login-error').textContent='雲端資料讀取失敗，請重新整理後再試。';
     }
