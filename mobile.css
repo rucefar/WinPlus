@@ -36,3 +36,18 @@
 @keyframes mm-help-dismiss{0%,75%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
 #page-mindmap.active .mm-hint{animation:mm-help-dismiss 4s linear forwards}
 @media(prefers-reduced-motion:reduce){#page-mindmap.active .mm-hint{animation-timing-function:steps(1,end)}}
+
+#page-mandala.active{flex-direction:column;align-items:stretch;justify-content:flex-start;overflow:hidden}
+#page-mandala .mandala-wrapper{align-items:stretch;flex:1;min-height:0;width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
+.mandala-zoom-toolbar{flex-shrink:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid #ddd;background:#fffdf8;color:#493b28}
+.mandala-zoom-toolbar button{padding:7px 12px;min-height:36px;border:1px solid #cdbda5;border-radius:8px;background:#fff;color:#493b28;font:inherit;font-size:13px;cursor:pointer}
+.mandala-zoom-toolbar output{min-width:42px;text-align:center;font-size:13px}.mandala-zoom-toolbar input[type=range]{width:120px;accent-color:#b59871}.mandala-zoom-toolbar small{font-size:11px;color:#736854}
+#mandala-viewport{flex:1;min-width:0;min-height:0;overflow:auto;touch-action:none;overscroll-behavior:contain;background:#faf8f3;border:1px solid #ddd;border-radius:8px}
+#mandala-stage{position:relative;overflow:hidden;flex-shrink:0}
+#mandala-stage #big-grid{position:absolute;width:630px;height:630px;transform-origin:top left}
+#mandala-stage .m-cell textarea{font-size:14px;padding-top:17px;touch-action:none}#mandala-stage .cell-code{font-size:10px}
+#mandala-cell-dialog{margin:auto;width:min(520px,94vw);max-height:88dvh;overflow:auto;padding:20px;border:1px solid #cdbda5;border-radius:16px;background:#fffdf8;color:#493b28;font-family:inherit}
+#mandala-cell-dialog::backdrop{background:#0007}#mandala-cell-dialog h2{font-size:20px;margin:0 0 14px}
+#mandala-cell-text{width:100%;box-sizing:border-box;font:inherit;font-size:16px;line-height:1.7;resize:vertical;padding:12px;border:1px solid #cdbda5;border-radius:8px}
+#mandala-cell-dialog form>div{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}#mandala-cell-dialog button{padding:10px 18px;border:1px solid #b59871;border-radius:8px;background:#fff;color:#493b28;font:inherit;cursor:pointer}#mandala-cell-error{color:#a32323;font-size:13px}
+@media(max-width:700px){#page-mandala .mandala-wrapper{padding:10px;gap:8px}.mandala-left{flex-shrink:0;gap:6px}.mandala-brand-title{font-size:18px}.left-field{margin:0}.mandala-zoom-toolbar{padding:8px;gap:6px}.mandala-zoom-toolbar input[type=range]{width:80px}.mandala-zoom-toolbar small{flex-basis:100%}}

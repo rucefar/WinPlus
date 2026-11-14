@@ -6,7 +6,8 @@
     "test": "node --test tests/shared-data.test.mjs",
     "test:rules": "firebase emulators:exec --only firestore --project demo-winplus 'node --test tests/firestore.test.mjs'",
     "test:browser": "firebase emulators:exec --only firestore --project demo-winplus 'node tests/collaboration.browser.mjs'",
-    "test:mobile": "node tests/mobile.browser.mjs"
+    "test:mobile": "node tests/mobile.browser.mjs",
+    "test:mandala": "node tests/mandala.browser.mjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.0",

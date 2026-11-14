@@ -59,7 +59,7 @@ try{
     }
   }
   await page.screenshot({path:'test-results/mindmap-mobile.png',fullPage:true});
-  await page.evaluate(()=>window.gotoPage('mandala'));assert(await page.evaluate(()=>document.getElementById('page-mandala').scrollWidth>innerWidth));
+  await page.evaluate(()=>window.gotoPage('mandala'));await page.locator('#mandala-original').click();assert(await page.evaluate(()=>document.getElementById('mandala-viewport').scrollWidth>document.getElementById('mandala-viewport').clientWidth));
   console.log('PASS: navigation and graph toolbar fit 320–430px; mandala stays readable with horizontal scrolling');
   assert.deepEqual(errors,[]);
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}

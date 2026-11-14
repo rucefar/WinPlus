@@ -1,3 +1,4 @@
+import {installMandalaViewport} from './mandala-viewport.mjs';
 import {installMindmapViewport} from './mindmap-viewport.mjs';
 import {installTeamTodos} from './team-todos.mjs';
 import {installTodos} from './todos.mjs';
@@ -46,6 +47,7 @@ export function installCollaboration({db, auth, api}) {
     }
   }
   function closeEditors() {
+    document.getElementById('mandala-cell-dialog')?.close();
     window.nGoBack(); customerBase = null;
     ['mm-link-modal','mm-reparent-modal'].forEach(id=>document.getElementById(id)?.classList.remove('show'));
   }
@@ -283,6 +285,7 @@ export function installCollaboration({db, auth, api}) {
   personal.append(home.querySelector('main.container'));document.body.append(personal);
   installTodos(personal);
   installMindmapViewport();
+  installMandalaViewport();
   const doors=document.createElement('div');doors.className='data-doors';
   doors.innerHTML='<button id="open-personal"><strong>🚀 我的事業</strong><span>私人名單、組織網與成長紀錄</span></button><button id="open-shared"><strong>📓 團隊工作區</strong><span>與指定 Google 帳號共同查看、編輯</span></button>';
   home.querySelector('header').after(doors);
