@@ -32,3 +32,7 @@
   .n-topbar .cloud-status{font-size:11px}.n-summary-bar{flex-wrap:wrap}.n-toolbar{flex-wrap:wrap;gap:8px}.n-search-wrap{flex-basis:100%;min-width:0}
   body:has(#winplus-view.active) #scope-banner{display:none}
 }
+
+@keyframes mm-help-dismiss{0%,75%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+#page-mindmap.active .mm-hint{animation:mm-help-dismiss 4s linear forwards}
+@media(prefers-reduced-motion:reduce){#page-mindmap.active .mm-hint{animation-timing-function:steps(1,end)}}

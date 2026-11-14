@@ -290,7 +290,7 @@ export function installCollaboration({db, auth, api}) {
   hub.innerHTML='<button class="data-home">← 資料首頁</button><h1>📓 團隊工作區</h1><p>選擇工作區後，變更會同步給該區所有成員。</p><p id="hub-account"></p><p id="hub-message" role="status" aria-live="polite"></p><button id="hub-refresh">重新整理工作區</button> <button id="hub-create">建立團隊工作區</button><section id="pending-invitations"><h2>📬 待確認邀請</h2><p>接受後才會開始共用與同步資料。</p><div id="pending-invitation-list"></div></section><h2>已加入的團隊</h2><div id="workspace-list"></div>';
   document.body.append(hub);
   const workspace=document.createElement('section');workspace.id='workspace-view';workspace.className='app-view data-hub';
-  workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><p id="workspace-summary"></p><p id="workspace-empty" hidden>此工作區目前沒有名單、九宮格或組織網資料。私人內容不會自動共用，請擁有者選擇資料加入。</p><button id="workspace-add-private" hidden>＋ 從我的事業加入資料</button><div class="data-doors"><button id="workspace-customers">👥 名單</button><button id="workspace-grid">🔲 九宮格</button><button id="workspace-organization">🕸️ 組織網</button><button id="workspace-todos">📝 團隊待辦</button></div>';
+  workspace.innerHTML='<button id="back-shared">← 團隊工作區列表</button> <button id="workspace-share-members">👥 共用成員</button><h1 id="workspace-title"></h1><p>共用成員可以共同查看與編輯這裡的資料。</p><p id="workspace-summary"></p><p id="workspace-empty" hidden>此工作區目前沒有名單、九宮格或組織網資料。私人內容不會自動共用，請擁有者選擇資料加入。</p><button id="workspace-add-private" hidden>＋ 從我的事業加入資料</button><div class="data-doors"><button id="workspace-customers">👥 名單</button><button id="workspace-grid">🔲 九宮格</button><button id="workspace-organization">🕸️ 組織網</button><button id="workspace-todos">📝 團隊待辦</button></div>';
   document.body.append(workspace);
   const teamTodos=installTeamTodos({db,api});
   const banner=document.createElement('div');banner.id='scope-banner';banner.setAttribute('role','status');document.body.prepend(banner);
@@ -306,6 +306,7 @@ export function installCollaboration({db, auth, api}) {
   document.getElementById('open-shared').onclick=()=>{renderHub();originalSwitch('shared');};
   document.getElementById('back-shared').onclick=()=>originalSwitch('shared');
   document.getElementById('hub-create').onclick=launcher.onclick;
+  document.getElementById('workspace-share-members').onclick=launcher.onclick;
   document.getElementById('hub-refresh').onclick=()=>listenWorkspaces();
   document.getElementById('workspace-add-private').onclick=()=>{launcher.onclick();sourceMode('append');document.getElementById('share-create-form').scrollIntoView({block:'start'});};
   document.getElementById('workspace-todos').onclick=()=>window.switchApp('team-todos');

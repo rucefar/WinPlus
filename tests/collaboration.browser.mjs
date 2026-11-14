@@ -60,7 +60,7 @@ try{
   await member.goto(`${url}/?user=member`);await member.waitForFunction(()=>window.testReady);
   await member.locator('#open-shared').click();
   await member.locator('#pending-invitation-list button').filter({hasText:'接受共用'}).click();
-  await member.locator('#share-launcher').click();
+  await member.evaluate(()=>window.switchApp('workspace'));await member.locator('#workspace-share-members').click();
   await member.waitForFunction(()=>window.nGetCustomers()[0]?.name==='owner私人名單');
   assert.equal(await member.evaluate(()=>window.NotebookApp.notes[0].title),'member私人筆記');
   assert.equal(await member.evaluate(()=>window.nGetCustomers().length),1);
@@ -134,7 +134,7 @@ try{
   await member.evaluate(()=>window.testOnline());
   await member.waitForFunction(()=>document.getElementById('share-error').textContent.includes('相同欄位'));
   assert.equal(await member.evaluate(()=>localStorage.getItem('mc-0-0')),'離線修改');
-  await member.locator('#share-launcher').click();await member.locator('#share-reload').click();
+  await member.evaluate(()=>window.switchApp('workspace'));await member.locator('#workspace-share-members').click();await member.locator('#share-reload').click();
   await member.waitForFunction(()=>localStorage.getItem('mc-0-0')==='線上夥伴修改');
   console.log('PASS: offline edits preserved; same-field conflict shown; explicit reload resolves conflict');
 
@@ -177,7 +177,8 @@ try{
   assert.equal(await member.locator('.todo-item').count(),2);
   assert.equal(await member.locator('.todo-done').count(),1);
   console.log('PASS: private to-do action/shopping colors, edit, completion, delete, cloud persistence, reload and mobile layout');
-  await member.evaluate(()=>window.openDataHome());await member.locator('#open-shared').click();await member.locator('#share-launcher').click();
+  await member.evaluate(()=>window.openDataHome());await member.locator('#open-shared').click();await member.locator('.workspace-card').filter({hasText:'團隊共同名單'}).click();
+  await member.locator('#workspace-share-members').click();
   await member.locator('#share-workspace').selectOption(workspace);
   await member.waitForFunction(()=>window.nGetCustomers().length===2);
   await owner.evaluate(()=>window.switchApp('workspace'));
@@ -189,7 +190,7 @@ try{
   assert.equal(await member.evaluate(()=>window.nGetCustomers().find(row=>row.id===1).address),'夥伴改的新地址');
   assert((await owner.locator('#workspace-summary').textContent()).includes('名單 3 位'));
   console.log('PASS: owner adds selected private data to an existing workspace; recipient receives it without overwriting team edits');
-  await owner.locator('#share-launcher').click();await owner.locator('#share-members button').click();
+  await owner.evaluate(()=>window.switchApp('workspace'));await owner.locator('#workspace-share-members').click();await owner.locator('#share-members button').click();
   await member.waitForFunction(()=>document.getElementById('share-workspace').value==='');
   assert.equal(await member.evaluate(()=>window.nGetCustomers()[0].name),'member私人名單');
   console.log('PASS: removing membership immediately switches the recipient back to private data');

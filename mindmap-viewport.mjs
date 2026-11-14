@@ -2,6 +2,7 @@
 export function installMindmapViewport(){
   const page=document.getElementById('page-mindmap'),wrapper=document.getElementById('mm-wrapper');
   const view={x:0,y:0,scale:1},pointers=new Map();let gesture=null,moveNodes=false;
+  window.mmShowHint=()=>{const hint=page.querySelector('.mm-hint');if(hint){hint.style.animation='none';void hint.offsetWidth;hint.style.animation='';}};
   window.mmViewport=view;window.mmIsTouch=matchMedia('(pointer:coarse)').matches || navigator.maxTouchPoints>0;
   const clamp=value=>Math.min(3,Math.max(.03,value));
   const local=point=>{const rect=page.getBoundingClientRect();return {x:point.x-rect.left,y:point.y-rect.top};};
